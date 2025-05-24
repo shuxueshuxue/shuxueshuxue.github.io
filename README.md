@@ -1,1 +1,2 @@
-Collection of Mathematical games.
+Collection of Mathematical plays.
+Enjoy!
