@@ -1780,13 +1780,43 @@
             
             if (e.key >= '0' && e.key <= '9') {
                 const digit = parseInt(e.key);
-                if (digit >= state.currentOrder) return; 
+                const currentValue = state.multiTable[row][col];
                 
-                state.multiTable[row][col] = digit;
-                renderTable();
-                updateElementInfo();
+                let newValue;
+                if (currentValue === -1 || currentValue === undefined) {
+                    // 如果格子为空，直接设置为输入的数字
+                    newValue = digit;
+                } else {
+                    // 如果格子有值，追加数字
+                    newValue = parseInt(currentValue.toString() + digit.toString());
+                }
+                
+                // 检查新值是否在有效范围内
+                if (newValue >= 0 && newValue < state.currentOrder) {
+                    state.multiTable[row][col] = newValue;
+                    renderTable();
+                    updateElementInfo();
+                }
+                // 如果超出范围，忽略输入
 
-            } else if (e.key === 'Backspace' || e.key === 'Delete') {
+            } else if (e.key === 'Backspace') {
+                const currentValue = state.multiTable[row][col];
+                if (currentValue === -1 || currentValue === undefined) {
+                    return; // 已经是空的，无需操作
+                }
+                
+                const valueStr = currentValue.toString();
+                if (valueStr.length === 1) {
+                    // 如果只有一位数，清空格子
+                    clearCell(row, col);
+                } else {
+                    // 如果是多位数，删除最后一位
+                    const newValue = parseInt(valueStr.slice(0, -1));
+                    state.multiTable[row][col] = newValue;
+                    renderTable();
+                    updateElementInfo();
+                }
+            } else if (e.key === 'Delete') {
                 clearCell(row, col);
             }
         });
