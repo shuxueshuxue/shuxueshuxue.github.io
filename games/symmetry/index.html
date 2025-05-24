@@ -12,11 +12,12 @@
         }
 
         body {
-            font-family: Arial, sans-serif;
-            background: #000;
-            color: #b4b4b4;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #0c0c0c 0%, #1a1a2e 50%, #16213e 100%);
+            color: #e0e6ed;
             overflow: hidden;
             user-select: none;
+            min-height: 100vh;
         }
 
         .container {
@@ -25,6 +26,21 @@
             display: flex;
             justify-content: center;
             align-items: center;
+            position: relative;
+        }
+
+        /* 背景装饰 */
+        .container::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: radial-gradient(circle at 20% 50%, rgba(78, 205, 196, 0.1) 0%, transparent 50%),
+                        radial-gradient(circle at 80% 20%, rgba(255, 107, 107, 0.1) 0%, transparent 50%),
+                        radial-gradient(circle at 40% 80%, rgba(130, 119, 255, 0.1) 0%, transparent 50%);
+            pointer-events: none;
         }
 
         .screen {
@@ -32,6 +48,7 @@
             width: 100%;
             height: 100%;
             position: relative;
+            animation: fadeIn 0.5s ease-in-out;
         }
 
         .screen.active {
@@ -41,115 +58,162 @@
             justify-content: center;
         }
 
-        /* 主菜单 - 改进布局 */
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+        }
+
+        @keyframes glow {
+            0%, 100% { box-shadow: 0 0 5px rgba(78, 205, 196, 0.3); }
+            50% { box-shadow: 0 0 20px rgba(78, 205, 196, 0.6), 0 0 30px rgba(78, 205, 196, 0.3); }
+        }
+
+        /* 主菜单 */
         .main-menu {
             text-align: center;
             position: relative;
             display: flex;
             flex-direction: column;
             align-items: center;
-            gap: 20px;
+            gap: 25px;
+            z-index: 10;
         }
 
         .game-title {
-            width: 400px;
-            height: 100px;
-            margin-bottom: 30px;
-            background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 100"><text x="50%" y="50%" font-family="Arial Black" font-size="60" fill="url(%23grad)" text-anchor="middle" dominant-baseline="middle">SYMMETRY</text><defs><linearGradient id="grad" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" style="stop-color:%23ff6b6b"/><stop offset="100%" style="stop-color:%234ecdc4"/></linearGradient></defs></svg>') no-repeat center;
+            width: 450px;
+            height: 120px;
+            margin-bottom: 40px;
+            background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 450 120"><text x="50%" y="50%" font-family="Arial Black" font-size="48" fill="url(%23grad)" text-anchor="middle" dominant-baseline="middle">SYMMETRY</text><defs><linearGradient id="grad" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" style="stop-color:%23ff6b6b"/><stop offset="30%" style="stop-color:%234ecdc4"/><stop offset="70%" style="stop-color:%238277ff"/><stop offset="100%" style="stop-color:%23ff6b6b"/></linearGradient></defs></svg>') no-repeat center;
             background-size: contain;
+            animation: glow 3s infinite;
         }
 
         .menu-button {
             display: block;
-            width: 220px;
-            padding: 18px 30px;
-            background: rgba(50, 50, 50, 0.3);
-            color: #b4b4b4;
-            border: 2px solid #646464;
-            border-radius: 8px;
+            width: 250px;
+            padding: 20px 35px;
+            background: rgba(30, 30, 50, 0.8);
+            color: #e0e6ed;
+            border: 2px solid #4ecdc4;
+            border-radius: 12px;
             font-size: 18px;
-            font-weight: 500;
+            font-weight: 600;
             cursor: pointer;
-            transition: all 0.3s ease;
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
             text-align: center;
+            position: relative;
+            overflow: hidden;
+            backdrop-filter: blur(10px);
+        }
+
+        .menu-button::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(78, 205, 196, 0.3), transparent);
+            transition: left 0.5s;
+        }
+
+        .menu-button:hover::before {
+            left: 100%;
         }
 
         .menu-button:hover {
             color: #4ecdc4;
             border-color: #4ecdc4;
-            background: rgba(78, 205, 196, 0.1);
-            transform: translateY(-2px);
-            box-shadow: 0 4px 12px rgba(78, 205, 196, 0.2);
+            background: rgba(78, 205, 196, 0.15);
+            transform: translateY(-3px);
+            box-shadow: 0 8px 25px rgba(78, 205, 196, 0.3);
         }
 
         .triangle-decoration {
             position: absolute;
-            left: -120px;
+            left: -150px;
             top: 50%;
             transform: translateY(-50%);
-            width: 150px;
-            height: 150px;
-            background: radial-gradient(circle, rgba(78, 205, 196, 0.2) 0%, transparent 70%);
+            width: 200px;
+            height: 200px;
+            background: conic-gradient(from 0deg, rgba(78, 205, 196, 0.3), rgba(255, 107, 107, 0.3), rgba(130, 119, 255, 0.3), rgba(78, 205, 196, 0.3));
             clip-path: polygon(50% 0%, 0% 100%, 100% 100%);
+            animation: pulse 4s infinite;
         }
 
-        /* 游戏菜单 - 改进按钮对齐 */
+        /* 游戏菜单 */
         .game-menu {
-            width: 900px;
-            max-height: 80vh;
+            width: 950px;
+            max-height: 85vh;
             overflow-y: auto;
-            padding: 20px;
+            padding: 30px;
+            background: rgba(20, 20, 35, 0.9);
+            border-radius: 20px;
+            backdrop-filter: blur(15px);
+            border: 1px solid rgba(78, 205, 196, 0.3);
         }
 
         .level-row {
             display: flex;
             align-items: center;
             justify-content: space-between;
-            margin: 15px 0;
-            padding: 20px 30px;
-            background: rgba(26, 26, 26, 0.8);
-            border: 2px solid #a0522d;
-            border-radius: 10px;
+            margin: 20px 0;
+            padding: 25px 35px;
+            background: rgba(30, 30, 50, 0.8);
+            border: 2px solid rgba(160, 82, 45, 0.6);
+            border-radius: 15px;
             cursor: pointer;
-            transition: all 0.3s ease;
+            transition: all 0.4s ease;
+            backdrop-filter: blur(10px);
         }
 
         .level-row:hover {
             border-color: #4ecdc4;
             background: rgba(78, 205, 196, 0.1);
+            transform: translateX(10px);
+            box-shadow: 0 5px 20px rgba(78, 205, 196, 0.2);
         }
 
         .level-label {
-            font-size: 22px;
-            font-weight: 600;
-            width: 180px;
+            font-size: 24px;
+            font-weight: 700;
+            width: 200px;
             text-align: left;
             color: #fff;
+            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
         }
 
         .level-buttons {
             display: flex;
-            gap: 20px;
+            gap: 25px;
             align-items: center;
         }
 
         .level-button {
-            padding: 12px 25px;
-            background: rgba(50, 50, 50, 0.6);
-            color: #b4b4b4;
+            padding: 15px 30px;
+            background: rgba(50, 50, 70, 0.8);
+            color: #e0e6ed;
             border: 2px solid #646464;
-            border-radius: 6px;
+            border-radius: 10px;
             cursor: pointer;
             transition: all 0.3s ease;
             font-size: 16px;
-            min-width: 140px;
+            font-weight: 500;
+            min-width: 160px;
             text-align: center;
+            backdrop-filter: blur(5px);
         }
 
         .level-button:hover:not(.disabled) {
             color: #4ecdc4;
             border-color: #4ecdc4;
-            background: rgba(78, 205, 196, 0.1);
+            background: rgba(78, 205, 196, 0.15);
+            transform: scale(1.05);
         }
 
         .level-button.disabled {
@@ -162,9 +226,9 @@
         /* 游戏界面 */
         .game-area {
             display: flex;
-            gap: 50px;
+            gap: 60px;
             align-items: flex-start;
-            padding: 20px;
+            padding: 30px;
             justify-content: center;
         }
 
@@ -174,246 +238,339 @@
 
         .multiplication-table {
             display: inline-grid;
-            gap: 2px;
-            background: #323232;
-            padding: 4px;
-            border-radius: 8px;
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+            gap: 3px;
+            background: rgba(30, 30, 50, 0.9);
+            padding: 8px;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(78, 205, 196, 0.3);
         }
 
         .cell {
-            width: 40px;
-            height: 40px;
+            width: 45px;
+            height: 45px;
             display: flex;
             align-items: center;
             justify-content: center;
             cursor: pointer;
-            font-size: 16px;
-            font-weight: 600;
-            transition: all 0.2s ease;
+            font-size: 18px;
+            font-weight: 700;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
             border: 2px solid transparent;
-            border-radius: 4px;
+            border-radius: 8px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .cell::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(45deg, transparent, rgba(255, 255, 255, 0.1), transparent);
+            opacity: 0;
+            transition: opacity 0.3s;
+        }
+
+        .cell:hover::before {
+            opacity: 1;
         }
 
         .cell.header {
             font-weight: bold;
             color: #fff;
             cursor: pointer;
-            background: rgba(50, 50, 50, 0.8);
+            background: rgba(50, 50, 70, 0.9);
+            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.5);
         }
 
         .cell.header.selected {
             border: 3px solid #ff6b6b;
-            transform: scale(1.05);
+            transform: scale(1.1);
+            box-shadow: 0 0 15px rgba(255, 107, 107, 0.6);
         }
 
         .cell:not(.header):hover {
             border: 2px solid #646464;
-            transform: scale(1.05);
+            transform: scale(1.1);
+            box-shadow: 0 0 10px rgba(100, 100, 100, 0.3);
         }
 
         .cell.selected {
             border: 2px solid #4ecdc4;
-            transform: scale(1.05);
-            box-shadow: 0 0 8px rgba(78, 205, 196, 0.5);
+            transform: scale(1.1);
+            box-shadow: 0 0 15px rgba(78, 205, 196, 0.6);
         }
 
         .cell.immutable {
-            background: #1a1a1a !important;
-            color: #ff6b6b;
+            background: rgba(26, 26, 26, 0.9) !important;
+            color: #ff6b6b !important;
             cursor: not-allowed;
             font-weight: bold;
+            box-shadow: inset 0 0 10px rgba(255, 107, 107, 0.3);
         }
 
         .control-panel {
-            background: rgba(50, 50, 50, 0.8);
-            padding: 25px;
-            border: 2px solid #a0522d;
-            border-radius: 12px;
-            width: 240px;
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+            background: rgba(30, 30, 50, 0.9);
+            padding: 30px;
+            border: 2px solid rgba(160, 82, 45, 0.6);
+            border-radius: 20px;
+            width: 280px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+            backdrop-filter: blur(15px);
         }
 
         .info-section {
-            margin-bottom: 25px;
-            font-size: 14px;
-            line-height: 1.6;
-            padding: 15px;
-            background: rgba(26, 26, 26, 0.6);
-            border-radius: 8px;
+            margin-bottom: 30px;
+            font-size: 15px;
+            line-height: 1.8;
+            padding: 20px;
+            background: rgba(20, 20, 35, 0.8);
+            border-radius: 12px;
+            border: 1px solid rgba(78, 205, 196, 0.2);
         }
 
         .info-section strong {
             color: #4ecdc4;
             display: block;
-            margin-bottom: 10px;
-            font-size: 16px;
+            margin-bottom: 15px;
+            font-size: 18px;
+            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
         }
 
         .control-button {
             width: 100%;
-            padding: 14px;
-            margin: 12px 0;
-            background: rgba(50, 50, 50, 0.8);
-            color: #b4b4b4;
+            padding: 16px;
+            margin: 15px 0;
+            background: rgba(50, 50, 70, 0.8);
+            color: #e0e6ed;
             border: 2px solid #646464;
-            border-radius: 8px;
+            border-radius: 12px;
             cursor: pointer;
             transition: all 0.3s ease;
             font-size: 16px;
-            font-weight: 500;
+            font-weight: 600;
+            backdrop-filter: blur(5px);
         }
 
         .control-button:hover {
             border-color: #4ecdc4;
             color: #4ecdc4;
-            background: rgba(78, 205, 196, 0.1);
+            background: rgba(78, 205, 196, 0.15);
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(78, 205, 196, 0.3);
         }
 
         .control-button.primary {
             border-color: #4ecdc4;
-            background: rgba(78, 205, 196, 0.2);
+            background: rgba(78, 205, 196, 0.3);
             color: #fff;
         }
 
         .control-button.primary:hover {
-            background: rgba(78, 205, 196, 0.3);
+            background: rgba(78, 205, 196, 0.4);
         }
 
         /* 画廊 */
         .gallery {
             width: 90%;
             max-width: 1200px;
-            height: 80vh;
+            height: 85vh;
             overflow-y: auto;
-            padding: 20px;
+            padding: 30px;
+            background: rgba(20, 20, 35, 0.9);
+            border-radius: 15px;
+            backdrop-filter: blur(15px);
+            border: 1px solid rgba(78, 205, 196, 0.3);
         }
 
         .gallery-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(420px, 1fr));
-            gap: 25px;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 20px;
             margin-top: 30px;
         }
 
         .group-card {
-            border: 3px solid #a0522d;
-            padding: 25px;
-            background: rgba(26, 26, 26, 0.8);
+            border: 2px solid rgba(78, 205, 196, 0.3);
+            padding: 20px;
+            background: rgba(30, 30, 50, 0.6);
             border-radius: 12px;
-            display: flex;
-            gap: 25px;
             transition: all 0.3s ease;
+            backdrop-filter: blur(10px);
+            text-align: center;
+            min-height: 200px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
         }
 
         .group-card:hover {
             border-color: #4ecdc4;
             background: rgba(78, 205, 196, 0.1);
+            transform: translateY(-3px);
+            box-shadow: 0 8px 25px rgba(78, 205, 196, 0.2);
         }
 
         .group-card.unknown {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 60px;
             color: #666;
-            height: 250px;
+            font-size: 48px;
+            background: rgba(40, 40, 60, 0.3);
+            border-color: rgba(100, 100, 100, 0.3);
+        }
+
+        .group-card.unknown:hover {
+            border-color: #999;
+            background: rgba(60, 60, 80, 0.4);
         }
 
         .group-info {
-            flex: 1;
+            text-align: center;
         }
 
         .group-info h3 {
             color: #4ecdc4;
             font-size: 24px;
-            margin-bottom: 10px;
+            margin-bottom: 8px;
+            font-weight: 600;
+        }
+
+        .group-info .order {
+            color: #ff6b6b;
+            font-size: 16px;
+            font-weight: 500;
+            margin-bottom: 8px;
+        }
+
+        .group-info .description {
+            color: #b4b4b4;
+            font-size: 14px;
+            line-height: 1.4;
         }
 
         .group-table-preview {
-            width: 200px;
-            height: 200px;
+            width: 120px;
+            height: 120px;
             display: grid;
             gap: 1px;
-            background: #333;
-            padding: 2px;
+            background: rgba(20, 20, 35, 0.8);
+            padding: 3px;
             border-radius: 6px;
+            margin: 15px auto 0;
+            border: 1px solid rgba(78, 205, 196, 0.2);
         }
 
         .preview-cell {
-            background: #000;
+            background: rgba(60, 60, 80, 0.8);
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 12px;
+            font-size: 10px;
             border-radius: 2px;
+            font-weight: 600;
         }
 
         /* 教程 */
         .tutorial {
-            width: 90%;
-            max-width: 800px;
-            height: 80vh;
+            width: 95%;
+            max-width: 900px;
+            height: 85vh;
             overflow-y: auto;
-            padding: 30px;
-            background: rgba(26, 26, 26, 0.9);
-            border: 2px solid #a0522d;
-            border-radius: 12px;
+            padding: 40px;
+            background: rgba(20, 20, 35, 0.9);
+            border: 2px solid rgba(160, 82, 45, 0.6);
+            border-radius: 20px;
+            backdrop-filter: blur(15px);
+        }
+
+        .tutorial h1 {
+            color: #4ecdc4;
+            text-align: center;
+            margin-bottom: 30px;
+            font-size: 36px;
+            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
         }
 
         .tutorial h2 {
             color: #4ecdc4;
-            margin: 25px 0 15px;
+            margin: 30px 0 20px;
+            font-size: 24px;
+            border-bottom: 2px solid rgba(78, 205, 196, 0.3);
+            padding-bottom: 10px;
         }
 
         .tutorial p {
-            margin: 12px 0;
-            line-height: 1.7;
+            margin: 15px 0;
+            line-height: 1.8;
+            font-size: 16px;
+        }
+
+        .tutorial strong {
+            color: #ff6b6b;
         }
 
         /* 设置 */
         .settings {
-            width: 450px;
-            padding: 30px;
-            background: rgba(26, 26, 26, 0.9);
-            border: 2px solid #a0522d;
-            border-radius: 12px;
+            width: 500px;
+            padding: 40px;
+            background: rgba(20, 20, 35, 0.9);
+            border: 2px solid rgba(160, 82, 45, 0.6);
+            border-radius: 20px;
+            backdrop-filter: blur(15px);
         }
 
         .setting-item {
-            margin: 25px 0;
+            margin: 30px 0;
             display: flex;
             justify-content: space-between;
             align-items: center;
+            font-size: 18px;
         }
 
         .toggle {
-            width: 60px;
-            height: 30px;
-            background: #333;
-            border-radius: 15px;
+            width: 70px;
+            height: 35px;
+            background: rgba(50, 50, 70, 0.8);
+            border-radius: 20px;
             position: relative;
             cursor: pointer;
-            transition: background 0.3s;
+            transition: all 0.3s ease;
+            border: 2px solid #646464;
         }
 
         .toggle.on {
-            background: #4ecdc4;
+            background: rgba(78, 205, 196, 0.8);
+            border-color: #4ecdc4;
         }
 
         .toggle-slider {
-            width: 26px;
-            height: 26px;
-            background: #fff;
+            width: 30px;
+            height: 30px;
+            background: linear-gradient(145deg, #ffffff, #e6e6e6);
             border-radius: 50%;
             position: absolute;
             top: 2px;
             left: 2px;
-            transition: transform 0.3s;
+            transition: all 0.3s ease;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
         }
 
         .toggle.on .toggle-slider {
-            transform: translateX(30px);
+            transform: translateX(35px);
+        }
+
+        select {
+            padding: 12px;
+            background: rgba(50, 50, 70, 0.8);
+            color: #fff;
+            border: 2px solid #646464;
+            border-radius: 8px;
+            font-size: 16px;
+            backdrop-filter: blur(5px);
         }
 
         /* 消息框 */
@@ -428,134 +585,222 @@
             z-index: 1000;
             justify-content: center;
             align-items: center;
+            backdrop-filter: blur(5px);
         }
 
         .modal.active {
             display: flex;
+            animation: fadeIn 0.3s ease-in-out;
         }
 
         .modal-content {
-            background: rgba(50, 50, 50, 0.95);
-            padding: 40px;
+            background: rgba(30, 30, 50, 0.95);
+            padding: 50px;
             border: 3px solid #4ecdc4;
-            border-radius: 12px;
-            max-width: 500px;
+            border-radius: 20px;
+            max-width: 600px;
             text-align: center;
-            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.5);
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
+            backdrop-filter: blur(15px);
+            animation: pulse 0.3s ease-in-out;
+        }
+
+        .modal-content h3 {
+            color: #4ecdc4;
+            margin-bottom: 20px;
+            font-size: 24px;
+        }
+
+        .modal-content p {
+            font-size: 18px;
+            line-height: 1.6;
+            margin-bottom: 30px;
         }
 
         .modal-button {
-            padding: 12px 30px;
-            margin-top: 25px;
-            background: rgba(50, 50, 50, 0.8);
-            color: #b4b4b4;
-            border: 2px solid #646464;
-            border-radius: 8px;
+            padding: 15px 40px;
+            margin-top: 20px;
+            background: rgba(78, 205, 196, 0.3);
+            color: #fff;
+            border: 2px solid #4ecdc4;
+            border-radius: 12px;
             cursor: pointer;
             transition: all 0.3s ease;
+            font-size: 16px;
+            font-weight: 600;
         }
 
         .modal-button:hover {
-            border-color: #4ecdc4;
-            color: #4ecdc4;
+            background: rgba(78, 205, 196, 0.5);
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(78, 205, 196, 0.3);
         }
 
         /* 提示图标 */
         .hint-icon {
             position: absolute;
-            top: 20px;
-            right: 20px;
-            width: 50px;
-            height: 50px;
-            background: #4ecdc4;
+            top: 30px;
+            right: 30px;
+            width: 60px;
+            height: 60px;
+            background: linear-gradient(145deg, #4ecdc4, #3ba99c);
             border-radius: 50%;
             display: flex;
             align-items: center;
             justify-content: center;
             cursor: pointer;
-            font-size: 24px;
+            font-size: 28px;
             color: #000;
             font-weight: bold;
+            transition: all 0.3s ease;
+            box-shadow: 0 5px 15px rgba(78, 205, 196, 0.4);
+        }
+
+        .hint-icon:hover {
+            transform: scale(1.1);
+            box-shadow: 0 8px 25px rgba(78, 205, 196, 0.6);
         }
 
         .hint-tooltip {
             position: absolute;
             top: 80px;
-            right: 20px;
+            right: 0;
             background: rgba(30, 0, 70, 0.95);
             color: #dc7800;
-            padding: 15px;
-            border-radius: 8px;
-            max-width: 300px;
+            padding: 20px;
+            border-radius: 12px;
+            max-width: 350px;
             display: none;
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.5);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(220, 120, 0, 0.3);
+            font-size: 14px;
+            line-height: 1.5;
         }
 
         .hint-icon:hover .hint-tooltip {
             display: block;
+            animation: fadeIn 0.3s ease-in-out;
         }
 
         /* 返回按钮 */
         .back-button {
             position: absolute;
-            top: 20px;
-            left: 20px;
-            padding: 12px 20px;
-            background: rgba(50, 50, 50, 0.8);
-            color: #b4b4b4;
+            top: 30px;
+            left: 30px;
+            padding: 15px 25px;
+            background: rgba(50, 50, 70, 0.8);
+            color: #e0e6ed;
             border: 2px solid #646464;
-            border-radius: 8px;
+            border-radius: 12px;
             cursor: pointer;
             transition: all 0.3s ease;
+            font-size: 16px;
+            font-weight: 600;
+            backdrop-filter: blur(10px);
         }
 
         .back-button:hover {
             border-color: #4ecdc4;
             color: #4ecdc4;
+            background: rgba(78, 205, 196, 0.15);
+            transform: translateX(-5px);
+            box-shadow: 0 5px 15px rgba(78, 205, 196, 0.3);
         }
 
         /* 滚动条 */
         ::-webkit-scrollbar {
-            width: 12px;
+            width: 14px;
         }
 
         ::-webkit-scrollbar-track {
-            background: #1a1a1a;
-            border-radius: 6px;
+            background: rgba(26, 26, 26, 0.8);
+            border-radius: 8px;
         }
 
         ::-webkit-scrollbar-thumb {
-            background: #646464;
-            border-radius: 6px;
+            background: linear-gradient(180deg, #646464, #4ecdc4);
+            border-radius: 8px;
+            border: 2px solid rgba(26, 26, 26, 0.8);
         }
 
         ::-webkit-scrollbar-thumb:hover {
-            background: #a0522d;
+            background: linear-gradient(180deg, #4ecdc4, #3ba99c);
         }
 
-        /* 标题样式改进 */
+        /* 标题样式 */
         h2 {
             color: #4ecdc4;
             text-align: center;
-            margin-bottom: 20px;
-            font-size: 28px;
+            margin-bottom: 30px;
+            font-size: 32px;
+            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
         }
 
         #gameTitle {
             color: #fff;
-            font-size: 24px;
-            margin-bottom: 20px;
+            font-size: 28px;
+            margin-bottom: 30px;
+            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.5);
         }
 
         /* 无群提示 */
         .no-groups-hint {
-            background: rgba(255, 107, 107, 0.1);
-            border: 2px solid #ff6b6b;
-            border-radius: 8px;
-            padding: 15px;
-            margin: 20px 0;
+            background: rgba(255, 107, 107, 0.15);
+            border: 2px solid rgba(255, 107, 107, 0.6);
+            border-radius: 12px;
+            padding: 20px;
+            margin: 25px 0;
             text-align: center;
             color: #ff6b6b;
+            font-weight: 500;
+            backdrop-filter: blur(5px);
+        }
+
+        /* 成功动画 */
+        @keyframes celebration {
+            0% { transform: scale(1) rotate(0deg); }
+            25% { transform: scale(1.1) rotate(90deg); }
+            50% { transform: scale(1.2) rotate(180deg); }
+            75% { transform: scale(1.1) rotate(270deg); }
+            100% { transform: scale(1) rotate(360deg); }
+        }
+
+        .celebrate {
+            animation: celebration 0.6s ease-in-out;
+        }
+
+        /* 响应式设计 */
+        @media (max-width: 1200px) {
+            .game-area {
+                flex-direction: column;
+                gap: 30px;
+            }
+            
+            .control-panel {
+                width: 100%;
+                max-width: 400px;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .gallery-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .level-row {
+                flex-direction: column;
+                gap: 15px;
+            }
+            
+            .level-buttons {
+                flex-direction: column;
+                width: 100%;
+            }
+            
+            .level-button {
+                width: 100%;
+            }
         }
     </style>
 </head>
@@ -620,34 +865,35 @@
             <div class="tutorial">
                 <h1 style="text-align: center; color: #4ecdc4;">Group Theory Explorer</h1>
                 
-                <h2>Objective</h2>
-                <p>Fill in multiplication tables to discover and understand finite groups.</p>
+                <h2>🎯 Objective</h2>
+                <p>Fill in multiplication tables to discover and understand finite groups. Master the art of abstract algebra through interactive exploration!</p>
                 
-                <h2>Game Flow</h2>
-                <p><strong>1. Exploration Mode:</strong> Freely create and explore group structures to discover new groups.</p>
-                <p><strong>2. Gallery:</strong> View all groups you've discovered in exploration mode.</p>
-                <p><strong>3. Puzzle Mode:</strong> Solve puzzles based on groups you've already discovered in the gallery.</p>
+                <h2>🔄 Game Flow</h2>
+                <p><strong>1. Exploration Mode:</strong> Freely create and explore group structures to discover new groups. This is where you learn and experiment!</p>
+                <p><strong>2. Gallery:</strong> View all groups you've discovered in exploration mode. Your personal collection of mathematical achievements.</p>
+                <p><strong>3. Puzzle Mode:</strong> Solve challenging puzzles based on groups you've already discovered. Test your understanding!</p>
                 
-                <h2>Controls</h2>
-                <p>• Click a cell to select it</p>
-                <p>• Type numbers (0-9) to fill values</p>
-                <p>• Backspace to clear a cell</p>
-                <p>• Right-click to quickly clear</p>
-                <p>• Click headers to swap elements</p>
-                <p>• ESC to return to menu</p>
+                <h2>🎮 Controls</h2>
+                <p>• <strong>Click a cell</strong> to select it</p>
+                <p>• <strong>Type numbers (0-9)</strong> to fill values</p>
+                <p>• <strong>Backspace/Delete</strong> to clear a cell</p>
+                <p>• <strong>Right-click</strong> to quickly clear</p>
+                <p>• <strong>Click headers</strong> to swap elements (powerful tool!)</p>
+                <p>• <strong>ESC</strong> to return to menu</p>
                 
-                <h2>Group Properties</h2>
-                <p><strong>Closure:</strong> All products must be in the group</p>
-                <p><strong>Associativity:</strong> (a·b)·c = a·(b·c)</p>
-                <p><strong>Identity:</strong> There exists e such that e·a = a·e = a</p>
+                <h2>📐 Group Properties</h2>
+                <p><strong>Closure:</strong> All products must be in the group (no values outside 0 to n-1)</p>
+                <p><strong>Associativity:</strong> (a·b)·c = a·(b·c) for all elements</p>
+                <p><strong>Identity:</strong> There exists e such that e·a = a·e = a for all a</p>
                 <p><strong>Inverses:</strong> For each a, there exists b such that a·b = b·a = e</p>
                 
-                <h2>Tips</h2>
-                <p>• Start by finding the identity element</p>
-                <p>• Each row and column must contain all elements exactly once</p>
-                <p>• Use element swapping to standardize your table</p>
-                <p>• Pay attention to element orders and conjugacy classes</p>
-                <p>• Discover groups in exploration mode first, then use them in puzzles!</p>
+                <h2>💡 Pro Tips</h2>
+                <p>• <strong>Start with the identity:</strong> Find which element acts as the identity first</p>
+                <p>• <strong>Latin square property:</strong> Each row and column must contain all elements exactly once</p>
+                <p>• <strong>Use element swapping:</strong> Click headers to standardize your table - this is crucial for puzzle solving!</p>
+                <p>• <strong>Study patterns:</strong> Pay attention to element orders and conjugacy classes</p>
+                <p>• <strong>Exploration first:</strong> Discover groups in exploration mode before attempting puzzles</p>
+                <p>• <strong>Small groups are easier:</strong> Start with order 4 to understand the basics</p>
             </div>
         </div>
 
@@ -663,7 +909,7 @@
                 </div>
                 <div class="setting-item">
                     <span>Language / 语言</span>
-                    <select id="languageSelect" onchange="changeLanguage()" style="padding: 8px; background: #333; color: #fff; border: 2px solid #646464; border-radius: 4px;">
+                    <select id="languageSelect" onchange="changeLanguage()">
                         <option value="en">English</option>
                         <option value="cn">中文</option>
                     </select>
@@ -693,6 +939,32 @@
             hint: '',
             language: 'en'
         };
+
+        // 格子展示配置 - 默认为 order - 2 (可在代码中调整)
+        function getCellDisplayCount(order) {
+            // 你可以在这里修改公式来调整显示的格子数量
+            // 默认: order - 2，确保至少显示2个格子
+            return Math.max(2, order - 2);
+        }
+
+        // 修复后的重新标记群元素函数
+        function relabelGroup(table) {
+            const order = table.length;
+            const permutation = generateRandomPermutation(order);
+            const newTable = Array(order).fill(null).map(() => Array(order).fill(0));
+            
+            // 正确的重新标记：newTable[π(i)][π(j)] = π(table[i][j])
+            for (let i = 0; i < order; i++) {
+                for (let j = 0; j < order; j++) {
+                    const newI = permutation[i];
+                    const newJ = permutation[j];
+                    const newValue = permutation[table[i][j]];
+                    newTable[newI][newJ] = newValue;
+                }
+            }
+            
+            return newTable;
+        }
 
         // Robust localStorage parsing function
         function safeJsonParse(key, defaultValue) {
@@ -816,30 +1088,29 @@
             ]
         };
 
-        // 基于已发现群生成puzzle的核心函数
+        // 改进的puzzle生成函数，使用简化的格子数量计算
         function generatePuzzleFromDiscovered(order, puzzleIndex) {
-            // 获取该阶数已发现的群
             const discoveredGroupsOfOrder = storage.discoveredGroups.filter(g => g.order === order && g.table);
             
             if (discoveredGroupsOfOrder.length === 0) {
-                return null; // 没有已发现的群
+                return null;
             }
             
             // 根据puzzleIndex选择群（循环使用）
             const selectedGroup = discoveredGroupsOfOrder[puzzleIndex % discoveredGroupsOfOrder.length];
-            let groupTable = JSON.parse(JSON.stringify(selectedGroup.table)); // 深拷贝
+            let groupTable = JSON.parse(JSON.stringify(selectedGroup.table));
             
-            // 可选地重新标记元素（打乱标签）
+            // 随机决定是否重新标记元素（50%概率）
             if (Math.random() > 0.5) {
                 groupTable = relabelGroup(groupTable);
             }
             
-            // 选择要显示的单元格（ceil(n/2)个）
-            const numToShow = Math.ceil(order / 2);
-            const positions = generateRandomPositions(order, numToShow);
+            // 使用简化的格子数量计算
+            const targetCells = getCellDisplayCount(order);
+            const cellsToShow = selectStrategicCells(groupTable, order, targetCells);
             
             // 生成immutable cells和hint
-            const immutableCells = positions.map(([i, j]) => [i, j, groupTable[i][j]]);
+            const immutableCells = cellsToShow.map(([i, j]) => [i, j, groupTable[i][j]]);
             const hint = generateHint(selectedGroup.name, order);
             
             return {
@@ -849,36 +1120,36 @@
             };
         }
 
-        // 重新标记群元素（随机置换标签）
-        function relabelGroup(table) {
-            const order = table.length;
-            const permutation = generateRandomPermutation(order);
-            const newTable = Array(order).fill(null).map(() => Array(order).fill(0));
+        // 战略性地选择要显示的单元格，使用配置的数量
+        function selectStrategicCells(table, order, targetCells) {
+            const positions = [];
             
+            // 总是包含一些关键位置：
+            // 1. 对角线上的一些元素（帮助识别单位元）
             for (let i = 0; i < order; i++) {
-                for (let j = 0; j < order; j++) {
-                    const newI = permutation.indexOf(i);
-                    const newJ = permutation.indexOf(j);
-                    const newValue = permutation[table[i][j]];
-                    newTable[newI][newJ] = newValue;
+                if (Math.random() < 0.4 && positions.length < targetCells) { // 40%概率包含对角线元素
+                    positions.push([i, i]);
                 }
             }
             
-            return newTable;
-        }
-
-        // 生成随机置换
-        function generateRandomPermutation(n) {
-            const arr = Array.from({length: n}, (_, i) => i);
-            for (let i = arr.length - 1; i > 0; i--) {
-                const j = Math.floor(Math.random() * (i + 1));
-                [arr[i], arr[j]] = [arr[j], arr[i]];
+            // 2. 第一行和第一列的一些元素（如果包含单位元）
+            const identity = findIdentityInTable(table);
+            if (identity !== -1) {
+                // 包含单位元行的一些元素
+                for (let j = 0; j < order && positions.length < targetCells; j++) {
+                    if (Math.random() < 0.3 && !positions.some(([r, c]) => r === identity && c === j)) {
+                        positions.push([identity, j]);
+                    }
+                }
+                // 包含单位元列的一些元素
+                for (let i = 0; i < order && positions.length < targetCells; i++) {
+                    if (Math.random() < 0.3 && !positions.some(([r, c]) => r === i && c === identity)) {
+                        positions.push([i, identity]);
+                    }
+                }
             }
-            return arr;
-        }
-
-        // 生成随机位置
-        function generateRandomPositions(order, numPositions) {
+            
+            // 3. 随机添加更多单元格直到达到目标数量
             const allPositions = [];
             for (let i = 0; i < order; i++) {
                 for (let j = 0; j < order; j++) {
@@ -886,34 +1157,80 @@
                 }
             }
             
-            // 随机选择位置
-            const selectedPositions = [];
-            const usedIndices = new Set();
+            // 随机打乱剩余位置
+            const remainingPositions = allPositions.filter(([i, j]) => 
+                !positions.some(([r, c]) => r === i && c === j)
+            );
+            shuffleArray(remainingPositions);
             
-            while (selectedPositions.length < numPositions && selectedPositions.length < allPositions.length) {
-                const randomIndex = Math.floor(Math.random() * allPositions.length);
-                if (!usedIndices.has(randomIndex)) {
-                    usedIndices.add(randomIndex);
-                    selectedPositions.push(allPositions[randomIndex]);
-                }
+            // 添加随机位置直到达到目标
+            while (positions.length < targetCells && remainingPositions.length > 0) {
+                positions.push(remainingPositions.pop());
             }
             
-            return selectedPositions;
+            return positions;
         }
 
-        // 生成提示
+        // 在给定表格中查找单位元
+        function findIdentityInTable(table) {
+            const order = table.length;
+            for (let e = 0; e < order; e++) {
+                let isIdentity = true;
+                for (let i = 0; i < order; i++) {
+                    if (table[e][i] !== i || table[i][e] !== i) {
+                        isIdentity = false;
+                        break;
+                    }
+                }
+                if (isIdentity) return e;
+            }
+            return -1;
+        }
+
+        // 数组打乱函数
+        function shuffleArray(array) {
+            for (let i = array.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [array[i], array[j]] = [array[j], array[i]];
+            }
+        }
+
+        // 生成随机置换
+        function generateRandomPermutation(n) {
+            const arr = Array.from({length: n}, (_, i) => i);
+            shuffleArray(arr);
+            return arr;
+        }
+
+        // 改进的提示生成
         function generateHint(groupName, order) {
             const hints = {
-                'C4': 'This is a cyclic group. Find the generator element.',
-                'C2 x C2': 'Klein four-group: every non-identity element has order 2.',
-                'C6': 'Cyclic group of order 6. Look for the generator.',
-                'S3': 'Symmetric group S3: not all elements commute.',
-                'C8': 'Cyclic group of order 8. Find the generator.',
-                'D8': 'Dihedral group: contains rotations and reflections.',
-                'D4': 'Dihedral group: contains rotations and reflections.'
+                'C4': 'This is a cyclic group. Find the generator element - one element whose powers give all others.',
+                'C2 x C2': 'Klein four-group: every non-identity element has order 2. All elements commute.',
+                'C6': 'Cyclic group of order 6. Look for the generator element.',
+                'S3': 'Symmetric group S3: not all elements commute. Contains 3-cycles and 2-cycles.',
+                'C8': 'Cyclic group of order 8. Find the generator element.',
+                'D8': 'Dihedral group: contains rotations and reflections. Half the elements have order 2.',
+                'D4': 'Dihedral group: contains rotations and reflections.',
+                'A4': 'Alternating group: all even permutations on 4 elements. Contains 3-cycles.',
+                'Q8': 'Quaternion group: non-abelian, all non-identity elements have order 4.'
             };
             
-            return hints[groupName] || `Complete this group structure of order ${order}. Based on ${groupName}.`;
+            const specificHint = hints[groupName];
+            if (specificHint) {
+                return specificHint;
+            }
+            
+            // 通用提示
+            if (groupName.startsWith('C') && !groupName.includes('x')) {
+                return `Cyclic group of order ${order}. All elements can be generated by powers of one element.`;
+            } else if (groupName.includes('x')) {
+                return `Direct product group. Elements behave independently in each component.`;
+            } else if (groupName.startsWith('D')) {
+                return `Dihedral group of order ${order}. Contains rotations and reflections.`;
+            }
+            
+            return `Complete this group structure of order ${order}. Based on ${groupName}.`;
         }
 
         // 检查该阶数是否有已发现的群
@@ -955,7 +1272,8 @@
                 hintTooltip: 'Click to see hint',
                 message: 'Message',
                 noPuzzlesAvailable: 'No puzzles available - discover groups first in exploration mode!',
-                noPuzzlesHint: 'Complete groups in exploration mode to unlock puzzles for this order.'
+                noPuzzlesHint: 'Complete groups in exploration mode to unlock puzzles for this order.',
+                puzzleCompleted: 'Puzzle completed successfully!'
             },
             cn: {
                 tutorial: '游戏说明',
@@ -984,7 +1302,8 @@
                 hintTooltip: '点击查看提示',
                 message: '消息',
                 noPuzzlesAvailable: '无可用谜题 - 请先在探索模式中发现群！',
-                noPuzzlesHint: '在探索模式中完成群以解锁此阶数的谜题。'
+                noPuzzlesHint: '在探索模式中完成群以解锁此阶数的谜题。',
+                puzzleCompleted: '谜题完成成功！'
             }
         };
 
@@ -1133,7 +1452,7 @@
             
             const solvedCount = (typeof storage.solvedPuzzles === 'object' && storage.solvedPuzzles !== null && storage.solvedPuzzles[order]) ? storage.solvedPuzzles[order] : 0;
             
-            // 使用基于已发现群的puzzle生成系统
+            // 使用改进的puzzle生成系统
             const puzzle = generatePuzzleFromDiscovered(order, solvedCount);
             
             if (!puzzle) {
@@ -1177,11 +1496,12 @@
             const container = document.getElementById('multiplicationTable');
             if (!container) return;
             container.innerHTML = '';
-            container.style.gridTemplateColumns = `repeat(${state.currentOrder + 1}, 40px)`;
+            container.style.gridTemplateColumns = `repeat(${state.currentOrder + 1}, 45px)`;
             
             // 空角落
             const corner = document.createElement('div');
             corner.className = 'cell header';
+            corner.style.background = 'rgba(40, 40, 60, 0.8)';
             container.appendChild(corner);
             
             // 列头
@@ -1190,7 +1510,7 @@
                 header.className = 'cell header';
                 if (state.selectedHeader === i) header.classList.add('selected');
                 header.textContent = i;
-                header.style.background = getElementColor(i, 150);
+                header.style.background = getElementColor(i, 180);
                 header.onclick = () => selectHeader(i);
                 container.appendChild(header);
             }
@@ -1202,7 +1522,7 @@
                 rowHeader.className = 'cell header';
                 if (state.selectedHeader === i) rowHeader.classList.add('selected');
                 rowHeader.textContent = i;
-                rowHeader.style.background = getElementColor(i, 150);
+                rowHeader.style.background = getElementColor(i, 180);
                 rowHeader.onclick = () => selectHeader(i);
                 container.appendChild(rowHeader);
                 
@@ -1215,8 +1535,10 @@
                     if (value >= 0 && value < state.currentOrder) {
                         cell.textContent = value;
                         cell.style.background = getElementColor(value);
+                        cell.style.color = '#fff';
                     } else {
                          cell.textContent = '';
+                         cell.style.background = 'rgba(40, 40, 60, 0.6)';
                     }
                     
                     if (state.immutableCells.some(([r, c]) => r === i && c === j)) {
@@ -1237,14 +1559,22 @@
             }
         }
 
-        // 获取元素颜色
-        function getElementColor(element, lightness = 180) {
-            if (element === -1 || element >= state.currentOrder) return '#000';
+        // 改进的颜色生成函数
+        function getElementColor(element, lightness = 200) {
+            if (element === -1 || element >= state.currentOrder) return 'rgba(40, 40, 60, 0.6)';
             
             const order = state.currentOrder;
-            if (order === 0) return '#000';
-            const hue = (element / order) * 360;
-            return `hsl(${hue}, 70%, ${lightness / 255 * 40 + 35}%)`;
+            if (order === 0) return 'rgba(40, 40, 60, 0.6)';
+            
+            // 使用更丰富的颜色调色板
+            const colors = [
+                '#ff6b6b', '#4ecdc4', '#45b7d1', '#96ceb4', '#feca57',
+                '#ff9ff3', '#54a0ff', '#5f27cd', '#00d2d3', '#ff9f43',
+                '#10ac84', '#ee5253', '#0abde3', '#feca57', '#48dbfb',
+                '#ff3838', '#1dd1a1', '#ffd32a', '#ff3838', '#3742fa'
+            ];
+            
+            return colors[element % colors.length];
         }
 
         // 选择表头
@@ -1473,9 +1803,16 @@
                 }
             }
             
-            // 验证群 - 只需要验证是否为有效群，不需要匹配原始群
+            // 验证群
             if (isValidGroup()) {
                 const groupName = identifyGroup();
+                
+                // 添加成功动画
+                const tableElement = document.getElementById('multiplicationTable');
+                if (tableElement) {
+                    tableElement.classList.add('celebrate');
+                    setTimeout(() => tableElement.classList.remove('celebrate'), 600);
+                }
                 
                 // 探索模式：记录发现的新群
                 if (state.currentMode === 'exploration') {
@@ -1485,9 +1822,9 @@
                             order: state.currentOrder, 
                             table: JSON.parse(JSON.stringify(state.multiTable))
                         });
-                        showModal(`${t('congratulations')}<br>${t('thisGroupIs')} ${groupName}`);
+                        showModal(`${t('congratulations')}<br>${t('thisGroupIs')} <strong>${groupName}</strong>`);
                     } else {
-                        showModal(`${t('congratulations')}<br>${t('validGroup')}<br>(${t('youveDiscoveredBefore')})`);
+                        showModal(`${t('congratulations')}<br>${t('validGroup')}<br><em>(${t('youveDiscoveredBefore')})</em>`);
                     }
                     saveData();
                 }
@@ -1496,10 +1833,10 @@
                     if (typeof storage.solvedPuzzles !== 'object' || storage.solvedPuzzles === null) storage.solvedPuzzles = {};
                     storage.solvedPuzzles[state.currentOrder] = (storage.solvedPuzzles[state.currentOrder] || 0) + 1;
                     saveData();
-                    showModal(`${t('congratulations')}<br>${t('validGroup')}<br>${t('thisGroupIs')} ${groupName}`);
+                    showModal(`🎉 ${t('puzzleCompleted')}<br>${t('thisGroupIs')} <strong>${groupName}</strong>`);
                 }
             } else {
-                showModal(t('notAGroup'));
+                showModal(`❌ ${t('notAGroup')}`);
             }
         }
 
@@ -1507,16 +1844,16 @@
         function isValidGroup() {
             if (state.currentOrder === 0) return false;
 
-            // 2. Identity element
+            // 1. 找到单位元
             const identity = findIdentity();
             if (identity === -1) return false;
 
-            // 3. Inverse element
+            // 2. 检查逆元
             for (let i = 0; i < state.currentOrder; i++) {
                 if (findInverse(i) === -1) return false;
             }
             
-            // 4. Associativity
+            // 3. 检查结合律
             for (let a = 0; a < state.currentOrder; a++) {
                 for (let b = 0; b < state.currentOrder; b++) {
                     for (let c = 0; c < state.currentOrder; c++) {
@@ -1533,7 +1870,7 @@
                 }
             }
             
-            // Latin Square Property
+            // 4. 拉丁方性质
             for (let i = 0; i < state.currentOrder; i++) {
                 const rowSet = new Set();
                 const colSet = new Set();
@@ -1575,6 +1912,19 @@
                 case 5: return 'C5';
                 case 6:
                     return isAbelian ? 'C6' : 'S3';
+                case 8:
+                    if (isAbelian) {
+                        if (hasElementOfOrder(8)) return 'C8';
+                        if (hasElementOfOrder(4)) return 'C4 x C2';
+                        return 'C2 x C2 x C2';
+                    } else {
+                        // 区分二面体群和四元数群需要更复杂的分析
+                        return countElementsOfOrder(2) > 1 ? 'D8' : 'Q8';
+                    }
+                case 9:
+                    return hasElementOfOrder(9) ? 'C9' : 'C3 x C3';
+                case 10:
+                    return isAbelian ? 'C10' : 'D10';
                 default:
                     const knownGroupsForOrder = groupsData[order];
                     if (knownGroupsForOrder) {
@@ -1605,6 +1955,14 @@
                 if (calculateOrder(g) === ord) return true;
             }
             return false;
+        }
+
+        function countElementsOfOrder(ord) {
+            let count = 0;
+            for (let g = 0; g < state.currentOrder; g++) {
+                if (calculateOrder(g) === ord) count++;
+            }
+            return count;
         }
 
         // 清空表格
@@ -1647,16 +2005,22 @@
                         card.innerHTML = `
                             <div class="group-info">
                                 <h3>${groupInfo.name}</h3>
-                                <p>${t('order')} ${order}</p>
-                                <p>${groupInfo.description || 'No description.'}</p>
+                                <div class="order">${t('order')} ${order}</div>
+                                <div class="description">${groupInfo.description || 'No description.'}</div>
                             </div>
-                            <div class="group-table-preview" style="grid-template-columns: repeat(${Math.min(order, 6)}, 1fr); grid-template-rows: repeat(${Math.min(order, 6)}, 1fr);">
+                            <div class="group-table-preview" style="grid-template-columns: repeat(${Math.min(order, 8)}, 1fr); grid-template-rows: repeat(${Math.min(order, 8)}, 1fr);">
                                 ${previewTable}
                             </div>
                         `;
                     } else {
                         card.className = 'group-card unknown';
-                        card.textContent = '?';
+                        card.innerHTML = `
+                            <div>?</div>
+                            <div style="font-size: 14px; margin-top: 10px; color: #888;">
+                                <strong>${groupInfo.name}</strong><br>
+                                ${t('order')} ${order}
+                            </div>
+                        `;
                     }
                     grid.appendChild(card);
                 });
@@ -1666,25 +2030,25 @@
         function generatePreviewTableFromData(tableData) {
             if (!tableData || !Array.isArray(tableData)) return generatePlaceholderPreviewTable(1);
             const order = tableData.length;
-            const maxShow = Math.min(order, 6);
+            const maxShow = Math.min(order, 8);
             let html = '';
             for (let i = 0; i < maxShow; i++) {
                 for (let j = 0; j < maxShow; j++) {
                     const val = tableData[i][j];
-                    const color = (val >= 0 && val < order) ? getElementColor(val, 100) : '#333';
-                    html += `<div class="preview-cell" style="background: ${color}; font-size: ${order > 4 ? '10px' : '12px'};">${(val >= 0 && val < order) ? val : ''}</div>`;
+                    const color = (val >= 0 && val < order) ? getElementColor(val, 120) : 'rgba(60, 60, 80, 0.8)';
+                    html += `<div class="preview-cell" style="background: ${color}; color: #fff;">${(val >= 0 && val < order && order <= 8) ? val : ''}</div>`;
                 }
             }
             return html;
         }
 
         function generatePlaceholderPreviewTable(order) {
-            const maxShow = Math.min(order, 6);
+            const maxShow = Math.min(order, 8);
             let html = '';
             for (let i = 0; i < maxShow; i++) {
                 for (let j = 0; j < maxShow; j++) {
-                    const color = getElementColor((i * maxShow + j) % order, 100); 
-                    html += `<div class="preview-cell" style="background: ${color}"></div>`;
+                    const color = getElementColor((i * maxShow + j) % order, 80); 
+                    html += `<div class="preview-cell" style="background: ${color}; opacity: 0.3;"></div>`;
                 }
             }
             return html;
