@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Interactive Demos & Games</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 20px;
+            padding: 40px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+        }
+        
+        h1 {
+            text-align: center;
+            color: #333;
+            margin-bottom: 10px;
+            font-size: 2.5rem;
+        }
+        
+        .subtitle {
+            text-align: center;
+            color: #666;
+            margin-bottom: 40px;
+            font-size: 1.2rem;
+        }
+        
+        .games-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 30px;
+            margin-top: 40px;
+        }
+        
+        .game-card {
+            background: #fff;
+            border-radius: 15px;
+            padding: 30px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            border: 2px solid transparent;
+        }
+        
+        .game-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.15);
+            border-color: #667eea;
+        }
+        
+        .game-card h3 {
+            color: #333;
+            margin-bottom: 15px;
+            font-size: 1.5rem;
+        }
+        
+        .game-card p {
+            color: #666;
+            line-height: 1.6;
+            margin-bottom: 20px;
+        }
+        
+        .game-card .tags {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin-bottom: 20px;
+        }
+        
+        .tag {
+            background: #667eea;
+            color: white;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 0.85rem;
+        }
+        
+        .play-button {
+            display: inline-block;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            text-decoration: none;
+            padding: 12px 25px;
+            border-radius: 25px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+        
+        .play-button:hover {
+            transform: scale(1.05);
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+        }
+        
+        .github-link {
+            text-align: center;
+            margin-top: 40px;
+        }
+        
+        .github-link a {
+            color: #667eea;
+            text-decoration: none;
+            font-weight: 600;
+        }
+        
+        .github-link a:hover {
+            text-decoration: underline;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🎮 Interactive Demos & Games</h1>
+        <p class="subtitle">A collection of educational games and interactive demonstrations</p>
+        
+        <div class="games-grid">
+            <div class="game-card">
+                <h3>🔢 Symmetry - Group Theory Explorer</h3>
+                <p>Discover and explore finite groups through interactive multiplication tables. Learn group theory concepts by solving puzzles and creating your own group structures.</p>
+                <div class="tags">
+                    <span class="tag">Mathematics</span>
+                    <span class="tag">Group Theory</span>
+                    <span class="tag">Puzzle</span>
+                    <span class="tag">Educational</span>
+                </div>
+                <a href="games/symmetry/" class="play-button">🎯 Play Now</a>
+            </div>
+            
+            <!-- 你可以添加更多游戏卡片 -->
+            <div class="game-card">
+                <h3>🚧 More Games Coming Soon</h3>
+                <p>I'm working on more interactive educational content. Check back soon for updates!</p>
+                <div class="tags">
+                    <span class="tag">Coming Soon</span>
+                </div>
+                <a href="#" class="play-button" style="opacity: 0.5; cursor: not-allowed;">🔄 In Development</a>
+            </div>
+        </div>
+        
+        <div class="github-link">
+            <p>📖 <a href="https://github.com/yourusername/interactive-demos" target="_blank">View Source on GitHub</a></p>
+        </div>
+    </div>
+</body>
+</html>

@@ -1,0 +1,1802 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Symmetry - Group Theory Game</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: Arial, sans-serif;
+            background: #000;
+            color: #b4b4b4;
+            overflow: hidden;
+            user-select: none;
+        }
+
+        .container {
+            width: 100vw;
+            height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .screen {
+            display: none;
+            width: 100%;
+            height: 100%;
+            position: relative;
+        }
+
+        .screen.active {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+        }
+
+        /* 主菜单 - 改进布局 */
+        .main-menu {
+            text-align: center;
+            position: relative;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 20px;
+        }
+
+        .game-title {
+            width: 400px;
+            height: 100px;
+            margin-bottom: 30px;
+            background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 100"><text x="50%" y="50%" font-family="Arial Black" font-size="60" fill="url(%23grad)" text-anchor="middle" dominant-baseline="middle">SYMMETRY</text><defs><linearGradient id="grad" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" style="stop-color:%23ff6b6b"/><stop offset="100%" style="stop-color:%234ecdc4"/></linearGradient></defs></svg>') no-repeat center;
+            background-size: contain;
+        }
+
+        .menu-button {
+            display: block;
+            width: 220px;
+            padding: 18px 30px;
+            background: rgba(50, 50, 50, 0.3);
+            color: #b4b4b4;
+            border: 2px solid #646464;
+            border-radius: 8px;
+            font-size: 18px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-align: center;
+        }
+
+        .menu-button:hover {
+            color: #4ecdc4;
+            border-color: #4ecdc4;
+            background: rgba(78, 205, 196, 0.1);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(78, 205, 196, 0.2);
+        }
+
+        .triangle-decoration {
+            position: absolute;
+            left: -120px;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 150px;
+            height: 150px;
+            background: radial-gradient(circle, rgba(78, 205, 196, 0.2) 0%, transparent 70%);
+            clip-path: polygon(50% 0%, 0% 100%, 100% 100%);
+        }
+
+        /* 游戏菜单 - 改进按钮对齐 */
+        .game-menu {
+            width: 900px;
+            max-height: 80vh;
+            overflow-y: auto;
+            padding: 20px;
+        }
+
+        .level-row {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin: 15px 0;
+            padding: 20px 30px;
+            background: rgba(26, 26, 26, 0.8);
+            border: 2px solid #a0522d;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .level-row:hover {
+            border-color: #4ecdc4;
+            background: rgba(78, 205, 196, 0.1);
+        }
+
+        .level-label {
+            font-size: 22px;
+            font-weight: 600;
+            width: 180px;
+            text-align: left;
+            color: #fff;
+        }
+
+        .level-buttons {
+            display: flex;
+            gap: 20px;
+            align-items: center;
+        }
+
+        .level-button {
+            padding: 12px 25px;
+            background: rgba(50, 50, 50, 0.6);
+            color: #b4b4b4;
+            border: 2px solid #646464;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-size: 16px;
+            min-width: 140px;
+            text-align: center;
+        }
+
+        .level-button:hover:not(.disabled) {
+            color: #4ecdc4;
+            border-color: #4ecdc4;
+            background: rgba(78, 205, 196, 0.1);
+        }
+
+        .level-button.disabled {
+            color: #666;
+            border-color: #444;
+            cursor: not-allowed;
+            background: rgba(30, 30, 30, 0.6);
+        }
+
+        /* 游戏界面 */
+        .game-area {
+            display: flex;
+            gap: 50px;
+            align-items: flex-start;
+            padding: 20px;
+            justify-content: center;
+        }
+
+        .table-section {
+            text-align: center;
+        }
+
+        .multiplication-table {
+            display: inline-grid;
+            gap: 2px;
+            background: #323232;
+            padding: 4px;
+            border-radius: 8px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+        }
+
+        .cell {
+            width: 40px;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: 600;
+            transition: all 0.2s ease;
+            border: 2px solid transparent;
+            border-radius: 4px;
+        }
+
+        .cell.header {
+            font-weight: bold;
+            color: #fff;
+            cursor: pointer;
+            background: rgba(50, 50, 50, 0.8);
+        }
+
+        .cell.header.selected {
+            border: 3px solid #ff6b6b;
+            transform: scale(1.05);
+        }
+
+        .cell:not(.header):hover {
+            border: 2px solid #646464;
+            transform: scale(1.05);
+        }
+
+        .cell.selected {
+            border: 2px solid #4ecdc4;
+            transform: scale(1.05);
+            box-shadow: 0 0 8px rgba(78, 205, 196, 0.5);
+        }
+
+        .cell.immutable {
+            background: #1a1a1a !important;
+            color: #ff6b6b;
+            cursor: not-allowed;
+            font-weight: bold;
+        }
+
+        .control-panel {
+            background: rgba(50, 50, 50, 0.8);
+            padding: 25px;
+            border: 2px solid #a0522d;
+            border-radius: 12px;
+            width: 240px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+        }
+
+        .info-section {
+            margin-bottom: 25px;
+            font-size: 14px;
+            line-height: 1.6;
+            padding: 15px;
+            background: rgba(26, 26, 26, 0.6);
+            border-radius: 8px;
+        }
+
+        .info-section strong {
+            color: #4ecdc4;
+            display: block;
+            margin-bottom: 10px;
+            font-size: 16px;
+        }
+
+        .control-button {
+            width: 100%;
+            padding: 14px;
+            margin: 12px 0;
+            background: rgba(50, 50, 50, 0.8);
+            color: #b4b4b4;
+            border: 2px solid #646464;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-size: 16px;
+            font-weight: 500;
+        }
+
+        .control-button:hover {
+            border-color: #4ecdc4;
+            color: #4ecdc4;
+            background: rgba(78, 205, 196, 0.1);
+        }
+
+        .control-button.primary {
+            border-color: #4ecdc4;
+            background: rgba(78, 205, 196, 0.2);
+            color: #fff;
+        }
+
+        .control-button.primary:hover {
+            background: rgba(78, 205, 196, 0.3);
+        }
+
+        /* 画廊 */
+        .gallery {
+            width: 90%;
+            max-width: 1200px;
+            height: 80vh;
+            overflow-y: auto;
+            padding: 20px;
+        }
+
+        .gallery-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(420px, 1fr));
+            gap: 25px;
+            margin-top: 30px;
+        }
+
+        .group-card {
+            border: 3px solid #a0522d;
+            padding: 25px;
+            background: rgba(26, 26, 26, 0.8);
+            border-radius: 12px;
+            display: flex;
+            gap: 25px;
+            transition: all 0.3s ease;
+        }
+
+        .group-card:hover {
+            border-color: #4ecdc4;
+            background: rgba(78, 205, 196, 0.1);
+        }
+
+        .group-card.unknown {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 60px;
+            color: #666;
+            height: 250px;
+        }
+
+        .group-info {
+            flex: 1;
+        }
+
+        .group-info h3 {
+            color: #4ecdc4;
+            font-size: 24px;
+            margin-bottom: 10px;
+        }
+
+        .group-table-preview {
+            width: 200px;
+            height: 200px;
+            display: grid;
+            gap: 1px;
+            background: #333;
+            padding: 2px;
+            border-radius: 6px;
+        }
+
+        .preview-cell {
+            background: #000;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 12px;
+            border-radius: 2px;
+        }
+
+        /* 教程 */
+        .tutorial {
+            width: 90%;
+            max-width: 800px;
+            height: 80vh;
+            overflow-y: auto;
+            padding: 30px;
+            background: rgba(26, 26, 26, 0.9);
+            border: 2px solid #a0522d;
+            border-radius: 12px;
+        }
+
+        .tutorial h2 {
+            color: #4ecdc4;
+            margin: 25px 0 15px;
+        }
+
+        .tutorial p {
+            margin: 12px 0;
+            line-height: 1.7;
+        }
+
+        /* 设置 */
+        .settings {
+            width: 450px;
+            padding: 30px;
+            background: rgba(26, 26, 26, 0.9);
+            border: 2px solid #a0522d;
+            border-radius: 12px;
+        }
+
+        .setting-item {
+            margin: 25px 0;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .toggle {
+            width: 60px;
+            height: 30px;
+            background: #333;
+            border-radius: 15px;
+            position: relative;
+            cursor: pointer;
+            transition: background 0.3s;
+        }
+
+        .toggle.on {
+            background: #4ecdc4;
+        }
+
+        .toggle-slider {
+            width: 26px;
+            height: 26px;
+            background: #fff;
+            border-radius: 50%;
+            position: absolute;
+            top: 2px;
+            left: 2px;
+            transition: transform 0.3s;
+        }
+
+        .toggle.on .toggle-slider {
+            transform: translateX(30px);
+        }
+
+        /* 消息框 */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.8);
+            z-index: 1000;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .modal.active {
+            display: flex;
+        }
+
+        .modal-content {
+            background: rgba(50, 50, 50, 0.95);
+            padding: 40px;
+            border: 3px solid #4ecdc4;
+            border-radius: 12px;
+            max-width: 500px;
+            text-align: center;
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.5);
+        }
+
+        .modal-button {
+            padding: 12px 30px;
+            margin-top: 25px;
+            background: rgba(50, 50, 50, 0.8);
+            color: #b4b4b4;
+            border: 2px solid #646464;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .modal-button:hover {
+            border-color: #4ecdc4;
+            color: #4ecdc4;
+        }
+
+        /* 提示图标 */
+        .hint-icon {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            width: 50px;
+            height: 50px;
+            background: #4ecdc4;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            font-size: 24px;
+            color: #000;
+            font-weight: bold;
+        }
+
+        .hint-tooltip {
+            position: absolute;
+            top: 80px;
+            right: 20px;
+            background: rgba(30, 0, 70, 0.95);
+            color: #dc7800;
+            padding: 15px;
+            border-radius: 8px;
+            max-width: 300px;
+            display: none;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.5);
+        }
+
+        .hint-icon:hover .hint-tooltip {
+            display: block;
+        }
+
+        /* 返回按钮 */
+        .back-button {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            padding: 12px 20px;
+            background: rgba(50, 50, 50, 0.8);
+            color: #b4b4b4;
+            border: 2px solid #646464;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .back-button:hover {
+            border-color: #4ecdc4;
+            color: #4ecdc4;
+        }
+
+        /* 滚动条 */
+        ::-webkit-scrollbar {
+            width: 12px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: #1a1a1a;
+            border-radius: 6px;
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: #646464;
+            border-radius: 6px;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: #a0522d;
+        }
+
+        /* 标题样式改进 */
+        h2 {
+            color: #4ecdc4;
+            text-align: center;
+            margin-bottom: 20px;
+            font-size: 28px;
+        }
+
+        #gameTitle {
+            color: #fff;
+            font-size: 24px;
+            margin-bottom: 20px;
+        }
+
+        /* 无群提示 */
+        .no-groups-hint {
+            background: rgba(255, 107, 107, 0.1);
+            border: 2px solid #ff6b6b;
+            border-radius: 8px;
+            padding: 15px;
+            margin: 20px 0;
+            text-align: center;
+            color: #ff6b6b;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div id="mainMenu" class="screen active">
+            <div class="main-menu">
+                <div class="triangle-decoration"></div>
+                <div class="game-title"></div>
+                <button class="menu-button" onclick="showTutorial()">Tutorial</button>
+                <button class="menu-button" onclick="showGameMenu()">Start Game</button>
+                <button class="menu-button" onclick="showGallery()">Gallery</button>
+                <button class="menu-button" onclick="showSettings()">Settings</button>
+                <button class="menu-button" onclick="exitGame()">Exit</button>
+            </div>
+        </div>
+
+        <div id="gameMenu" class="screen">
+            <button class="back-button" onclick="showMainMenu()">← Back</button>
+            <div class="game-menu">
+                <h2 style="text-align: center; margin-bottom: 40px;">Select Level</h2>
+                <div id="levelList"></div>
+            </div>
+        </div>
+
+        <div id="gameArea" class="screen">
+            <button class="back-button" onclick="backToGameMenu()">← Back</button>
+            <div class="hint-icon" id="hintIcon" style="display: none;">
+                ?
+                <div class="hint-tooltip" id="hintTooltip"></div>
+            </div>
+            <div class="game-area">
+                <div class="table-section">
+                    <h2 id="gameTitle" style="margin-bottom: 30px;">Order 4 Group</h2>
+                    <div id="multiplicationTable" class="multiplication-table"></div>
+                </div>
+                <div class="control-panel">
+                    <div class="info-section">
+                        <strong>Selected Element Info</strong>
+                        <div id="elementInfo">
+                            Order: -<br>
+                            Conjugates: -<br>
+                            Centralizer: -
+                        </div>
+                    </div>
+                    <button class="control-button primary" onclick="submitTable()">Submit</button>
+                    <button class="control-button" onclick="clearTable()">Clear</button>
+                </div>
+            </div>
+        </div>
+
+        <div id="gallery" class="screen">
+            <button class="back-button" onclick="showMainMenu()">← Back</button>
+            <div class="gallery">
+                <h2>Discovered Groups</h2>
+                <div class="gallery-grid" id="galleryGrid"></div>
+            </div>
+        </div>
+
+        <div id="tutorial" class="screen">
+            <button class="back-button" onclick="showMainMenu()">← Back</button>
+            <div class="tutorial">
+                <h1 style="text-align: center; color: #4ecdc4;">Group Theory Explorer</h1>
+                
+                <h2>Objective</h2>
+                <p>Fill in multiplication tables to discover and understand finite groups.</p>
+                
+                <h2>Game Flow</h2>
+                <p><strong>1. Exploration Mode:</strong> Freely create and explore group structures to discover new groups.</p>
+                <p><strong>2. Gallery:</strong> View all groups you've discovered in exploration mode.</p>
+                <p><strong>3. Puzzle Mode:</strong> Solve puzzles based on groups you've already discovered in the gallery.</p>
+                
+                <h2>Controls</h2>
+                <p>• Click a cell to select it</p>
+                <p>• Type numbers (0-9) to fill values</p>
+                <p>• Backspace to clear a cell</p>
+                <p>• Right-click to quickly clear</p>
+                <p>• Click headers to swap elements</p>
+                <p>• ESC to return to menu</p>
+                
+                <h2>Group Properties</h2>
+                <p><strong>Closure:</strong> All products must be in the group</p>
+                <p><strong>Associativity:</strong> (a·b)·c = a·(b·c)</p>
+                <p><strong>Identity:</strong> There exists e such that e·a = a·e = a</p>
+                <p><strong>Inverses:</strong> For each a, there exists b such that a·b = b·a = e</p>
+                
+                <h2>Tips</h2>
+                <p>• Start by finding the identity element</p>
+                <p>• Each row and column must contain all elements exactly once</p>
+                <p>• Use element swapping to standardize your table</p>
+                <p>• Pay attention to element orders and conjugacy classes</p>
+                <p>• Discover groups in exploration mode first, then use them in puzzles!</p>
+            </div>
+        </div>
+
+        <div id="settings" class="screen">
+            <button class="back-button" onclick="showMainMenu()">← Back</button>
+            <div class="settings">
+                <h2 style="margin-bottom: 40px;">Settings</h2>
+                <div class="setting-item">
+                    <span>Enable Screenshots</span>
+                    <div class="toggle" id="screenshotToggle" onclick="toggleScreenshot()">
+                        <div class="toggle-slider"></div>
+                    </div>
+                </div>
+                <div class="setting-item">
+                    <span>Language / 语言</span>
+                    <select id="languageSelect" onchange="changeLanguage()" style="padding: 8px; background: #333; color: #fff; border: 2px solid #646464; border-radius: 4px;">
+                        <option value="en">English</option>
+                        <option value="cn">中文</option>
+                    </select>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="modal" class="modal">
+        <div class="modal-content">
+            <h3 id="modalTitle">Message</h3>
+            <p id="modalText"></p>
+            <button class="modal-button" onclick="closeModal()">Confirm</button>
+        </div>
+    </div>
+
+    <script>
+        // 游戏状态
+        const state = {
+            currentPage: 'mainMenu',
+            currentMode: 'exploration',
+            currentOrder: 4,
+            multiTable: [],
+            selectedCell: null,
+            selectedHeader: null,
+            immutableCells: [],
+            hint: '',
+            language: 'en'
+        };
+
+        // Robust localStorage parsing function
+        function safeJsonParse(key, defaultValue) {
+            const item = localStorage.getItem(key);
+            if (item === null || item === "null" || item === "undefined") {
+                return defaultValue;
+            }
+            try {
+                const parsed = JSON.parse(item);
+                if (Array.isArray(defaultValue) && !Array.isArray(parsed)) {
+                    console.warn(`Data for key '${key}' in localStorage was not an array, using default.`);
+                    return defaultValue;
+                }
+                if (typeof defaultValue === 'object' && defaultValue !== null && !Array.isArray(defaultValue)) {
+                    if (typeof parsed !== 'object' || parsed === null || Array.isArray(parsed)) {
+                        console.warn(`Data for key '${key}' in localStorage was not a suitable object, using default.`);
+                        return defaultValue;
+                    }
+                }
+                if (key === 'settings' && typeof parsed === 'object' && parsed !== null && typeof defaultValue === 'object' && defaultValue !== null) {
+                    return { ...defaultValue, ...parsed };
+                }
+                return parsed;
+            } catch (e) {
+                console.warn(`Error parsing JSON for key '${key}' from localStorage, using default value. Error:`, e);
+                return defaultValue;
+            }
+        }
+
+        // 数据存储
+        const storage = {
+            discoveredGroups: safeJsonParse('discoveredGroups', []),
+            solvedPuzzles: safeJsonParse('solvedPuzzles', {}),
+            settings: safeJsonParse('settings', {"screenshot": false, "language": "en"})
+        };
+
+        // 保存数据
+        function saveData() {
+            try {
+                localStorage.setItem('discoveredGroups', JSON.stringify(storage.discoveredGroups));
+                localStorage.setItem('solvedPuzzles', JSON.stringify(storage.solvedPuzzles));
+                localStorage.setItem('settings', JSON.stringify(storage.settings));
+            } catch (e) {
+                console.error("Error saving data to localStorage:", e);
+            }
+        }
+
+        // 级别配置
+        const levelOrders = [4, 6, 8, 9, 10, 12, 14, 15, 16, 18, 20];
+
+        // 群数据库
+        const groupsData = {
+            1: [{name: '1', description: 'Trivial group'}],
+            2: [{name: 'C2', description: 'Cyclic group of order 2'}],
+            3: [{name: 'C3', description: 'Cyclic group of order 3'}],
+            4: [
+                {name: 'C4', description: 'Cyclic group of order 4'},
+                {name: 'C2 x C2', description: 'Klein four-group'}
+            ],
+            5: [{name: 'C5', description: 'Cyclic group of order 5'}],
+            6: [
+                {name: 'C6', description: 'Cyclic group of order 6'},
+                {name: 'S3', description: 'Symmetric group on 3 letters'}
+            ],
+            8: [
+                {name: 'C8', description: 'Cyclic group of order 8'},
+                {name: 'C4 x C2', description: 'Direct product'},
+                {name: 'C2 x C2 x C2', description: 'Elementary abelian'},
+                {name: 'D8', description: 'Dihedral group of order 8'},
+                {name: 'Q8', description: 'Quaternion group'}
+            ],
+            9: [
+                {name: 'C9', description: 'Cyclic group of order 9'},
+                {name: 'C3 x C3', description: 'Elementary abelian'}
+            ],
+            10: [
+                {name: 'C10', description: 'Cyclic group of order 10'},
+                {name: 'D10', description: 'Dihedral group of order 10'}
+            ],
+            12: [
+                {name: 'C12', description: 'Cyclic group of order 12'},
+                {name: 'C6 x C2', description: 'Direct product'},
+                {name: 'A4', description: 'Alternating group on 4 letters'},
+                {name: 'D12', description: 'Dihedral group of order 12'},
+                {name: 'C3 : C4', description: 'Semidirect product'}
+            ],
+            14: [
+                {name: 'C14', description: 'Cyclic group of order 14'},
+                {name: 'D14', description: 'Dihedral group of order 14'}
+            ],
+            15: [{name: 'C15', description: 'Cyclic group of order 15'}],
+            16: [
+                {name: 'C16', description: 'Cyclic group of order 16'},
+                {name: 'C8 x C2', description: 'Direct product'},
+                {name: 'C4 x C4', description: 'Direct product'},
+                {name: 'C4 x C2 x C2', description: 'Direct product'},
+                {name: 'C2 x C2 x C2 x C2', description: 'Elementary abelian'},
+                {name: 'D16', description: 'Dihedral group of order 16'},
+                {name: 'Q16', description: 'Generalized quaternion'},
+                {name: 'QD16', description: 'Quasi-dihedral'},
+                {name: 'C8 : C2', description: 'Semidirect product'},
+                {name: 'C2 x D8', description: 'Direct product'},
+                {name: 'C2 x Q8', description: 'Direct product'},
+                {name: 'C4 : C4', description: 'Semidirect product'},
+                {name: 'G4,4', description: 'Group of order 16'},
+                {name: '(C4 x C2) : C2', description: 'Semidirect product'}
+            ],
+            18: [
+                {name: 'C18', description: 'Cyclic group of order 18'},
+                {name: 'C6 x C3', description: 'Direct product'},
+                {name: 'D18', description: 'Dihedral group of order 18'},
+                {name: 'C3 x S3', description: 'Direct product'},
+                {name: '(C3 x C3) : C2', description: 'Semidirect product'}
+            ],
+            20: [
+                {name: 'C20', description: 'Cyclic group of order 20'},
+                {name: 'C10 x C2', description: 'Direct product'},
+                {name: 'D20', description: 'Dihedral group of order 20'},
+                {name: 'C5 ⋊ C4', description: 'Semidirect product'},
+                {name: 'Fr20', description: 'Frobenius group'}
+            ]
+        };
+
+        // 基于已发现群生成puzzle的核心函数
+        function generatePuzzleFromDiscovered(order, puzzleIndex) {
+            // 获取该阶数已发现的群
+            const discoveredGroupsOfOrder = storage.discoveredGroups.filter(g => g.order === order && g.table);
+            
+            if (discoveredGroupsOfOrder.length === 0) {
+                return null; // 没有已发现的群
+            }
+            
+            // 根据puzzleIndex选择群（循环使用）
+            const selectedGroup = discoveredGroupsOfOrder[puzzleIndex % discoveredGroupsOfOrder.length];
+            let groupTable = JSON.parse(JSON.stringify(selectedGroup.table)); // 深拷贝
+            
+            // 可选地重新标记元素（打乱标签）
+            if (Math.random() > 0.5) {
+                groupTable = relabelGroup(groupTable);
+            }
+            
+            // 选择要显示的单元格（ceil(n/2)个）
+            const numToShow = Math.ceil(order / 2);
+            const positions = generateRandomPositions(order, numToShow);
+            
+            // 生成immutable cells和hint
+            const immutableCells = positions.map(([i, j]) => [i, j, groupTable[i][j]]);
+            const hint = generateHint(selectedGroup.name, order);
+            
+            return {
+                cells: immutableCells,
+                hint: hint,
+                sourceName: selectedGroup.name
+            };
+        }
+
+        // 重新标记群元素（随机置换标签）
+        function relabelGroup(table) {
+            const order = table.length;
+            const permutation = generateRandomPermutation(order);
+            const newTable = Array(order).fill(null).map(() => Array(order).fill(0));
+            
+            for (let i = 0; i < order; i++) {
+                for (let j = 0; j < order; j++) {
+                    const newI = permutation.indexOf(i);
+                    const newJ = permutation.indexOf(j);
+                    const newValue = permutation[table[i][j]];
+                    newTable[newI][newJ] = newValue;
+                }
+            }
+            
+            return newTable;
+        }
+
+        // 生成随机置换
+        function generateRandomPermutation(n) {
+            const arr = Array.from({length: n}, (_, i) => i);
+            for (let i = arr.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [arr[i], arr[j]] = [arr[j], arr[i]];
+            }
+            return arr;
+        }
+
+        // 生成随机位置
+        function generateRandomPositions(order, numPositions) {
+            const allPositions = [];
+            for (let i = 0; i < order; i++) {
+                for (let j = 0; j < order; j++) {
+                    allPositions.push([i, j]);
+                }
+            }
+            
+            // 随机选择位置
+            const selectedPositions = [];
+            const usedIndices = new Set();
+            
+            while (selectedPositions.length < numPositions && selectedPositions.length < allPositions.length) {
+                const randomIndex = Math.floor(Math.random() * allPositions.length);
+                if (!usedIndices.has(randomIndex)) {
+                    usedIndices.add(randomIndex);
+                    selectedPositions.push(allPositions[randomIndex]);
+                }
+            }
+            
+            return selectedPositions;
+        }
+
+        // 生成提示
+        function generateHint(groupName, order) {
+            const hints = {
+                'C4': 'This is a cyclic group. Find the generator element.',
+                'C2 x C2': 'Klein four-group: every non-identity element has order 2.',
+                'C6': 'Cyclic group of order 6. Look for the generator.',
+                'S3': 'Symmetric group S3: not all elements commute.',
+                'C8': 'Cyclic group of order 8. Find the generator.',
+                'D8': 'Dihedral group: contains rotations and reflections.',
+                'D4': 'Dihedral group: contains rotations and reflections.'
+            };
+            
+            return hints[groupName] || `Complete this group structure of order ${order}. Based on ${groupName}.`;
+        }
+
+        // 检查该阶数是否有已发现的群
+        function hasDiscoveredGroupsOfOrder(order) {
+            return storage.discoveredGroups.some(g => g.order === order && g.table);
+        }
+
+        // 获取该阶数已发现的群数量
+        function getDiscoveredGroupsCountOfOrder(order) {
+            return storage.discoveredGroups.filter(g => g.order === order && g.table).length;
+        }
+
+        // 语言系统
+        const translations = {
+            en: {
+                tutorial: 'Tutorial',
+                startGame: 'Start Game',
+                gallery: 'Gallery',
+                settings: 'Settings',
+                exit: 'Exit',
+                discovered: 'Discovered',
+                puzzle: 'Puzzle',
+                order: 'Order',
+                conjugates: 'Conjugates',
+                centralizer: 'Centralizer',
+                submit: 'Submit',
+                clear: 'Clear',
+                back: 'Back',
+                selectLevel: 'Select Level',
+                discoveredGroups: 'Discovered Groups',
+                enableScreenshots: 'Enable Screenshots',
+                language: 'Language',
+                congratulations: 'Congratulations!',
+                thisGroupIs: 'This group is',
+                validGroup: 'You have successfully created a valid group!',
+                youveDiscoveredBefore: "You've discovered it before.",
+                notAGroup: 'This is not a valid group. Check the group axioms.',
+                fillTable: 'Please fill in the entire table first.',
+                hintTooltip: 'Click to see hint',
+                message: 'Message',
+                noPuzzlesAvailable: 'No puzzles available - discover groups first in exploration mode!',
+                noPuzzlesHint: 'Complete groups in exploration mode to unlock puzzles for this order.'
+            },
+            cn: {
+                tutorial: '游戏说明',
+                startGame: '开始游戏',
+                gallery: '画廊',
+                settings: '设置',
+                exit: '退出',
+                discovered: '已发现',
+                puzzle: '谜题',
+                order: '阶',
+                conjugates: '共轭元',
+                centralizer: '中心化子',
+                submit: '提交',
+                clear: '清空',
+                back: '返回',
+                selectLevel: '选择关卡',
+                discoveredGroups: '已发现的群',
+                enableScreenshots: '启用截图',
+                language: '语言 / Language',
+                congratulations: '恭喜！',
+                thisGroupIs: '这个群是',
+                validGroup: '你成功创建了一个有效的群！',
+                youveDiscoveredBefore: '你之前已经发现过它了。',
+                notAGroup: '这不是一个有效的群。请检查群公理。',
+                fillTable: '请先填满整个表格。',
+                hintTooltip: '点击查看提示',
+                message: '消息',
+                noPuzzlesAvailable: '无可用谜题 - 请先在探索模式中发现群！',
+                noPuzzlesHint: '在探索模式中完成群以解锁此阶数的谜题。'
+            }
+        };
+
+        function t(key) {
+            return translations[state.language][key] || key;
+        }
+
+        // 初始化
+        function init() {
+            // 加载设置
+            state.language = storage.settings.language || 'en';
+            
+            const screenshotToggle = document.getElementById('screenshotToggle');
+            if (screenshotToggle) screenshotToggle.classList.toggle('on', storage.settings.screenshot);
+
+            const languageSelect = document.getElementById('languageSelect');
+            if (languageSelect) languageSelect.value = state.language;
+            
+            // 更新文本
+            updateLanguage();
+        }
+
+        // 页面切换
+        function showScreen(screenId) {
+            document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+            const screenToShow = document.getElementById(screenId);
+            if (screenToShow) {
+                 screenToShow.classList.add('active');
+            } else {
+                console.error("Screen not found: " + screenId);
+                document.getElementById('mainMenu').classList.add('active');
+            }
+            state.currentPage = screenId;
+        }
+
+        function showMainMenu() {
+            showScreen('mainMenu');
+        }
+
+        function showGameMenu() {
+            generateLevelList();
+            showScreen('gameMenu');
+        }
+
+        function showGallery() {
+            updateGallery();
+            showScreen('gallery');
+        }
+
+        function showTutorial() {
+            showScreen('tutorial');
+        }
+
+        function showSettings() {
+            showScreen('settings');
+        }
+
+        function exitGame() {
+            if (confirm('Are you sure you want to exit?')) {
+                window.close();
+            }
+        }
+
+        function backToGameMenu() {
+            showGameMenu();
+        }
+
+        // 生成关卡列表
+        function generateLevelList() {
+            const levelList = document.getElementById('levelList');
+            if (!levelList) return;
+            levelList.innerHTML = '';
+            
+            levelOrders.forEach(order => {
+                const discovered = Array.isArray(storage.discoveredGroups) ? storage.discoveredGroups.filter(g => g.order === order).length : 0;
+                const total = groupsData[order]?.length || 0;
+                const solvedPuzzles = (typeof storage.solvedPuzzles === 'object' && storage.solvedPuzzles !== null && storage.solvedPuzzles[order]) ? storage.solvedPuzzles[order] : 0;
+                
+                // 检查是否有已发现的群可以用于puzzle
+                const hasDiscoveredGroups = hasDiscoveredGroupsOfOrder(order);
+                const discoveredGroupsCount = getDiscoveredGroupsCountOfOrder(order);
+                
+                const row = document.createElement('div');
+                row.className = 'level-row';
+                
+                let puzzleButtonContent;
+                let puzzleButtonClass = 'level-button';
+                let puzzleButtonOnClick = `startPuzzle(${order})`;
+                
+                if (hasDiscoveredGroups) {
+                    puzzleButtonContent = `${t('puzzle')} ${solvedPuzzles}/${discoveredGroupsCount}`;
+                } else {
+                    puzzleButtonContent = t('noPuzzlesAvailable');
+                    puzzleButtonClass += ' disabled';
+                    puzzleButtonOnClick = 'return false;';
+                }
+                
+                row.innerHTML = `
+                    <div class="level-label">${t('order')} ${order}</div>
+                    <div class="level-buttons">
+                        <button class="level-button" onclick="startExploration(${order})">
+                            ${t('discovered')} ${discovered}/${total}
+                        </button>
+                        <button class="${puzzleButtonClass}" onclick="${puzzleButtonOnClick}">
+                            ${puzzleButtonContent}
+                        </button>
+                    </div>
+                `;
+                
+                // 如果没有已发现的群，添加提示
+                if (!hasDiscoveredGroups) {
+                    const hint = document.createElement('div');
+                    hint.className = 'no-groups-hint';
+                    hint.textContent = t('noPuzzlesHint');
+                    row.appendChild(hint);
+                }
+                
+                levelList.appendChild(row);
+            });
+        }
+
+        // 开始探索模式
+        function startExploration(order) {
+            state.currentMode = 'exploration';
+            state.currentOrder = order;
+            state.immutableCells = [];
+            initTable();
+            const gameTitleEl = document.getElementById('gameTitle');
+            if(gameTitleEl) gameTitleEl.textContent = `${t('order')} ${order} Group`;
+            const hintIconEl = document.getElementById('hintIcon');
+            if(hintIconEl) hintIconEl.style.display = 'none';
+            showScreen('gameArea');
+        }
+
+        // 开始谜题模式
+        function startPuzzle(order) {
+            // 检查是否有已发现的群
+            if (!hasDiscoveredGroupsOfOrder(order)) {
+                showModal(t('noPuzzlesAvailable'));
+                return;
+            }
+            
+            state.currentMode = 'puzzle';
+            state.currentOrder = order;
+            initTable();
+            
+            const solvedCount = (typeof storage.solvedPuzzles === 'object' && storage.solvedPuzzles !== null && storage.solvedPuzzles[order]) ? storage.solvedPuzzles[order] : 0;
+            
+            // 使用基于已发现群的puzzle生成系统
+            const puzzle = generatePuzzleFromDiscovered(order, solvedCount);
+            
+            if (!puzzle) {
+                showModal(t('noPuzzlesAvailable'));
+                return;
+            }
+            
+            state.immutableCells = [];
+            if (puzzle.cells && Array.isArray(puzzle.cells)) {
+                puzzle.cells.forEach(([i, j, value]) => {
+                    if (i < state.currentOrder && j < state.currentOrder) {
+                       state.multiTable[i][j] = value;
+                       state.immutableCells.push([i, j]);
+                    }
+                });
+            }
+            
+            state.hint = puzzle.hint || '';
+            const hintTooltipEl = document.getElementById('hintTooltip');
+            if (hintTooltipEl) hintTooltipEl.textContent = state.hint;
+            
+            const gameTitleEl = document.getElementById('gameTitle');
+            if(gameTitleEl) gameTitleEl.textContent = `${t('order')} ${order} ${t('puzzle')}`;
+            const hintIconEl = document.getElementById('hintIcon');
+            if(hintIconEl) hintIconEl.style.display = 'block';
+            
+            renderTable();
+            showScreen('gameArea');
+        }
+
+        // 初始化表格
+        function initTable() {
+            state.multiTable = Array(state.currentOrder).fill(null).map(() => Array(state.currentOrder).fill(-1));
+            state.selectedCell = null;
+            state.selectedHeader = null;
+            renderTable();
+        }
+
+        // 渲染表格
+        function renderTable() {
+            const container = document.getElementById('multiplicationTable');
+            if (!container) return;
+            container.innerHTML = '';
+            container.style.gridTemplateColumns = `repeat(${state.currentOrder + 1}, 40px)`;
+            
+            // 空角落
+            const corner = document.createElement('div');
+            corner.className = 'cell header';
+            container.appendChild(corner);
+            
+            // 列头
+            for (let i = 0; i < state.currentOrder; i++) {
+                const header = document.createElement('div');
+                header.className = 'cell header';
+                if (state.selectedHeader === i) header.classList.add('selected');
+                header.textContent = i;
+                header.style.background = getElementColor(i, 150);
+                header.onclick = () => selectHeader(i);
+                container.appendChild(header);
+            }
+            
+            // 行
+            for (let i = 0; i < state.currentOrder; i++) {
+                // 行头
+                const rowHeader = document.createElement('div');
+                rowHeader.className = 'cell header';
+                if (state.selectedHeader === i) rowHeader.classList.add('selected');
+                rowHeader.textContent = i;
+                rowHeader.style.background = getElementColor(i, 150);
+                rowHeader.onclick = () => selectHeader(i);
+                container.appendChild(rowHeader);
+                
+                // 单元格
+                for (let j = 0; j < state.currentOrder; j++) {
+                    const cell = document.createElement('div');
+                    cell.className = 'cell';
+                    
+                    const value = state.multiTable[i][j];
+                    if (value >= 0 && value < state.currentOrder) {
+                        cell.textContent = value;
+                        cell.style.background = getElementColor(value);
+                    } else {
+                         cell.textContent = '';
+                    }
+                    
+                    if (state.immutableCells.some(([r, c]) => r === i && c === j)) {
+                        cell.classList.add('immutable');
+                    } else {
+                        if (state.selectedCell && state.selectedCell[0] === i && state.selectedCell[1] === j) {
+                            cell.classList.add('selected');
+                        }
+                        cell.onclick = () => selectCell(i, j);
+                        cell.oncontextmenu = (e) => {
+                            e.preventDefault();
+                            clearCell(i, j);
+                        };
+                    }
+                    
+                    container.appendChild(cell);
+                }
+            }
+        }
+
+        // 获取元素颜色
+        function getElementColor(element, lightness = 180) {
+            if (element === -1 || element >= state.currentOrder) return '#000';
+            
+            const order = state.currentOrder;
+            if (order === 0) return '#000';
+            const hue = (element / order) * 360;
+            return `hsl(${hue}, 70%, ${lightness / 255 * 40 + 35}%)`;
+        }
+
+        // 选择表头
+        function selectHeader(index) {
+            if (state.selectedHeader !== null && state.selectedHeader !== index) {
+                swapElements(state.selectedHeader, index);
+                state.selectedHeader = null;
+            } else {
+                state.selectedHeader = index;
+            }
+            renderTable();
+        }
+
+        // 交换元素
+        function swapElements(elem1, elem2) {
+            if (elem1 === elem2 || elem1 < 0 || elem1 >= state.currentOrder || elem2 < 0 || elem2 >= state.currentOrder) return;
+            
+            const newTable = state.multiTable.map(row => [...row]);
+            
+            // 交换行
+            [newTable[elem1], newTable[elem2]] = [newTable[elem2], newTable[elem1]];
+            
+            // 交换列
+            for (let i = 0; i < state.currentOrder; i++) {
+                [newTable[i][elem1], newTable[i][elem2]] = [newTable[i][elem2], newTable[i][elem1]];
+            }
+            
+            // 更新值
+            for (let i = 0; i < state.currentOrder; i++) {
+                for (let j = 0; j < state.currentOrder; j++) {
+                    if (newTable[i][j] === elem1) newTable[i][j] = -2;
+                    else if (newTable[i][j] === elem2) newTable[i][j] = elem1;
+                }
+            }
+             for (let i = 0; i < state.currentOrder; i++) {
+                for (let j = 0; j < state.currentOrder; j++) {
+                    if (newTable[i][j] === -2) newTable[i][j] = elem2;
+                }
+            }
+            
+            state.multiTable = newTable;
+            
+            // 更新不可变单元格位置
+            state.immutableCells = state.immutableCells.map(([r, c]) => {
+                let newR = r;
+                let newC = c;
+                if (r === elem1) newR = elem2; else if (r === elem2) newR = elem1;
+                if (c === elem1) newC = elem2; else if (c === elem2) newC = elem1;
+                return [newR, newC];
+            });
+        }
+
+        // 选择单元格
+        function selectCell(row, col) {
+            state.selectedCell = [row, col];
+            state.selectedHeader = null;
+            renderTable();
+            updateElementInfo();
+        }
+
+        // 清除单元格
+        function clearCell(row, col) {
+            if (state.immutableCells.some(([r, c]) => r === row && c === col)) return;
+            state.multiTable[row][col] = -1;
+            renderTable();
+        }
+
+        // 更新元素信息
+        function updateElementInfo() {
+            const elementInfoEl = document.getElementById('elementInfo');
+            if (!elementInfoEl) return;
+
+            if (!state.selectedCell) {
+                 elementInfoEl.innerHTML = `${t('order')}: -<br>${t('conjugates')}: -<br>${t('centralizer')}: -`;
+                 return;
+            }
+            
+            const [row, col] = state.selectedCell;
+            const value = state.multiTable[row][col];
+            
+            if (value >= 0 && value < state.currentOrder) {
+                const order = calculateOrder(value);
+                const conjugates = calculateConjugates(value);
+                const centralizer = calculateCentralizer(value);
+                
+                elementInfoEl.innerHTML = `
+                    ${t('order')}: ${order === null ? '-' : order}<br>
+                    ${t('conjugates')}: ${conjugates.length > 0 ? conjugates.join(', ') : '-'}<br>
+                    ${t('centralizer')}: ${centralizer.length > 0 ? centralizer.join(', ') : '-'}
+                `;
+            } else {
+                 elementInfoEl.innerHTML = `${t('order')}: -<br>${t('conjugates')}: -<br>${t('centralizer')}: -`;
+            }
+        }
+
+        // 计算元素的阶
+        function calculateOrder(element) {
+            if (element < 0 || element >= state.currentOrder) return null;
+            const identity = findIdentity();
+            if (identity === -1) return null;
+            if (element === identity) return 1;
+            
+            let currentElement = element;
+            for (let i = 2; i <= state.currentOrder; i++) {
+                currentElement = multiply(currentElement, element);
+                if (currentElement === -1) return null;
+                if (currentElement === identity) return i;
+            }
+            return null;
+        }
+
+        // 计算共轭元
+        function calculateConjugates(element) {
+            if (element < 0 || element >= state.currentOrder) return [];
+            const conjugates = new Set([element]);
+            const identity = findIdentity();
+            if (identity === -1) return [element];
+            
+            for (let g = 0; g < state.currentOrder; g++) {
+                const gInv = findInverse(g);
+                if (gInv === -1) continue;
+                
+                const g_x_element = multiply(g, element);
+                if (g_x_element === -1) continue;
+                const conjugate = multiply(g_x_element, gInv);
+                
+                if (conjugate !== -1 && conjugate < state.currentOrder) {
+                    conjugates.add(conjugate);
+                }
+            }
+            
+            return Array.from(conjugates).sort((a, b) => a - b);
+        }
+
+        // 计算中心化子
+        function calculateCentralizer(element) {
+            if (element < 0 || element >= state.currentOrder) return [];
+            const centralizer = [];
+            
+            for (let g = 0; g < state.currentOrder; g++) {
+                const g_x_element = multiply(g, element);
+                const element_x_g = multiply(element, g);
+                
+                if (g_x_element !== -1 && element_x_g !== -1 && g_x_element === element_x_g) {
+                    centralizer.push(g);
+                }
+            }
+            
+            return centralizer.sort((a,b) => a - b);
+        }
+
+        // 查找单位元
+        function findIdentity() {
+            for (let e = 0; e < state.currentOrder; e++) {
+                let isIdentity = true;
+                for (let i = 0; i < state.currentOrder; i++) {
+                    if (multiply(e, i) !== i || multiply(i, e) !== i) {
+                        isIdentity = false;
+                        break;
+                    }
+                }
+                if (isIdentity) return e;
+            }
+            return -1;
+        }
+
+        // 查找逆元
+        function findInverse(element) {
+            if (element < 0 || element >= state.currentOrder) return -1;
+            const identity = findIdentity();
+            if (identity === -1) return -1;
+            
+            for (let i = 0; i < state.currentOrder; i++) {
+                if (multiply(element, i) === identity && multiply(i, element) === identity) {
+                    return i;
+                }
+            }
+            return -1;
+        }
+
+        // 乘法运算
+        function multiply(a, b) {
+            if (a < 0 || a >= state.currentOrder || b < 0 || b >= state.currentOrder) return -1;
+            if (!state.multiTable || !state.multiTable[a]) return -1;
+            const result = state.multiTable[a][b];
+            if (result < 0 || result >= state.currentOrder) return -1;
+            return result;
+        }
+
+        // 键盘输入
+        document.addEventListener('keydown', (e) => {
+            if (state.currentPage !== 'gameArea') return;
+            
+            if (e.key === 'Escape') {
+                backToGameMenu();
+                return;
+            }
+            
+            if (!state.selectedCell) return;
+            
+            const [row, col] = state.selectedCell;
+            if (state.immutableCells.some(([r, c]) => r === row && c === col)) return;
+            
+            if (e.key >= '0' && e.key <= '9') {
+                const digit = parseInt(e.key);
+                if (digit >= state.currentOrder) return; 
+                
+                state.multiTable[row][col] = digit;
+                renderTable();
+                updateElementInfo();
+
+            } else if (e.key === 'Backspace' || e.key === 'Delete') {
+                clearCell(row, col);
+            }
+        });
+
+        // 提交表格
+        function submitTable() {
+            // 检查是否填满
+            for (let i = 0; i < state.currentOrder; i++) {
+                for (let j = 0; j < state.currentOrder; j++) {
+                    if (state.multiTable[i][j] === -1 || state.multiTable[i][j] >= state.currentOrder) {
+                        showModal(t('fillTable'));
+                        return;
+                    }
+                }
+            }
+            
+            // 验证群 - 只需要验证是否为有效群，不需要匹配原始群
+            if (isValidGroup()) {
+                const groupName = identifyGroup();
+                
+                // 探索模式：记录发现的新群
+                if (state.currentMode === 'exploration') {
+                    if (!storage.discoveredGroups.some(g => g.name === groupName && g.order === state.currentOrder)) {
+                        storage.discoveredGroups.push({
+                            name: groupName, 
+                            order: state.currentOrder, 
+                            table: JSON.parse(JSON.stringify(state.multiTable))
+                        });
+                        showModal(`${t('congratulations')}<br>${t('thisGroupIs')} ${groupName}`);
+                    } else {
+                        showModal(`${t('congratulations')}<br>${t('validGroup')}<br>(${t('youveDiscoveredBefore')})`);
+                    }
+                    saveData();
+                }
+                // 谜题模式：任何有效群都算成功
+                else if (state.currentMode === 'puzzle') {
+                    if (typeof storage.solvedPuzzles !== 'object' || storage.solvedPuzzles === null) storage.solvedPuzzles = {};
+                    storage.solvedPuzzles[state.currentOrder] = (storage.solvedPuzzles[state.currentOrder] || 0) + 1;
+                    saveData();
+                    showModal(`${t('congratulations')}<br>${t('validGroup')}<br>${t('thisGroupIs')} ${groupName}`);
+                }
+            } else {
+                showModal(t('notAGroup'));
+            }
+        }
+
+        // 验证是否为群
+        function isValidGroup() {
+            if (state.currentOrder === 0) return false;
+
+            // 2. Identity element
+            const identity = findIdentity();
+            if (identity === -1) return false;
+
+            // 3. Inverse element
+            for (let i = 0; i < state.currentOrder; i++) {
+                if (findInverse(i) === -1) return false;
+            }
+            
+            // 4. Associativity
+            for (let a = 0; a < state.currentOrder; a++) {
+                for (let b = 0; b < state.currentOrder; b++) {
+                    for (let c = 0; c < state.currentOrder; c++) {
+                        const ab = multiply(a,b);
+                        if (ab === -1) return false;
+                        const ab_c = multiply(ab, c);
+                        
+                        const bc = multiply(b,c);
+                        if (bc === -1) return false;
+                        const a_bc = multiply(a, bc);
+
+                        if (ab_c === -1 || a_bc === -1 || ab_c !== a_bc) return false;
+                    }
+                }
+            }
+            
+            // Latin Square Property
+            for (let i = 0; i < state.currentOrder; i++) {
+                const rowSet = new Set();
+                const colSet = new Set();
+                for (let j = 0; j < state.currentOrder; j++) {
+                    rowSet.add(state.multiTable[i][j]);
+                    colSet.add(state.multiTable[j][i]);
+                }
+                if (rowSet.size !== state.currentOrder || colSet.size !== state.currentOrder) {
+                    return false;
+                }
+            }
+            
+            return true;
+        }
+        
+        // 识别群
+        function identifyGroup() {
+            const order = state.currentOrder;
+            
+            let isAbelian = true;
+            for (let i = 0; i < order; i++) {
+                for (let j = 0; j < order; j++) {
+                    if (multiply(i,j) !== multiply(j,i)) {
+                        isAbelian = false;
+                        break;
+                    }
+                }
+                if (!isAbelian) break;
+            }
+            
+            if (isPrime(order)) return `C${order}`;
+            
+            switch (order) {
+                case 1: return '1';
+                case 2: return 'C2';
+                case 3: return 'C3';
+                case 4:
+                    return isAbelian && hasElementOfOrder(4) ? 'C4' : 'C2 x C2';
+                case 5: return 'C5';
+                case 6:
+                    return isAbelian ? 'C6' : 'S3';
+                default:
+                    const knownGroupsForOrder = groupsData[order];
+                    if (knownGroupsForOrder) {
+                        if (isAbelian) {
+                            const abelianMatch = knownGroupsForOrder.find(g => g.name.startsWith('C') || g.name.includes('x'));
+                            if (abelianMatch) return abelianMatch.name;
+                        } else {
+                             const nonAbelianMatch = knownGroupsForOrder.find(g => !g.name.startsWith('C') && !g.name.includes('x'));
+                             if (nonAbelianMatch) return nonAbelianMatch.name;
+                        }
+                    }
+                    return `${isAbelian ? "Abelian" : "Non-Abelian"} Group of order ${order}`;
+            }
+        }
+        
+        function isPrime(n) {
+            if (n <= 1) return false;
+            if (n <= 3) return true;
+            if (n % 2 === 0 || n % 3 === 0) return false;
+            for (let i = 5; i * i <= n; i = i + 6) {
+                if (n % i === 0 || n % (i + 2) === 0) return false;
+            }
+            return true;
+        }
+        
+        function hasElementOfOrder(ord) {
+            for (let g = 0; g < state.currentOrder; g++) {
+                if (calculateOrder(g) === ord) return true;
+            }
+            return false;
+        }
+
+        // 清空表格
+        function clearTable() {
+            if (confirm(t('clear') + '?')) {
+                for(let i=0; i<state.currentOrder; i++) {
+                    for(let j=0; j<state.currentOrder; j++) {
+                        if (!state.immutableCells.some(([r, c]) => r === i && c === j)) {
+                            state.multiTable[i][j] = -1;
+                        }
+                    }
+                }
+                state.selectedCell = null;
+                renderTable();
+                updateElementInfo();
+            }
+        }
+
+        // 更新画廊
+        function updateGallery() {
+            const grid = document.getElementById('galleryGrid');
+            if (!grid) return;
+            grid.innerHTML = '';
+            
+            const knownOrders = Object.keys(groupsData).map(Number).sort((a,b) => a-b);
+
+            knownOrders.forEach(order => {
+                 const groupsForOrder = groupsData[order] || [];
+                 groupsForOrder.forEach(groupInfo => {
+                    const discovered = Array.isArray(storage.discoveredGroups) && storage.discoveredGroups.some(g => g.name === groupInfo.name && g.order === order);
+                    
+                    const card = document.createElement('div');
+                    if (discovered) {
+                        card.className = 'group-card';
+                        const discoveredGroupData = storage.discoveredGroups.find(g => g.name === groupInfo.name && g.order === order);
+                        const previewTable = discoveredGroupData && discoveredGroupData.table ? 
+                                             generatePreviewTableFromData(discoveredGroupData.table) : 
+                                             generatePlaceholderPreviewTable(order);
+
+                        card.innerHTML = `
+                            <div class="group-info">
+                                <h3>${groupInfo.name}</h3>
+                                <p>${t('order')} ${order}</p>
+                                <p>${groupInfo.description || 'No description.'}</p>
+                            </div>
+                            <div class="group-table-preview" style="grid-template-columns: repeat(${Math.min(order, 6)}, 1fr); grid-template-rows: repeat(${Math.min(order, 6)}, 1fr);">
+                                ${previewTable}
+                            </div>
+                        `;
+                    } else {
+                        card.className = 'group-card unknown';
+                        card.textContent = '?';
+                    }
+                    grid.appendChild(card);
+                });
+            });
+        }
+        
+        function generatePreviewTableFromData(tableData) {
+            if (!tableData || !Array.isArray(tableData)) return generatePlaceholderPreviewTable(1);
+            const order = tableData.length;
+            const maxShow = Math.min(order, 6);
+            let html = '';
+            for (let i = 0; i < maxShow; i++) {
+                for (let j = 0; j < maxShow; j++) {
+                    const val = tableData[i][j];
+                    const color = (val >= 0 && val < order) ? getElementColor(val, 100) : '#333';
+                    html += `<div class="preview-cell" style="background: ${color}; font-size: ${order > 4 ? '10px' : '12px'};">${(val >= 0 && val < order) ? val : ''}</div>`;
+                }
+            }
+            return html;
+        }
+
+        function generatePlaceholderPreviewTable(order) {
+            const maxShow = Math.min(order, 6);
+            let html = '';
+            for (let i = 0; i < maxShow; i++) {
+                for (let j = 0; j < maxShow; j++) {
+                    const color = getElementColor((i * maxShow + j) % order, 100); 
+                    html += `<div class="preview-cell" style="background: ${color}"></div>`;
+                }
+            }
+            return html;
+        }
+
+        // 显示消息
+        function showModal(message, title = t('message')) {
+            const modalTitleEl = document.getElementById('modalTitle');
+            const modalTextEl = document.getElementById('modalText');
+            const modalEl = document.getElementById('modal');
+
+            if (modalTitleEl) modalTitleEl.textContent = title;
+            if (modalTextEl) modalTextEl.innerHTML = message;
+            if (modalEl) modalEl.classList.add('active');
+        }
+
+        function closeModal() {
+            const modalEl = document.getElementById('modal');
+            if (modalEl) modalEl.classList.remove('active');
+        }
+
+        // 设置功能
+        function toggleScreenshot() {
+            if (typeof storage.settings !== 'object' || storage.settings === null) storage.settings = {};
+            storage.settings.screenshot = !storage.settings.screenshot;
+            const screenshotToggleEl = document.getElementById('screenshotToggle');
+            if (screenshotToggleEl) screenshotToggleEl.classList.toggle('on', storage.settings.screenshot);
+            saveData();
+        }
+
+        function changeLanguage() {
+            const languageSelect = document.getElementById('languageSelect');
+            if (!languageSelect) return;
+
+            state.language = languageSelect.value;
+            if (typeof storage.settings !== 'object' || storage.settings === null) storage.settings = {};
+            storage.settings.language = state.language;
+            saveData();
+            updateLanguage();
+            if (state.currentPage === 'gameMenu') generateLevelList();
+            if (state.currentPage === 'gameArea') {
+                const gameTitleEl = document.getElementById('gameTitle');
+                if (gameTitleEl) {
+                    if (state.currentMode === 'puzzle') {
+                        gameTitleEl.textContent = `${t('order')} ${state.currentOrder} ${t('puzzle')}`;
+                    } else {
+                        gameTitleEl.textContent = `${t('order')} ${state.currentOrder} Group`;
+                    }
+                }
+                updateElementInfo();
+            }
+        }
+
+        function updateLanguage() {
+            // Main Menu Buttons
+            const mainMenuButtons = document.querySelectorAll('#mainMenu .menu-button');
+            if (mainMenuButtons.length >= 5) {
+                mainMenuButtons[0].textContent = t('tutorial');
+                mainMenuButtons[1].textContent = t('startGame');
+                mainMenuButtons[2].textContent = t('gallery');
+                mainMenuButtons[3].textContent = t('settings');
+                mainMenuButtons[4].textContent = t('exit');
+            }
+
+            // Back Buttons
+            document.querySelectorAll('.back-button').forEach(btn => btn.textContent = `← ${t('back')}`);
+            
+            // Game Menu
+            const gameMenuTitle = document.querySelector('#gameMenu h2');
+            if (gameMenuTitle) gameMenuTitle.textContent = t('selectLevel');
+
+            // Game Area
+            const gameAreaSubmit = document.querySelector('#gameArea .control-button.primary');
+            if (gameAreaSubmit) gameAreaSubmit.textContent = t('submit');
+            const gameAreaClear = document.querySelectorAll('#gameArea .control-button')[1];
+            if (gameAreaClear) gameAreaClear.textContent = t('clear');
+            const selectedInfoStrong = document.querySelector('.info-section strong');
+            if(selectedInfoStrong) selectedInfoStrong.textContent = t('Selected Element Info') || "Selected Element Info";
+
+            // Gallery
+            const galleryTitle = document.querySelector('#gallery h2');
+            if (galleryTitle) galleryTitle.textContent = t('discoveredGroups');
+
+            // Settings
+            const settingsTitle = document.querySelector('#settings h2');
+            if (settingsTitle) settingsTitle.textContent = t('settings');
+            const settingItems = document.querySelectorAll('.setting-item span');
+            if (settingItems.length >= 2) {
+                settingItems[0].textContent = t('enableScreenshots');
+                settingItems[1].textContent = t('language');
+            }
+            
+            const modalButton = document.querySelector('.modal-button');
+            if (modalButton) modalButton.textContent = t('Confirm') || 'Confirm';
+
+            if (state.currentPage === 'gameArea') {
+                updateElementInfo();
+                const gameTitleEl = document.getElementById('gameTitle');
+                if (gameTitleEl) {
+                    if (state.currentMode === 'puzzle') {
+                        gameTitleEl.textContent = `${t('order')} ${state.currentOrder} ${t('puzzle')}`;
+                    } else {
+                        gameTitleEl.textContent = `${t('order')} ${state.currentOrder} Group`;
+                    }
+                }
+            }
+            if(state.currentPage === 'gallery') updateGallery();
+            if(state.currentPage === 'gameMenu') generateLevelList();
+        }
+
+        // 初始化游戏
+        document.addEventListener('DOMContentLoaded', init);
+    </script>
+</body>
+</html>
