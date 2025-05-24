@@ -1,1 +1,1 @@
-# shuxueshuxue.github.io
+Collection of Mathematical games.
