@@ -3,8 +3,10 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Interactive Demos & Games</title>
+    <title>Interactive Demos & Mathematical Explorations</title>
     <style>
+        @import url('https://fonts.googleapis.com/css2?family=Noto+Serif:wght@300;400;600&family=Source+Code+Pro:wght@300;400&display=swap');
+        
         * {
             margin: 0;
             padding: 0;
@@ -12,148 +14,297 @@
         }
         
         body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            font-family: 'Noto Serif', serif;
+            background: #fafafa;
+            color: #2c2c2c;
+            line-height: 1.7;
             min-height: 100vh;
-            padding: 20px;
+        }
+        
+        /* 水墨风格背景装饰 */
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: 
+                radial-gradient(circle at 85% 20%, rgba(0,0,0,0.03) 0%, transparent 50%),
+                radial-gradient(circle at 15% 80%, rgba(0,0,0,0.02) 0%, transparent 40%),
+                linear-gradient(135deg, transparent 0%, rgba(0,0,0,0.01) 50%, transparent 100%);
+            pointer-events: none;
+            z-index: -1;
         }
         
         .container {
-            max-width: 1200px;
+            max-width: 900px;
             margin: 0 auto;
-            background: rgba(255, 255, 255, 0.95);
-            border-radius: 20px;
-            padding: 40px;
-            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+            padding: 60px 40px;
+        }
+        
+        /* 页面标题区域 */
+        .header {
+            text-align: center;
+            margin-bottom: 80px;
+            position: relative;
+        }
+        
+        .header::after {
+            content: '';
+            position: absolute;
+            bottom: -20px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 60px;
+            height: 1px;
+            background: linear-gradient(to right, transparent, #333, transparent);
         }
         
         h1 {
-            text-align: center;
-            color: #333;
-            margin-bottom: 10px;
-            font-size: 2.5rem;
+            font-size: 2.8rem;
+            font-weight: 300;
+            color: #1a1a1a;
+            margin-bottom: 15px;
+            letter-spacing: -1px;
         }
         
         .subtitle {
-            text-align: center;
+            font-size: 1.1rem;
             color: #666;
-            margin-bottom: 40px;
-            font-size: 1.2rem;
+            font-weight: 300;
+            font-style: italic;
         }
         
-        .games-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-            gap: 30px;
-            margin-top: 40px;
+        /* 项目展示区域 */
+        .projects {
+            margin-bottom: 60px;
         }
         
-        .game-card {
+        .project-item {
             background: #fff;
-            border-radius: 15px;
-            padding: 30px;
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
-            transition: transform 0.3s ease, box-shadow 0.3s ease;
-            border: 2px solid transparent;
+            border: 1px solid #e8e8e8;
+            border-radius: 2px;
+            margin-bottom: 30px;
+            padding: 40px;
+            position: relative;
+            transition: all 0.3s ease;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.04);
         }
         
-        .game-card:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.15);
-            border-color: #667eea;
+        .project-item:hover {
+            border-color: #ccc;
+            box-shadow: 0 8px 25px rgba(0,0,0,0.08);
+            transform: translateY(-2px);
         }
         
-        .game-card h3 {
-            color: #333;
+        .project-item::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 3px;
+            height: 100%;
+            background: linear-gradient(to bottom, #333, #666, #333);
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+        
+        .project-item:hover::before {
+            opacity: 1;
+        }
+        
+        .project-title {
+            font-size: 1.4rem;
+            color: #222;
             margin-bottom: 15px;
-            font-size: 1.5rem;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 10px;
         }
         
-        .game-card p {
-            color: #666;
-            line-height: 1.6;
+        .project-title .icon {
+            font-size: 1.2rem;
+            opacity: 0.7;
+        }
+        
+        .project-description {
+            color: #555;
             margin-bottom: 20px;
+            font-size: 1rem;
         }
         
-        .game-card .tags {
+        .tag-list {
             display: flex;
             flex-wrap: wrap;
             gap: 8px;
-            margin-bottom: 20px;
+            margin-bottom: 25px;
         }
         
         .tag {
-            background: #667eea;
-            color: white;
-            padding: 4px 12px;
-            border-radius: 20px;
-            font-size: 0.85rem;
+            background: #f5f5f5;
+            color: #444;
+            padding: 4px 10px;
+            border-radius: 3px;
+            font-size: 0.82rem;
+            font-family: 'Source Code Pro', monospace;
+            border: 1px solid #e0e0e0;
+            font-weight: 300;
         }
         
-        .play-button {
-            display: inline-block;
-            background: linear-gradient(135deg, #667eea, #764ba2);
-            color: white;
+        .project-link {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            color: #333;
             text-decoration: none;
-            padding: 12px 25px;
-            border-radius: 25px;
-            font-weight: 600;
+            font-weight: 400;
+            padding: 10px 20px;
+            border: 1.5px solid #333;
+            border-radius: 3px;
             transition: all 0.3s ease;
+            font-size: 0.9rem;
         }
         
-        .play-button:hover {
-            transform: scale(1.05);
-            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+        .project-link:hover {
+            background: #333;
+            color: #fff;
         }
         
-        .github-link {
+        .coming-soon {
+            opacity: 0.6;
+        }
+        
+        .coming-soon .project-link {
+            border-color: #ccc;
+            color: #999;
+            cursor: not-allowed;
+        }
+        
+        .coming-soon .project-link:hover {
+            background: transparent;
+            color: #999;
+        }
+        
+        /* 底部链接区域 */
+        .footer {
             text-align: center;
+            padding-top: 40px;
+            border-top: 1px solid #e8e8e8;
             margin-top: 40px;
         }
         
-        .github-link a {
-            color: #667eea;
+        .footer a {
+            color: #444;
             text-decoration: none;
-            font-weight: 600;
+            font-weight: 400;
+            font-size: 0.95rem;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            transition: color 0.3s ease;
         }
         
-        .github-link a:hover {
-            text-decoration: underline;
+        .footer a:hover {
+            color: #000;
+        }
+        
+        /* 响应式设计 */
+        @media (max-width: 768px) {
+            .container {
+                padding: 40px 20px;
+            }
+            
+            h1 {
+                font-size: 2.2rem;
+            }
+            
+            .project-item {
+                padding: 30px 25px;
+            }
+            
+            .tag-list {
+                gap: 6px;
+            }
+        }
+        
+        /* 优雅的滚动条 */
+        ::-webkit-scrollbar {
+            width: 6px;
+        }
+        
+        ::-webkit-scrollbar-track {
+            background: #f5f5f5;
+        }
+        
+        ::-webkit-scrollbar-thumb {
+            background: #ccc;
+            border-radius: 3px;
+        }
+        
+        ::-webkit-scrollbar-thumb:hover {
+            background: #999;
         }
     </style>
 </head>
 <body>
     <div class="container">
-        <h1>🎮 Interactive Demos & Games</h1>
-        <p class="subtitle">A collection of educational games and interactive demonstrations</p>
+        <header class="header">
+            <h1>Interactive Explorations</h1>
+            <p class="subtitle">Mathematical demonstrations and educational experiments</p>
+        </header>
         
-        <div class="games-grid">
-            <div class="game-card">
-                <h3>🔢 Symmetry - Group Theory Explorer</h3>
-                <p>Discover and explore finite groups through interactive multiplication tables. Learn group theory concepts by solving puzzles and creating your own group structures.</p>
-                <div class="tags">
-                    <span class="tag">Mathematics</span>
-                    <span class="tag">Group Theory</span>
-                    <span class="tag">Puzzle</span>
-                    <span class="tag">Educational</span>
+        <main class="projects">
+            <article class="project-item">
+                <h2 class="project-title">
+                    <span class="icon">∞</span>
+                    Symmetry - Group Theory Explorer
+                </h2>
+                <p class="project-description">
+                    An interactive journey through finite groups and their multiplication tables. 
+                    Discover the elegant patterns of mathematical symmetry through visual exploration 
+                    and hands-on experimentation with group structures.
+                </p>
+                <div class="tag-list">
+                    <span class="tag">abstract-algebra</span>
+                    <span class="tag">group-theory</span>
+                    <span class="tag">interactive</span>
+                    <span class="tag">mathematics</span>
                 </div>
-                <a href="games/symmetry/" class="play-button">🎯 Play Now</a>
-            </div>
+                <a href="games/symmetry/" class="project-link">
+                    <span>Explore</span>
+                    <span>→</span>
+                </a>
+            </article>
             
-            <!-- 你可以添加更多游戏卡片 -->
-            <div class="game-card">
-                <h3>🚧 More Games Coming Soon</h3>
-                <p>I'm working on more interactive educational content. Check back soon for updates!</p>
-                <div class="tags">
-                    <span class="tag">Coming Soon</span>
+            <article class="project-item coming-soon">
+                <h2 class="project-title">
+                    <span class="icon">⚡</span>
+                    Future Explorations
+                </h2>
+                <p class="project-description">
+                    Additional mathematical visualizations and interactive demonstrations 
+                    are in development. Each new project aims to make abstract concepts 
+                    tangible through thoughtful design and interaction.
+                </p>
+                <div class="tag-list">
+                    <span class="tag">in-development</span>
+                    <span class="tag">coming-soon</span>
                 </div>
-                <a href="#" class="play-button" style="opacity: 0.5; cursor: not-allowed;">🔄 In Development</a>
-            </div>
-        </div>
+                <a href="#" class="project-link">
+                    <span>In Progress</span>
+                    <span>⋯</span>
+                </a>
+            </article>
+        </main>
         
-        <div class="github-link">
-            <p>📖 <a href="https://github.com/yourusername/interactive-demos" target="_blank">View Source on GitHub</a></p>
-        </div>
+        <footer class="footer">
+            <a href="https://github.com/shuxueshuxue/shuxueshuxue.github.io" target="_blank" rel="noopener noreferrer">
+                <span>Source Code</span>
+                <span>↗</span>
+            </a>
+        </footer>
     </div>
 </body>
 </html>
