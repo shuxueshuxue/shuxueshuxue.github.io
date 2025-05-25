@@ -1,0 +1,1881 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ODE Quest - The Mathematical Adventure</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Press+Start+2P:wght@400&display=swap');
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Press Start 2P', cursive;
+            background: #1a1a2e;
+            color: #eee;
+            font-size: 12px;
+            line-height: 1.6;
+            overflow-x: hidden;
+        }
+
+        .stars {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        .star {
+            position: absolute;
+            background: #fff;
+            border-radius: 50%;
+            animation: twinkle 2s infinite;
+        }
+
+        @keyframes twinkle {
+            0%, 100% { opacity: 0.3; }
+            50% { opacity: 1; }
+        }
+
+        .container {
+            position: relative;
+            z-index: 1;
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 15px;
+        }
+
+        .compact-hud {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: #0f3460;
+            border: 2px solid #4fc3f7;
+            border-radius: 8px;
+            padding: 12px 20px;
+            margin-bottom: 20px;
+            font-size: 10px;
+        }
+
+        .hud-section {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .hud-item {
+            text-align: center;
+        }
+
+        .hud-value {
+            font-size: 12px;
+            color: #4fc3f7;
+            margin-bottom: 2px;
+        }
+
+        .hud-label {
+            font-size: 7px;
+            color: #81c784;
+        }
+
+        .lives-display {
+            display: flex;
+            gap: 8px;
+        }
+
+        .life-heart {
+            font-size: 18px;
+            color: #f44336;
+            text-shadow: 0 0 10px rgba(244, 67, 54, 0.5);
+        }
+
+        .life-heart.empty {
+            color: #424242;
+            text-shadow: none;
+        }
+
+        .progress-bar {
+            width: 60px;
+            height: 6px;
+            background: #1a1a2e;
+            border: 1px solid #4fc3f7;
+            border-radius: 3px;
+            overflow: hidden;
+            margin-top: 2px;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #4fc3f7, #81c784);
+            width: 0%;
+            transition: width 0.8s ease;
+        }
+
+        .main-layout {
+            display: grid;
+            grid-template-columns: 1fr 400px;
+            gap: 20px;
+            height: calc(100vh - 120px);
+        }
+
+        .chart-section {
+            background: #16213e;
+            border: 2px solid #4fc3f7;
+            border-radius: 10px;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .chart-container {
+            flex: 1;
+            position: relative;
+            background: #0d1929;
+            border-radius: 8px;
+            border: 1px solid #333;
+            overflow: hidden;
+        }
+
+        .chart-canvas {
+            width: 100%;
+            height: 100%;
+            display: block;
+        }
+
+        .chart-info {
+            text-align: center;
+            margin-top: 10px;
+            font-size: 8px;
+            color: #81c784;
+        }
+
+        .legend {
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+            margin-bottom: 10px;
+            font-size: 8px;
+        }
+
+        .legend-item {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .legend-color {
+            width: 12px;
+            height: 3px;
+            border-radius: 2px;
+        }
+
+        .control-section {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        .mission-panel {
+            background: #16213e;
+            border: 2px solid #4fc3f7;
+            border-radius: 10px;
+            padding: 20px;
+            flex: 1;
+        }
+
+        .equation-display {
+            background: #0d1929;
+            border: 2px solid #81c784;
+            border-radius: 8px;
+            padding: 18px;
+            margin-bottom: 15px;
+            text-align: center;
+        }
+
+        .equation-text {
+            font-size: 16px;
+            color: #4fc3f7;
+            margin-bottom: 8px;
+        }
+
+        .equation-desc {
+            font-size: 9px;
+            color: #81c784;
+            margin-bottom: 12px;
+        }
+
+        .mission-params {
+            font-size: 9px;
+            color: #eee;
+        }
+
+        .mission-params div {
+            margin: 4px 0;
+        }
+
+        .computing-animation {
+            display: none;
+            text-align: center;
+            margin: 15px 0;
+            font-size: 8px;
+            color: #ffc107;
+        }
+
+        .computing-dots::after {
+            content: '...';
+            animation: dots 1.5s infinite;
+        }
+
+        @keyframes dots {
+            0%, 33% { content: '.'; }
+            34%, 66% { content: '..'; }
+            67%, 100% { content: '...'; }
+        }
+
+        .results-panel {
+            background: #1a2332;
+            border: 2px solid #ffc107;
+            border-radius: 8px;
+            margin-top: 15px;
+            overflow: hidden;
+        }
+
+        .results-header {
+            background: #333;
+            padding: 12px 15px;
+            cursor: pointer;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 10px;
+            color: #ffc107;
+            border-bottom: 1px solid #555;
+            transition: background 0.3s ease;
+        }
+
+        .results-header:hover {
+            background: #404040;
+        }
+
+        .collapse-icon {
+            transition: transform 0.3s ease;
+            font-size: 8px;
+        }
+
+        .collapse-icon.collapsed {
+            transform: rotate(-90deg);
+        }
+
+        .results-content {
+            padding: 15px;
+            max-height: 300px;
+            overflow: hidden;
+            transition: max-height 0.3s ease, padding 0.3s ease;
+        }
+
+        .results-content.collapsed {
+            max-height: 0;
+            padding: 0 15px;
+        }
+
+        .result-row {
+            display: flex;
+            justify-content: space-between;
+            padding: 6px 0;
+            border-bottom: 1px solid #333;
+            font-size: 9px;
+        }
+
+        .result-row:last-child {
+            border-bottom: none;
+        }
+
+        .control-panel {
+            background: #16213e;
+            border: 2px solid #ff6b6b;
+            border-radius: 10px;
+            padding: 20px;
+        }
+
+        .input-group {
+            margin: 15px 0;
+        }
+
+        .input-label {
+            display: block;
+            margin-bottom: 6px;
+            color: #4fc3f7;
+            font-size: 9px;
+        }
+
+        .game-select, .game-input {
+            width: 100%;
+            padding: 10px;
+            background: #0d1929;
+            border: 2px solid #4fc3f7;
+            border-radius: 6px;
+            color: #eee;
+            font-family: 'Press Start 2P', cursive;
+            font-size: 9px;
+        }
+
+        .game-select:focus, .game-input:focus {
+            outline: none;
+            border-color: #81c784;
+            box-shadow: 0 0 10px rgba(129, 199, 132, 0.3);
+        }
+
+        .method-info {
+            margin-top: 6px;
+            font-size: 7px;
+            color: #81c784;
+            padding: 6px;
+            background: rgba(129, 199, 132, 0.1);
+            border-radius: 4px;
+            line-height: 1.4;
+        }
+
+        .wiki-link {
+            color: #4fc3f7;
+            text-decoration: none;
+            border-bottom: 1px dotted #4fc3f7;
+        }
+
+        .wiki-link:hover {
+            color: #81c784;
+            border-color: #81c784;
+        }
+
+        .action-button {
+            width: 100%;
+            padding: 12px;
+            background: linear-gradient(45deg, #4caf50, #8bc34a);
+            border: none;
+            border-radius: 8px;
+            color: #1a1a2e;
+            font-family: 'Press Start 2P', cursive;
+            font-size: 10px;
+            cursor: pointer;
+            margin: 8px 0;
+            transition: all 0.3s ease;
+        }
+
+        .action-button:hover:not(:disabled) {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 15px rgba(76, 175, 80, 0.4);
+        }
+
+        .action-button:disabled {
+            background: #424242;
+            color: #666;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .action-button.computing {
+            background: linear-gradient(45deg, #ff9800, #ffc107);
+            animation: pulse 0.5s infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.7; }
+        }
+
+        .success { color: #4caf50; }
+        .failure { color: #f44336; }
+        .warning { color: #ff9800; }
+
+        .floating-text {
+            position: fixed;
+            font-size: 12px;
+            font-weight: bold;
+            pointer-events: none;
+            animation: float-up 2s ease-out forwards;
+            z-index: 1000;
+        }
+
+        @keyframes float-up {
+            0% {
+                opacity: 1;
+                transform: translateY(0);
+            }
+            100% {
+                opacity: 0;
+                transform: translateY(-40px);
+            }
+        }
+
+        .game-over-screen {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(26, 26, 46, 0.95);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+        }
+
+        .game-over-content {
+            background: #16213e;
+            border: 3px solid #f44336;
+            border-radius: 15px;
+            padding: 30px;
+            text-align: center;
+            max-width: 450px;
+        }
+
+        .drawing-indicator {
+            color: #ffc107;
+            font-size: 8px;
+            text-align: center;
+            margin-top: 5px;
+        }
+
+        @media (max-width: 1024px) {
+            .main-layout {
+                grid-template-columns: 1fr;
+                grid-template-rows: 300px 1fr;
+                height: auto;
+            }
+            .control-section {
+                flex-direction: row;
+                gap: 15px;
+            }
+            .mission-panel, .control-panel {
+                flex: 1;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                padding: 8px;
+            }
+            .control-section {
+                flex-direction: column;
+            }
+            .compact-hud {
+                flex-direction: column;
+                gap: 10px;
+            }
+            .hud-section {
+                justify-content: space-around;
+                width: 100%;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="stars" id="stars"></div>
+    
+    <div class="container">
+        <div class="compact-hud">
+            <div class="hud-section">
+                <div class="hud-item">
+                    <div class="hud-value" id="playerMoney">$2000</div>
+                    <div class="hud-label">CREDITS</div>
+                    <div class="progress-bar">
+                        <div class="progress-fill" id="moneyBar"></div>
+                    </div>
+                </div>
+                <div class="hud-item">
+                    <div class="hud-value" id="currentLevel">1</div>
+                    <div class="hud-label">LEVEL</div>
+                    <div class="progress-bar">
+                        <div class="progress-fill" id="levelProgress"></div>
+                    </div>
+                </div>
+                <div class="hud-item">
+                    <div class="hud-value" id="playerScore">0</div>
+                    <div class="hud-label">SCORE</div>
+                </div>
+                <div class="hud-item">
+                    <div class="hud-value" id="accuracyRate">0%</div>
+                    <div class="hud-label">PRECISION</div>
+                </div>
+            </div>
+            <div class="hud-section">
+                <div class="lives-display" id="livesDisplay">
+                    <span class="life-heart">♥</span>
+                    <span class="life-heart">♥</span>
+                    <span class="life-heart">♥</span>
+                    <span class="life-heart">♥</span>
+                    <span class="life-heart">♥</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="main-layout">
+            <div class="chart-section">
+                <div class="legend">
+                    <div class="legend-item">
+                        <div class="legend-color" style="background: #ff6b6b;"></div>
+                        <span>Reference Solution</span>
+                    </div>
+                    <div class="legend-item">
+                        <div class="legend-color" style="background: #4fc3f7;"></div>
+                        <span>Your Solution</span>
+                    </div>
+                    <div class="legend-item">
+                        <div style="width: 8px; height: 8px; background: #ff6b6b; border-radius: 50%; margin: 0 2px;"></div>
+                        <span>Error > Target</span>
+                    </div>
+                </div>
+                <div class="chart-container">
+                    <canvas id="trajectoryCanvas" class="chart-canvas"></canvas>
+                </div>
+                <div class="chart-info">
+                    <div id="chartStatus">Execute a mission to see trajectory comparison</div>
+                    <div id="drawingIndicator" class="drawing-indicator" style="display: none;">
+                        🔄 Drawing trajectory...
+                    </div>
+                    <div style="font-size: 7px; color: #666; margin-top: 4px;">
+                        Red dots mark points where error exceeds target accuracy<br>
+                        Hover over chart to see exact coordinates and error values
+                    </div>
+                </div>
+            </div>
+
+            <div class="control-section">
+                <div class="mission-panel">
+                    <div class="equation-display">
+                        <div class="equation-text" id="equationDisplay">dy/dt = y</div>
+                        <div class="equation-desc" id="equationDescription">Exponential Growth Protocol</div>
+                        <div class="mission-params">
+                            <div>📍 Initial: <span id="initialCondition">y(0) = 1.00</span></div>
+                            <div>⏱️ Time Domain: <span id="timeDomain">[0, 1.00]</span></div>
+                            <div>🎯 Target Error: <span id="targetError">< 0.01000</span></div>
+                            <div>💰 Reward: <span id="missionReward">$150</span></div>
+                        </div>
+                    </div>
+
+                    <div class="computing-animation" id="computingAnimation">
+                        <div>🔄 Computing trajectory<span class="computing-dots"></span></div>
+                        <div style="margin-top: 8px; font-size: 7px;">
+                            Step <span id="computingStep">0</span> of <span id="totalSteps">0</span>
+                        </div>
+                    </div>
+
+                    <div id="resultsPanel" class="results-panel" style="display: none;">
+                        <div class="results-header" onclick="toggleResults()">
+                            <span>📊 MISSION ANALYSIS</span>
+                            <span class="collapse-icon" id="collapseIcon">▼</span>
+                        </div>
+                        <div class="results-content" id="resultsContent">
+                            <!-- Results will be populated here -->
+                        </div>
+                    </div>
+
+                    <div style="text-align: center; margin-top: 15px;">
+                        <button class="action-button" id="nextMissionBtn" onclick="nextMission()" style="display: none;">
+                            🚀 NEXT MISSION
+                        </button>
+                    </div>
+                </div>
+
+                <div class="control-panel">
+                    <div class="input-group">
+                        <label class="input-label" for="solutionMethod">🔧 NUMERICAL METHOD:</label>
+                        <select class="game-select" id="solutionMethod">
+                            <option value="euler">Euler Method</option>
+                            <option value="midpoint">Midpoint Method</option>
+                            <option value="heun">Heun's Method</option>
+                            <option value="rk4">Runge-Kutta 4</option>
+                            <option value="adaptive">Adaptive RK</option>
+                        </select>
+                        <div class="method-info" id="methodDescription">
+                            Simple forward Euler integration. Fast but low accuracy. Base cost: $15. <a href="https://en.wikipedia.org/wiki/Euler_method" target="_blank" class="wiki-link">📖 Learn more</a>
+                        </div>
+                    </div>
+
+                    <div class="input-group">
+                        <label class="input-label" for="stepSize">📏 STEP SIZE (h):</label>
+                        <input type="number" class="game-input" id="stepSize" value="0.01" min="0.0001" max="1" step="0.0001">
+                        <div class="method-info">
+                            ⚠️ Smaller steps = Higher accuracy but more expensive
+                        </div>
+                    </div>
+
+                    <div style="text-align: center; margin: 15px 0;">
+                        <div style="font-size: 9px; color: #ffc107; margin-bottom: 8px;">
+                            💰 ESTIMATED COST: $<span id="costEstimate">50</span>
+                        </div>
+                        <button class="action-button" id="executeBtn" onclick="executeMission()">
+                            🚀 EXECUTE MISSION
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="game-over-screen" id="gameOverScreen">
+        <div class="game-over-content">
+            <h2 style="color: #f44336; margin-bottom: 15px;">🌌 MISSION COMPLETE 🌌</h2>
+            <div id="finalStats"></div>
+            <button class="action-button" onclick="restartGame()" style="margin-top: 15px;">
+                🔄 NEW EXPEDITION
+            </button>
+        </div>
+    </div>
+
+    <script>
+        // ============ CORE COST CALCULATION MODULE ============
+        class CostCalculator {
+            static BASE_OVERHEADS = {
+                'euler': 15,
+                'midpoint': 40,
+                'heun': 70,
+                'rk4': 120,
+                'adaptive': 200
+            };
+
+            static MULTIPLIERS = {
+                'euler': 1.0,
+                'midpoint': 2.5,
+                'heun': 3.5,
+                'rk4': 6.0,
+                'adaptive': 12.0
+            };
+
+            static calculate(method, stepSize, timeSpan) {
+                const duration = timeSpan[1] - timeSpan[0];
+                const stepCost = (duration / stepSize) * 2;
+                const overhead = this.BASE_OVERHEADS[method];
+                const multiplier = this.MULTIPLIERS[method];
+                
+                return Math.ceil(stepCost * multiplier + overhead);
+            }
+        }
+
+        // ============ GAME STATE MANAGER ============
+        class GameState {
+            constructor() {
+                this.money = 2000;
+                this.maxMoney = 2000;
+                this.level = 1;
+                this.score = 0;
+                this.lives = 5;
+                this.accuracy = 0;
+                this.missionCount = 0;
+                this.totalMissions = 0;
+                this.currentMission = null;
+                this.resultsCollapsed = false;
+            }
+
+            deductMoney(amount) {
+                this.money -= amount;
+            }
+
+            addMoney(amount) {
+                this.money += amount;
+            }
+
+            addScore(amount) {
+                this.score += amount;
+            }
+
+            loseLife() {
+                this.lives--;
+            }
+
+            isGameOver() {
+                return this.lives <= 0;
+            }
+
+            shouldLevelUp() {
+                return this.missionCount % 3 === 0;
+            }
+
+            levelUp() {
+                this.level++;
+                this.maxMoney += 500;
+            }
+
+            updateAccuracy(newAccuracy) {
+                this.accuracy = Math.max(this.accuracy, newAccuracy);
+            }
+
+            completeMission() {
+                this.missionCount++;
+                this.totalMissions++;
+            }
+
+            failMission() {
+                this.totalMissions++;
+            }
+        }
+
+        // ============ PROBLEM GENERATOR ============
+        class ProblemGenerator {
+            static EQUATIONS = [
+                {
+                    name: 'Exponential Growth',
+                    equation: (t, y) => y,
+                    hasAnalytical: true,
+                    solution: (t, y0, t0) => y0 * Math.exp(t - t0),
+                    display: 'dy/dt = y',
+                    description: 'Population explosion protocol'
+                },
+                {
+                    name: 'Exponential Decay',
+                    equation: (t, y) => -y,
+                    hasAnalytical: true,
+                    solution: (t, y0, t0) => y0 * Math.exp(-(t - t0)),
+                    display: 'dy/dt = -y',
+                    description: 'Radioactive decay simulation'
+                },
+                {
+                    name: 'Gaussian Kernel',
+                    equation: (t, y) => -2 * t * y,
+                    hasAnalytical: true,
+                    solution: (t, y0, t0) => y0 * Math.exp(-(t*t - t0*t0)),
+                    display: 'dy/dt = -2ty',
+                    description: 'Heat distribution analysis'
+                },
+                {
+                    name: 'Harmonic Oscillator',
+                    equation: (t, y) => Math.cos(t),
+                    hasAnalytical: true,
+                    solution: (t, y0, t0) => y0 + Math.sin(t) - Math.sin(t0),
+                    display: 'dy/dt = cos(t)',
+                    description: 'Vibrational force field'
+                },
+                {
+                    name: 'Logistic Growth',
+                    equation: (t, y) => y * (1 - y),
+                    hasAnalytical: false,
+                    display: 'dy/dt = y(1-y)',
+                    description: 'Population limit dynamics'
+                },
+                {
+                    name: 'Sine Wave Driver',
+                    equation: (t, y) => Math.sin(t),
+                    hasAnalytical: true,
+                    solution: (t, y0, t0) => y0 - Math.cos(t) + Math.cos(t0),
+                    display: 'dy/dt = sin(t)',
+                    description: 'Oscillatory input system'
+                }
+            ];
+
+            static generate(level) {
+                const eqIndex = Math.floor(Math.random() * this.EQUATIONS.length);
+                const baseEq = this.EQUATIONS[eqIndex];
+                
+                const t0 = Math.random() * 0.3;
+                let tEnd = t0 + 0.8 + level * 0.1 + Math.random() * 0.2;
+                
+                if (baseEq.display.includes('sin') || baseEq.display.includes('cos')) {
+                    tEnd = t0 + Math.PI * (1 + level * 0.15);
+                }
+                
+                const y0 = 0.3 + Math.random() * 1.4;
+                
+                // Exponentially increasing precision requirements
+                const basePrecision = 0.1;
+                const targetAccuracy = basePrecision / Math.pow(5, level - 1);
+                
+                // Exponentially increasing rewards
+                let baseReward;
+                if (level === 1) {
+                    baseReward = 30 + Math.floor(Math.random() * 20);
+                } else {
+                    baseReward = Math.floor(30 * Math.pow(2, level - 1)) + Math.floor(Math.random() * Math.floor(20 * Math.pow(2, level - 1)));
+                }
+
+                const mission = {
+                    name: baseEq.name,
+                    equation: baseEq.equation,
+                    display: baseEq.display,
+                    description: baseEq.description,
+                    timeSpan: [t0, tEnd],
+                    initialValue: y0,
+                    targetAccuracy: targetAccuracy,
+                    baseReward: baseReward,
+                    hasAnalytical: baseEq.hasAnalytical
+                };
+
+                if (baseEq.hasAnalytical) {
+                    mission.getReference = (t) => baseEq.solution(t, y0, t0);
+                } else {
+                    // Use high-precision reference
+                    const refSolution = NumericalSolver.rk4(mission, 0.00001);
+                    mission.referenceT = refSolution.t;
+                    mission.referenceY = refSolution.y;
+                    mission.getReference = (t) => {
+                        for (let i = 0; i < mission.referenceT.length - 1; i++) {
+                            if (t >= mission.referenceT[i] && t <= mission.referenceT[i + 1]) {
+                                const alpha = (t - mission.referenceT[i]) / (mission.referenceT[i + 1] - mission.referenceT[i]);
+                                return mission.referenceY[i] * (1 - alpha) + mission.referenceY[i + 1] * alpha;
+                            }
+                        }
+                        return mission.referenceY[mission.referenceY.length - 1];
+                    };
+                }
+
+                return mission;
+            }
+        }
+
+        // ============ NUMERICAL SOLVER ============
+        class NumericalSolver {
+            static async solveAnimated(method, mission, stepSize, progressCallback) {
+                const maxSteps = 50000;
+                const minStepSize = 1e-8;
+                
+                if (stepSize < minStepSize) {
+                    throw new Error(`Step size too small (min: ${minStepSize})`);
+                }
+                
+                const expectedSteps = Math.ceil((mission.timeSpan[1] - mission.timeSpan[0]) / stepSize);
+                if (expectedSteps > maxSteps) {
+                    throw new Error(`Too many steps required: ${expectedSteps} (max: ${maxSteps})`);
+                }
+
+                const startTime = performance.now();
+                let result;
+
+                switch (method) {
+                    case 'euler':
+                        result = await this.eulerAnimated(mission, stepSize, progressCallback);
+                        break;
+                    case 'midpoint':
+                        result = await this.midpointAnimated(mission, stepSize, progressCallback);
+                        break;
+                    case 'heun':
+                        result = await this.heunAnimated(mission, stepSize, progressCallback);
+                        break;
+                    case 'rk4':
+                        result = await this.rk4Animated(mission, stepSize, progressCallback);
+                        break;
+                    case 'adaptive':
+                        result = await this.adaptiveAnimated(mission, stepSize, progressCallback);
+                        break;
+                    default:
+                        throw new Error('Unknown method');
+                }
+
+                result.computationTime = (performance.now() - startTime) / 1000;
+                return result;
+            }
+
+            static async eulerAnimated(mission, h, progressCallback) {
+                const [t0, tEnd] = mission.timeSpan;
+                const f = mission.equation;
+                const y0 = mission.initialValue;
+                
+                const t = [t0];
+                const y = [y0];
+                
+                let currentT = t0;
+                let currentY = y0;
+                let step = 0;
+                const totalSteps = Math.ceil((tEnd - t0) / h);
+                
+                while (currentT < tEnd) {
+                    const actualH = Math.min(h, tEnd - currentT);
+                    currentY = currentY + actualH * f(currentT, currentY);
+                    currentT += actualH;
+                    
+                    t.push(currentT);
+                    y.push(currentY);
+                    
+                    step++;
+                    if (step % Math.max(1, Math.floor(totalSteps / 100)) === 0) {
+                        progressCallback(step, totalSteps);
+                        await new Promise(resolve => setTimeout(resolve, 1));
+                    }
+                }
+                
+                return { t, y };
+            }
+
+            static async midpointAnimated(mission, h, progressCallback) {
+                const [t0, tEnd] = mission.timeSpan;
+                const f = mission.equation;
+                const y0 = mission.initialValue;
+                
+                const t = [t0];
+                const y = [y0];
+                
+                let currentT = t0;
+                let currentY = y0;
+                let step = 0;
+                const totalSteps = Math.ceil((tEnd - t0) / h);
+                
+                while (currentT < tEnd) {
+                    const actualH = Math.min(h, tEnd - currentT);
+                    const k1 = f(currentT, currentY);
+                    const k2 = f(currentT + actualH/2, currentY + actualH * k1 / 2);
+                    
+                    currentY = currentY + actualH * k2;
+                    currentT += actualH;
+                    
+                    t.push(currentT);
+                    y.push(currentY);
+                    
+                    step++;
+                    if (step % Math.max(1, Math.floor(totalSteps / 100)) === 0) {
+                        progressCallback(step, totalSteps);
+                        await new Promise(resolve => setTimeout(resolve, 1));
+                    }
+                }
+                
+                return { t, y };
+            }
+
+            static async heunAnimated(mission, h, progressCallback) {
+                const [t0, tEnd] = mission.timeSpan;
+                const f = mission.equation;
+                const y0 = mission.initialValue;
+                
+                const t = [t0];
+                const y = [y0];
+                
+                let currentT = t0;
+                let currentY = y0;
+                let step = 0;
+                const totalSteps = Math.ceil((tEnd - t0) / h);
+                
+                while (currentT < tEnd) {
+                    const actualH = Math.min(h, tEnd - currentT);
+                    const k1 = f(currentT, currentY);
+                    const k2 = f(currentT + actualH, currentY + actualH * k1);
+                    
+                    currentY = currentY + (actualH / 2) * (k1 + k2);
+                    currentT += actualH;
+                    
+                    t.push(currentT);
+                    y.push(currentY);
+                    
+                    step++;
+                    if (step % Math.max(1, Math.floor(totalSteps / 100)) === 0) {
+                        progressCallback(step, totalSteps);
+                        await new Promise(resolve => setTimeout(resolve, 2));
+                    }
+                }
+                
+                return { t, y };
+            }
+
+            static async rk4Animated(mission, h, progressCallback) {
+                const [t0, tEnd] = mission.timeSpan;
+                const f = mission.equation;
+                const y0 = mission.initialValue;
+                
+                const t = [t0];
+                const y = [y0];
+                
+                let currentT = t0;
+                let currentY = y0;
+                let step = 0;
+                const totalSteps = Math.ceil((tEnd - t0) / h);
+                
+                while (currentT < tEnd) {
+                    const actualH = Math.min(h, tEnd - currentT);
+                    const k1 = f(currentT, currentY);
+                    const k2 = f(currentT + actualH/2, currentY + actualH * k1 / 2);
+                    const k3 = f(currentT + actualH/2, currentY + actualH * k2 / 2);
+                    const k4 = f(currentT + actualH, currentY + actualH * k3);
+                    
+                    currentY = currentY + (actualH / 6) * (k1 + 2*k2 + 2*k3 + k4);
+                    currentT += actualH;
+                    
+                    t.push(currentT);
+                    y.push(currentY);
+                    
+                    step++;
+                    if (step % Math.max(1, Math.floor(totalSteps / 100)) === 0) {
+                        progressCallback(step, totalSteps);
+                        await new Promise(resolve => setTimeout(resolve, 3));
+                    }
+                }
+                
+                return { t, y };
+            }
+
+            static async adaptiveAnimated(mission, h, progressCallback) {
+                // Adaptive uses smaller internal steps but costs as if using h
+                const result = await this.rk4Animated(mission, h/2, progressCallback);
+                result.computationTime *= 2.5;
+                return result;
+            }
+
+            static rk4(mission, h) {
+                const [t0, tEnd] = mission.timeSpan;
+                const f = mission.equation;
+                const y0 = mission.initialValue;
+                
+                const t = [t0];
+                const y = [y0];
+                
+                let currentT = t0;
+                let currentY = y0;
+                
+                while (currentT < tEnd) {
+                    const actualH = Math.min(h, tEnd - currentT);
+                    const k1 = f(currentT, currentY);
+                    const k2 = f(currentT + actualH/2, currentY + actualH * k1 / 2);
+                    const k3 = f(currentT + actualH/2, currentY + actualH * k2 / 2);
+                    const k4 = f(currentT + actualH, currentY + actualH * k3);
+                    
+                    currentY = currentY + (actualH / 6) * (k1 + 2*k2 + 2*k3 + k4);
+                    currentT += actualH;
+                    
+                    t.push(currentT);
+                    y.push(currentY);
+                }
+                
+                return { t, y };
+            }
+        }
+
+        // ============ CHART RENDERER ============
+        class ChartRenderer {
+            constructor(canvas) {
+                this.canvas = canvas;
+                this.ctx = canvas.getContext('2d');
+                this.referenceData = [];
+                this.numericalData = [];
+                this.isDrawing = false;
+                this.setupCanvas();
+                this.setupMouseEvents();
+                this.clear();
+            }
+
+            setupCanvas() {
+                const rect = this.canvas.getBoundingClientRect();
+                const dpr = window.devicePixelRatio || 1;
+                
+                this.canvas.width = rect.width * dpr;
+                this.canvas.height = rect.height * dpr;
+                this.width = this.canvas.width;
+                this.height = this.canvas.height;
+                
+                this.ctx.scale(dpr, dpr);
+                this.margin = { top: 20, right: 20, bottom: 40, left: 60 };
+            }
+
+            setupMouseEvents() {
+                // Create tooltip element
+                this.tooltip = document.createElement('div');
+                this.tooltip.style.cssText = `
+                    position: absolute;
+                    background: rgba(0, 0, 0, 0.9);
+                    color: white;
+                    padding: 8px 12px;
+                    border-radius: 4px;
+                    font-size: 10px;
+                    font-family: 'Press Start 2P';
+                    pointer-events: none;
+                    z-index: 1000;
+                    display: none;
+                    line-height: 1.4;
+                `;
+                document.body.appendChild(this.tooltip);
+
+                this.canvas.addEventListener('mousemove', (e) => {
+                    if (this.isDrawing || this.referenceData.length === 0) {
+                        this.tooltip.style.display = 'none';
+                        return;
+                    }
+
+                    const rect = this.canvas.getBoundingClientRect();
+                    const x = e.clientX - rect.left;
+                    const y = e.clientY - rect.top;
+                    
+                    const dataX = this.fromCanvasX(x);
+                    const closestPoint = this.findClosestPoint(dataX);
+                    
+                    if (closestPoint) {
+                        const error = Math.abs(closestPoint.ref.y - closestPoint.num.y);
+                        
+                        this.tooltip.innerHTML = `
+                            t: ${closestPoint.ref.x.toFixed(4)}<br>
+                            Reference: ${closestPoint.ref.y.toFixed(6)}<br>
+                            Numerical: ${closestPoint.num.y.toFixed(6)}<br>
+                            Error: ${error.toExponential(3)}
+                        `;
+                        
+                        this.tooltip.style.left = (e.clientX + 10) + 'px';
+                        this.tooltip.style.top = (e.clientY - 10) + 'px';
+                        this.tooltip.style.display = 'block';
+                        
+                        // Highlight the point
+                        this.redrawWithHighlight(closestPoint);
+                    } else {
+                        this.tooltip.style.display = 'none';
+                    }
+                });
+
+                this.canvas.addEventListener('mouseleave', () => {
+                    this.tooltip.style.display = 'none';
+                    if (!this.isDrawing && this.referenceData.length > 0) {
+                        this.redrawWithoutHighlight();
+                    }
+                });
+            }
+
+            findClosestPoint(targetX) {
+                if (this.referenceData.length === 0 || this.numericalData.length === 0) return null;
+                
+                let minDistance = Infinity;
+                let closestIndex = -1;
+                
+                const minLength = Math.min(this.referenceData.length, this.numericalData.length);
+                
+                for (let i = 0; i < minLength; i++) {
+                    const distance = Math.abs(this.referenceData[i].x - targetX);
+                    if (distance < minDistance) {
+                        minDistance = distance;
+                        closestIndex = i;
+                    }
+                }
+                
+                if (closestIndex >= 0) {
+                    return {
+                        ref: this.referenceData[closestIndex],
+                        num: this.numericalData[closestIndex],
+                        index: closestIndex
+                    };
+                }
+                
+                return null;
+            }
+
+            fromCanvasX(canvasX) {
+                const canvasWidth = this.width / window.devicePixelRatio;
+                return this.xMin + (canvasX - this.margin.left) / (canvasWidth - this.margin.left - this.margin.right) * (this.xMax - this.xMin);
+            }
+
+            redrawWithHighlight(closestPoint) {
+                this.clear();
+                this.drawLine(this.referenceData, '#ff6b6b', 3);
+                this.drawLine(this.numericalData, '#4fc3f7', 2);
+                this.drawErrorPoints(this.referenceData, this.numericalData, gameController.gameState.currentMission.targetAccuracy);
+                
+                // Highlight the closest point
+                const ctx = this.ctx;
+                
+                // Highlight reference point
+                ctx.fillStyle = '#ff6b6b';
+                ctx.strokeStyle = '#fff';
+                ctx.lineWidth = 2;
+                ctx.beginPath();
+                ctx.arc(this.toCanvasX(closestPoint.ref.x), this.toCanvasY(closestPoint.ref.y), 5, 0, 2 * Math.PI);
+                ctx.fill();
+                ctx.stroke();
+                
+                // Highlight numerical point
+                ctx.fillStyle = '#4fc3f7';
+                ctx.beginPath();
+                ctx.arc(this.toCanvasX(closestPoint.num.x), this.toCanvasY(closestPoint.num.y), 5, 0, 2 * Math.PI);
+                ctx.fill();
+                ctx.stroke();
+                
+                // Draw connection line
+                ctx.strokeStyle = 'rgba(255, 255, 255, 0.8)';
+                ctx.lineWidth = 1;
+                ctx.setLineDash([3, 3]);
+                ctx.beginPath();
+                ctx.moveTo(this.toCanvasX(closestPoint.ref.x), this.toCanvasY(closestPoint.ref.y));
+                ctx.lineTo(this.toCanvasX(closestPoint.num.x), this.toCanvasY(closestPoint.num.y));
+                ctx.stroke();
+                ctx.setLineDash([]);
+            }
+
+            redrawWithoutHighlight() {
+                this.clear();
+                this.drawLine(this.referenceData, '#ff6b6b', 3);
+                this.drawLine(this.numericalData, '#4fc3f7', 2);
+                this.drawErrorPoints(this.referenceData, this.numericalData, gameController.gameState.currentMission.targetAccuracy);
+            }
+
+            clear() {
+                const canvasWidth = this.width / window.devicePixelRatio;
+                const canvasHeight = this.height / window.devicePixelRatio;
+                
+                this.ctx.clearRect(0, 0, canvasWidth, canvasHeight);
+                this.drawAxes();
+                this.drawGrid();
+            }
+
+            drawAxes() {
+                const ctx = this.ctx;
+                const canvasWidth = this.width / window.devicePixelRatio;
+                const canvasHeight = this.height / window.devicePixelRatio;
+                
+                ctx.strokeStyle = '#81c784';
+                ctx.lineWidth = 1;
+                ctx.font = '8px "Press Start 2P"';
+                ctx.fillStyle = '#81c784';
+                
+                // X axis
+                ctx.beginPath();
+                ctx.moveTo(this.margin.left, canvasHeight - this.margin.bottom);
+                ctx.lineTo(canvasWidth - this.margin.right, canvasHeight - this.margin.bottom);
+                ctx.stroke();
+                
+                // Y axis
+                ctx.beginPath();
+                ctx.moveTo(this.margin.left, this.margin.top);
+                ctx.lineTo(this.margin.left, canvasHeight - this.margin.bottom);
+                ctx.stroke();
+                
+                // Labels
+                ctx.textAlign = 'center';
+                ctx.fillText('Time (t)', canvasWidth / 2, canvasHeight - 10);
+                
+                ctx.save();
+                ctx.translate(15, canvasHeight / 2);
+                ctx.rotate(-Math.PI / 2);
+                ctx.fillText('y(t)', 0, 0);
+                ctx.restore();
+            }
+
+            drawGrid() {
+                const ctx = this.ctx;
+                const canvasWidth = this.width / window.devicePixelRatio;
+                const canvasHeight = this.height / window.devicePixelRatio;
+                
+                ctx.strokeStyle = 'rgba(129, 199, 132, 0.1)';
+                ctx.lineWidth = 1;
+                
+                for (let i = 0; i <= 10; i++) {
+                    const x = this.margin.left + i * (canvasWidth - this.margin.left - this.margin.right) / 10;
+                    ctx.beginPath();
+                    ctx.moveTo(x, this.margin.top);
+                    ctx.lineTo(x, canvasHeight - this.margin.bottom);
+                    ctx.stroke();
+                }
+                
+                for (let i = 0; i <= 10; i++) {
+                    const y = this.margin.top + i * (canvasHeight - this.margin.top - this.margin.bottom) / 10;
+                    ctx.beginPath();
+                    ctx.moveTo(this.margin.left, y);
+                    ctx.lineTo(canvasWidth - this.margin.right, y);
+                    ctx.stroke();
+                }
+            }
+
+            async animatedDraw(referenceData, numericalData, method, targetError) {
+                this.referenceData = referenceData;
+                this.numericalData = numericalData;
+                this.setData(referenceData, numericalData);
+                this.isDrawing = true;
+                
+                document.getElementById('drawingIndicator').style.display = 'block';
+                document.getElementById('chartStatus').textContent = `Drawing ${method.toUpperCase()} vs Reference...`;
+                
+                const totalPoints = Math.max(referenceData.length, numericalData.length);
+                const animationSteps = Math.min(100, totalPoints);
+                
+                for (let step = 1; step <= animationSteps; step++) {
+                    const progress = step / animationSteps;
+                    const refPoints = Math.floor(referenceData.length * progress);
+                    const numPoints = Math.floor(numericalData.length * progress);
+                    
+                    this.clear();
+                    
+                    if (refPoints > 1) {
+                        this.drawLine(referenceData.slice(0, refPoints), '#ff6b6b', 3);
+                    }
+                    
+                    if (numPoints > 1) {
+                        this.drawLine(numericalData.slice(0, numPoints), '#4fc3f7', 2);
+                        this.drawErrorPoints(referenceData.slice(0, refPoints), numericalData.slice(0, numPoints), targetError);
+                    }
+                    
+                    await new Promise(resolve => setTimeout(resolve, 20));
+                }
+                
+                this.clear();
+                this.drawLine(referenceData, '#ff6b6b', 3);
+                this.drawLine(numericalData, '#4fc3f7', 2);
+                this.drawErrorPoints(referenceData, numericalData, targetError);
+                
+                this.isDrawing = false;
+                document.getElementById('drawingIndicator').style.display = 'none';
+                const errorCount = this.countErrorPoints(referenceData, numericalData, targetError);
+                document.getElementById('chartStatus').textContent = 
+                    `Analysis complete: ${method.toUpperCase()} vs Reference (${errorCount} error points marked)`;
+            }
+
+            setData(referenceData, numericalData) {
+                const allData = [...referenceData, ...numericalData];
+                
+                this.xMin = Math.min(...allData.map(p => p.x));
+                this.xMax = Math.max(...allData.map(p => p.x));
+                this.yMin = Math.min(...allData.map(p => p.y));
+                this.yMax = Math.max(...allData.map(p => p.y));
+                
+                const xPadding = (this.xMax - this.xMin) * 0.05;
+                const yPadding = (this.yMax - this.yMin) * 0.1;
+                
+                this.xMin -= xPadding;
+                this.xMax += xPadding;
+                this.yMin -= yPadding;
+                this.yMax += yPadding;
+            }
+
+            toCanvasX(x) {
+                const canvasWidth = this.width / window.devicePixelRatio;
+                return this.margin.left + (x - this.xMin) / (this.xMax - this.xMin) * 
+                       (canvasWidth - this.margin.left - this.margin.right);
+            }
+
+            toCanvasY(y) {
+                const canvasHeight = this.height / window.devicePixelRatio;
+                return canvasHeight - this.margin.bottom - 
+                       (y - this.yMin) / (this.yMax - this.yMin) * 
+                       (canvasHeight - this.margin.top - this.margin.bottom);
+            }
+
+            drawLine(data, color, lineWidth) {
+                if (data.length < 2) return;
+                
+                const ctx = this.ctx;
+                ctx.strokeStyle = color;
+                ctx.lineWidth = lineWidth;
+                ctx.beginPath();
+                
+                ctx.moveTo(this.toCanvasX(data[0].x), this.toCanvasY(data[0].y));
+                for (let i = 1; i < data.length; i++) {
+                    ctx.lineTo(this.toCanvasX(data[i].x), this.toCanvasY(data[i].y));
+                }
+                ctx.stroke();
+            }
+
+            drawErrorPoints(referenceData, numericalData, targetError) {
+                const ctx = this.ctx;
+                const minLength = Math.min(referenceData.length, numericalData.length);
+                
+                for (let i = 0; i < minLength; i++) {
+                    const refPoint = referenceData[i];
+                    const numPoint = numericalData[i];
+                    const error = Math.abs(refPoint.y - numPoint.y);
+                    
+                    if (error > targetError) {
+                        ctx.fillStyle = '#ff6b6b';
+                        ctx.beginPath();
+                        ctx.arc(this.toCanvasX(numPoint.x), this.toCanvasY(numPoint.y), 3, 0, 2 * Math.PI);
+                        ctx.fill();
+                        
+                        ctx.strokeStyle = 'rgba(255, 107, 107, 0.6)';
+                        ctx.lineWidth = 1;
+                        ctx.setLineDash([2, 2]);
+                        ctx.beginPath();
+                        ctx.moveTo(this.toCanvasX(refPoint.x), this.toCanvasY(refPoint.y));
+                        ctx.lineTo(this.toCanvasX(numPoint.x), this.toCanvasY(numPoint.y));
+                        ctx.stroke();
+                        ctx.setLineDash([]);
+                    }
+                }
+            }
+
+            countErrorPoints(referenceData, numericalData, targetError) {
+                let count = 0;
+                const minLength = Math.min(referenceData.length, numericalData.length);
+                
+                for (let i = 0; i < minLength; i++) {
+                    const error = Math.abs(referenceData[i].y - numericalData[i].y);
+                    if (error > targetError) count++;
+                }
+                
+                return count;
+            }
+
+            clearChart() {
+                this.referenceData = [];
+                this.numericalData = [];
+                this.clear();
+                this.tooltip.style.display = 'none';
+                document.getElementById('chartStatus').textContent = 'Execute a mission to see trajectory comparison';
+                document.getElementById('drawingIndicator').style.display = 'none';
+            }
+        }
+
+        // ============ MAIN GAME CONTROLLER ============
+        class GameController {
+            constructor() {
+                this.gameState = new GameState();
+                this.chartRenderer = null;
+                this.isComputing = false;
+                
+                this.init();
+            }
+
+            init() {
+                this.createStarField();
+                this.setupEventListeners();
+                this.initChart();
+                this.generateNewMission();
+                this.updateDisplay();
+            }
+
+            createStarField() {
+                const starsContainer = document.getElementById('stars');
+                for (let i = 0; i < 80; i++) {
+                    const star = document.createElement('div');
+                    star.className = 'star';
+                    star.style.left = Math.random() * 100 + '%';
+                    star.style.top = Math.random() * 100 + '%';
+                    star.style.width = star.style.height = Math.random() * 3 + 1 + 'px';
+                    star.style.animationDelay = Math.random() * 2 + 's';
+                    starsContainer.appendChild(star);
+                }
+            }
+
+            setupEventListeners() {
+                const methodSelect = document.getElementById('solutionMethod');
+                const stepSizeInput = document.getElementById('stepSize');
+                
+                methodSelect.addEventListener('change', () => {
+                    this.updateMethodInfo();
+                    this.updateCostEstimate();
+                });
+                
+                stepSizeInput.addEventListener('input', () => {
+                    this.updateCostEstimate();
+                });
+                
+                this.updateMethodInfo();
+                this.updateCostEstimate();
+            }
+
+            updateMethodInfo() {
+                const method = document.getElementById('solutionMethod').value;
+                const descriptions = {
+                    'euler': 'Simple forward Euler integration. Fast but low accuracy. Base cost: $15. <a href="https://en.wikipedia.org/wiki/Euler_method" target="_blank" class="wiki-link">📖 Learn more</a>',
+                    'midpoint': 'Second-order accurate method using midpoint evaluation. Good balance. Base cost: $40. <a href="https://en.wikipedia.org/wiki/Midpoint_method" target="_blank" class="wiki-link">📖 Learn more</a>',
+                    'heun': 'Improved Euler method with predictor-corrector approach. Base cost: $70. <a href="https://en.wikipedia.org/wiki/Heun%27s_method" target="_blank" class="wiki-link">📖 Learn more</a>',
+                    'rk4': 'Fourth-order Runge-Kutta. Industry standard for high accuracy. Base cost: $120. <a href="https://en.wikipedia.org/wiki/Runge%E2%80%93Kutta_methods" target="_blank" class="wiki-link">📖 Learn more</a>',
+                    'adaptive': 'Intelligent step size control. Expensive but extremely precise. Base cost: $200. <a href="https://en.wikipedia.org/wiki/Adaptive_stepsize" target="_blank" class="wiki-link">📖 Learn more</a>'
+                };
+                
+                document.getElementById('methodDescription').innerHTML = descriptions[method];
+            }
+
+            updateCostEstimate() {
+                if (!this.gameState.currentMission) return;
+                
+                const method = document.getElementById('solutionMethod').value;
+                const stepSize = parseFloat(document.getElementById('stepSize').value) || 0.01;
+                
+                const cost = CostCalculator.calculate(method, stepSize, this.gameState.currentMission.timeSpan);
+                document.getElementById('costEstimate').textContent = cost;
+            }
+
+            initChart() {
+                const canvas = document.getElementById('trajectoryCanvas');
+                if (canvas) {
+                    this.chartRenderer = new ChartRenderer(canvas);
+                    
+                    window.addEventListener('resize', () => {
+                        if (this.chartRenderer) {
+                            this.chartRenderer.setupCanvas();
+                            this.chartRenderer.clear();
+                        }
+                    });
+                }
+            }
+
+            generateNewMission() {
+                if (this.gameState.level > 15) {
+                    this.endGame(true);
+                    return;
+                }
+
+                this.gameState.currentMission = ProblemGenerator.generate(this.gameState.level);
+                this.displayMission(this.gameState.currentMission);
+                this.updateDisplay();
+                this.updateCostEstimate();
+            }
+
+            displayMission(mission) {
+                document.getElementById('equationDisplay').textContent = mission.display;
+                document.getElementById('equationDescription').textContent = mission.description;
+                document.getElementById('initialCondition').textContent = 
+                    `y(${mission.timeSpan[0].toFixed(2)}) = ${mission.initialValue.toFixed(2)}`;
+                document.getElementById('timeDomain').textContent = 
+                    `[${mission.timeSpan[0].toFixed(2)}, ${mission.timeSpan[1].toFixed(2)}]`;
+                document.getElementById('targetError').textContent = 
+                    `< ${mission.targetAccuracy.toFixed(5)}`;
+                document.getElementById('missionReward').textContent = 
+                    `$${mission.baseReward}`;
+            }
+
+            async executeMission() {
+                if (this.isComputing) return;
+                
+                const method = document.getElementById('solutionMethod').value;
+                const stepSize = parseFloat(document.getElementById('stepSize').value);
+                
+                if (stepSize <= 0) {
+                    this.showFloatingText('Invalid step size!', 'failure');
+                    return;
+                }
+
+                const cost = CostCalculator.calculate(method, stepSize, this.gameState.currentMission.timeSpan);
+
+                if (cost > this.gameState.money) {
+                    this.showFloatingText('Insufficient credits!', 'failure');
+                    return;
+                }
+
+                this.isComputing = true;
+                this.startComputingAnimation();
+                if (this.chartRenderer) {
+                    this.chartRenderer.clearChart();
+                }
+
+                try {
+                    const result = await NumericalSolver.solveAnimated(
+                        method, 
+                        this.gameState.currentMission, 
+                        stepSize, 
+                        (step, total) => this.updateComputingProgress(step, total)
+                    );
+                    
+                    // Generate points for chart
+                    const referencePoints = [];
+                    const numericalPoints = [];
+                    
+                    for (let i = 0; i < result.t.length; i++) {
+                        const t = result.t[i];
+                        const y = result.y[i];
+                        const refY = this.gameState.currentMission.getReference(t);
+                        
+                        referencePoints.push({ x: t, y: refY });
+                        numericalPoints.push({ x: t, y: y });
+                    }
+                    
+                    // Verify data consistency
+                    console.log('Data consistency check:', {
+                        timePoints: result.t.length,
+                        referencePoints: referencePoints.length,
+                        numericalPoints: numericalPoints.length,
+                        firstTimePoint: result.t[0],
+                        lastTimePoint: result.t[result.t.length - 1],
+                        firstRefValue: referencePoints[0].y,
+                        firstNumValue: numericalPoints[0].y,
+                        firstError: Math.abs(referencePoints[0].y - numericalPoints[0].y)
+                    });
+                    
+                    // Animate the chart drawing
+                    if (this.chartRenderer) {
+                        await this.chartRenderer.animatedDraw(referencePoints, numericalPoints, method, this.gameState.currentMission.targetAccuracy);
+                    }
+                    
+                    this.processMissionResult(result, cost, method);
+                } catch (error) {
+                    this.showFloatingText(`Error: ${error.message}`, 'failure');
+                } finally {
+                    this.isComputing = false;
+                    this.endComputingAnimation();
+                }
+            }
+
+            processMissionResult(result, cost, method) {
+                // Deduct cost first
+                this.gameState.deductMoney(cost);
+                
+                const error = this.calculateError(result.y, result.t);
+                const success = error <= this.gameState.currentMission.targetAccuracy;
+                const accuracy = Math.max(0, 1 - error / this.gameState.currentMission.targetAccuracy);
+                
+                this.gameState.updateAccuracy(accuracy);
+                
+                let reward = 0;
+
+                if (success) {
+                    reward = this.gameState.currentMission.baseReward;
+                    this.gameState.addMoney(reward);
+                    this.gameState.addScore(reward);
+                    this.gameState.completeMission();
+                    
+                    this.showFloatingText(`+$${reward}`, 'success');
+                    
+                    if (this.gameState.shouldLevelUp()) {
+                        this.levelUp();
+                    }
+                } else {
+                    this.gameState.loseLife();
+                    this.gameState.failMission();
+                    this.showFloatingText('Mission Failed!', 'failure');
+                    
+                    if (this.gameState.isGameOver()) {
+                        this.endGame(false);
+                        return;
+                    }
+                }
+
+                this.displayResults(cost, error, success, reward, accuracy);
+                this.updateDisplay();
+                
+                document.getElementById('nextMissionBtn').style.display = 'block';
+                document.getElementById('executeBtn').disabled = true;
+            }
+
+            calculateError(numericalSolution, timePoints) {
+                let maxError = 0;
+                let maxErrorIndex = -1;
+                let maxErrorTime = 0;
+                
+                for (let i = 0; i < timePoints.length; i++) {
+                    const reference = this.gameState.currentMission.getReference(timePoints[i]);
+                    const error = Math.abs(numericalSolution[i] - reference);
+                    
+                    if (error > maxError) {
+                        maxError = error;
+                        maxErrorIndex = i;
+                        maxErrorTime = timePoints[i];
+                    }
+                }
+                
+                // Debug logging
+                console.log('Max Error Analysis:', {
+                    maxError: maxError,
+                    atTime: maxErrorTime,
+                    atIndex: maxErrorIndex,
+                    referenceValue: this.gameState.currentMission.getReference(maxErrorTime),
+                    numericalValue: numericalSolution[maxErrorIndex],
+                    targetAccuracy: this.gameState.currentMission.targetAccuracy,
+                    totalPoints: timePoints.length
+                });
+                
+                return maxError;
+            }
+
+            displayResults(cost, error, success, reward, accuracy) {
+                const panel = document.getElementById('resultsPanel');
+                const content = document.getElementById('resultsContent');
+                
+                let html = `
+                    <div class="result-row">
+                        <span>💰 Mission Cost:</span>
+                        <span class="failure">-$${cost}</span>
+                    </div>
+                    <div class="result-row">
+                        <span>📊 Max Error:</span>
+                        <span>${error < 0.0001 ? error.toExponential(2) : error.toFixed(6)}</span>
+                    </div>
+                    <div class="result-row">
+                        <span>🎯 Accuracy:</span>
+                        <span>${(accuracy * 100).toFixed(2)}%</span>
+                    </div>
+                `;
+
+                if (success) {
+                    html += `
+                        <div class="result-row">
+                            <span>🏆 Mission Reward:</span>
+                            <span class="success">+$${reward}</span>
+                        </div>
+                    `;
+                    
+                    const netGain = reward - cost;
+                    const isProfit = netGain >= 0;
+                    const netClass = isProfit ? 'success' : 'failure';
+                    const borderColor = isProfit ? '#4caf50' : '#f44336';
+                    
+                    html += `
+                        <div class="result-row" style="border-top: 2px solid ${borderColor}; margin-top: 8px; padding-top: 8px; font-weight: bold;">
+                            <span>🎉 MISSION SUCCESS!</span>
+                            <span class="${netClass}">Net: $${netGain}</span>
+                        </div>
+                    `;
+                } else {
+                    html += `
+                        <div class="result-row" style="border-top: 2px solid #f44336; margin-top: 8px; padding-top: 8px; font-weight: bold;">
+                            <span>💀 MISSION FAILED</span>
+                            <span class="failure">Loss: -$${cost}</span>
+                        </div>
+                    `;
+                }
+
+                content.innerHTML = html;
+                panel.style.display = 'block';
+                
+                // Reset collapse state
+                content.classList.remove('collapsed');
+                document.getElementById('collapseIcon').classList.remove('collapsed');
+                document.getElementById('collapseIcon').textContent = '▼';
+                this.gameState.resultsCollapsed = false;
+            }
+
+            levelUp() {
+                this.gameState.levelUp();
+                this.showFloatingText(`LEVEL UP! ${this.gameState.level}`, 'success');
+            }
+
+            nextMission() {
+                this.generateNewMission();
+                document.getElementById('resultsPanel').style.display = 'none';
+                document.getElementById('nextMissionBtn').style.display = 'none';
+                document.getElementById('executeBtn').disabled = false;
+                if (this.chartRenderer) {
+                    this.chartRenderer.clearChart();
+                }
+                this.gameState.resultsCollapsed = false;
+            }
+
+            updateDisplay() {
+                document.getElementById('playerMoney').textContent = `$${this.gameState.money}`;
+                document.getElementById('currentLevel').textContent = this.gameState.level;
+                document.getElementById('playerScore').textContent = this.gameState.score;
+                document.getElementById('accuracyRate').textContent = `${(this.gameState.accuracy * 100).toFixed(1)}%`;
+                
+                const moneyPercentage = (this.gameState.money / this.gameState.maxMoney) * 100;
+                document.getElementById('moneyBar').style.width = `${Math.max(0, moneyPercentage)}%`;
+                
+                const levelProgress = (this.gameState.missionCount % 3) / 3 * 100;
+                document.getElementById('levelProgress').style.width = `${levelProgress}%`;
+                
+                const hearts = document.querySelectorAll('.life-heart');
+                hearts.forEach((heart, index) => {
+                    heart.className = index < this.gameState.lives ? 'life-heart' : 'life-heart empty';
+                });
+            }
+
+            startComputingAnimation() {
+                document.getElementById('computingAnimation').style.display = 'block';
+                document.getElementById('executeBtn').classList.add('computing');
+                document.getElementById('executeBtn').textContent = '🔄 COMPUTING...';
+                document.getElementById('executeBtn').disabled = true;
+                
+                document.getElementById('chartStatus').innerHTML = 
+                    '<span class="drawing-indicator">🔄 Drawing trajectory...</span>';
+            }
+
+            updateComputingProgress(step, total) {
+                document.getElementById('computingStep').textContent = step;
+                document.getElementById('totalSteps').textContent = total;
+            }
+
+            endComputingAnimation() {
+                document.getElementById('computingAnimation').style.display = 'none';
+                document.getElementById('executeBtn').classList.remove('computing');
+                document.getElementById('executeBtn').textContent = '🚀 EXECUTE MISSION';
+                
+                document.getElementById('chartStatus').textContent = 
+                    'Trajectory analysis complete';
+            }
+
+            showFloatingText(text, type) {
+                const floatingText = document.createElement('div');
+                floatingText.className = `floating-text ${type}`;
+                floatingText.textContent = text;
+                floatingText.style.left = Math.random() * 200 + 200 + 'px';
+                floatingText.style.top = Math.random() * 100 + 100 + 'px';
+                
+                document.body.appendChild(floatingText);
+                
+                setTimeout(() => {
+                    if (floatingText.parentNode) {
+                        floatingText.parentNode.removeChild(floatingText);
+                    }
+                }, 2000);
+            }
+
+            endGame(victory) {
+                const screen = document.getElementById('gameOverScreen');
+                const stats = document.getElementById('finalStats');
+                
+                const title = victory ? '🏆 UNIVERSE SAVED!' : '💀 EXPEDITION FAILED';
+                const message = victory ? 'You have mastered all numerical arts!' : 'The mathematical universe remains in chaos...';
+                
+                stats.innerHTML = `
+                    <h3 style="color: ${victory ? '#4caf50' : '#f44336'}; margin-bottom: 15px; font-size: 14px;">${title}</h3>
+                    <p style="margin-bottom: 15px; font-size: 8px;">${message}</p>
+                    <div style="text-align: left; font-size: 8px;">
+                        <div>💰 Final Credits: $${this.gameState.money}</div>
+                        <div>🏆 Total Score: ${this.gameState.score}</div>
+                        <div>🎯 Max Level: ${this.gameState.level}</div>
+                        <div>📊 Best Accuracy: ${(this.gameState.accuracy * 100).toFixed(1)}%</div>
+                        <div>🚀 Missions Completed: ${this.gameState.missionCount}</div>
+                        <div>📈 Success Rate: ${this.gameState.totalMissions > 0 ? ((this.gameState.missionCount / this.gameState.totalMissions) * 100).toFixed(1) : 0}%</div>
+                    </div>
+                `;
+                
+                screen.style.display = 'flex';
+            }
+
+            restartGame() {
+                this.gameState = new GameState();
+                document.getElementById('gameOverScreen').style.display = 'none';
+                document.getElementById('resultsPanel').style.display = 'none';
+                document.getElementById('nextMissionBtn').style.display = 'none';
+                document.getElementById('executeBtn').disabled = false;
+                
+                this.generateNewMission();
+                this.updateDisplay();
+                if (this.chartRenderer) {
+                    this.chartRenderer.clearChart();
+                }
+            }
+        }
+
+        // ============ GLOBAL FUNCTIONS ============
+        let gameController = null;
+
+        function executeMission() {
+            if (gameController) {
+                gameController.executeMission();
+            }
+        }
+
+        function nextMission() {
+            if (gameController) {
+                gameController.nextMission();
+            }
+        }
+
+        function toggleResults() {
+            if (!gameController) return;
+            
+            const content = document.getElementById('resultsContent');
+            const icon = document.getElementById('collapseIcon');
+            
+            gameController.gameState.resultsCollapsed = !gameController.gameState.resultsCollapsed;
+            
+            if (gameController.gameState.resultsCollapsed) {
+                content.classList.add('collapsed');
+                icon.classList.add('collapsed');
+                icon.textContent = '▶';
+            } else {
+                content.classList.remove('collapsed');
+                icon.classList.remove('collapsed');
+                icon.textContent = '▼';
+            }
+        }
+
+        function restartGame() {
+            if (gameController) {
+                gameController.restartGame();
+            }
+        }
+
+        // ============ INITIALIZATION ============
+        function initializeGame() {
+            try {
+                gameController = new GameController();
+            } catch (error) {
+                console.error('Game initialization failed:', error);
+            }
+        }
+
+        window.addEventListener('load', initializeGame);
+    </script>
+</body>
+</html>
