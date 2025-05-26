@@ -1,0 +1,2360 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Math Challenge Game</title>
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700&family=Inter:wght@300;400;600;700&family=Fira+Code:wght@400;500&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary-bg: #0a0a0f;
+            --secondary-bg: #1a1a2e;
+            --tertiary-bg: #16213e;
+            --accent-blue: #00d4ff;
+            --accent-purple: #7c3aed;
+            --accent-gold: #fbbf24;
+            --accent-green: #10b981;
+            --accent-red: #ef4444;
+            --text-primary: #f8fafc;
+            --text-secondary: #cbd5e1;
+            --text-muted: #64748b;
+            --border-color: #334155;
+            --success: #22c55e;
+            --error: #ef4444;
+            --warning: #f59e0b;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: linear-gradient(135deg, var(--primary-bg) 0%, #0f172a 100%);
+            color: var(--text-primary);
+            height: 100vh;
+            padding: 0.5rem;
+            overflow: hidden;
+            position: relative;
+        }
+
+        /* Animated background particles */
+        .background-particles {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: -1;
+        }
+
+        .particle {
+            position: absolute;
+            width: 2px;
+            height: 2px;
+            background: var(--accent-blue);
+            border-radius: 50%;
+            opacity: 0.3;
+            animation: float 6s infinite ease-in-out;
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0px) rotate(0deg); opacity: 0.3; }
+            50% { transform: translateY(-20px) rotate(180deg); opacity: 0.8; }
+        }
+
+        .game-container {
+            max-width: 1400px;
+            margin: 0 auto;
+            height: 100vh;
+            display: grid;
+            grid-template-columns: 1fr 300px;
+            gap: 1rem;
+            padding: 0.5rem;
+        }
+
+        /* Main Game Area */
+        .main-game {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+        }
+
+        /* Stats Bar */
+        .stats-bar {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 0.75rem;
+        }
+
+        .stat-card {
+            background: linear-gradient(135deg, var(--secondary-bg), var(--tertiary-bg));
+            border-radius: 0.75rem;
+            padding: 1rem;
+            border: 1px solid var(--border-color);
+            text-align: center;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .stat-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 2px;
+            background: linear-gradient(90deg, var(--accent-blue), var(--accent-purple));
+            transform: scaleX(0);
+            transition: transform 0.3s ease;
+        }
+
+        .stat-card:hover::before {
+            transform: scaleX(1);
+        }
+
+        .stat-card:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+        }
+
+        .stat-label {
+            font-size: 0.75rem;
+            color: var(--text-muted);
+            margin-bottom: 0.25rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .stat-value {
+            font-size: 1.25rem;
+            font-weight: 700;
+            color: var(--accent-gold);
+        }
+
+        .hearts {
+            font-size: 1rem;
+            filter: drop-shadow(0 0 8px rgba(239, 68, 68, 0.6));
+        }
+
+        .heart {
+            display: inline-block;
+            animation-fill-mode: both;
+        }
+
+        .heart.pop {
+            animation: heartPop 0.6s ease-out;
+        }
+
+        @keyframes heartPop {
+            0% { transform: scale(0); opacity: 0; }
+            50% { transform: scale(1.3); opacity: 0.8; }
+            100% { transform: scale(1); opacity: 1; }
+        }
+
+        /* Game Area */
+        .game-area {
+            background: linear-gradient(135deg, var(--secondary-bg), var(--tertiary-bg));
+            border-radius: 1rem;
+            padding: 1.5rem;
+            border: 1px solid var(--border-color);
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .game-title {
+            text-align: center;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 1.5rem;
+            font-weight: 700;
+            background: linear-gradient(135deg, var(--accent-blue), var(--accent-purple));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin: 0;
+            text-shadow: 0 0 20px rgba(0, 212, 255, 0.3);
+        }
+
+        .title-row {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 1rem;
+            margin-bottom: 1rem;
+        }
+
+        .help-btn {
+            background: linear-gradient(135deg, var(--accent-gold), var(--warning));
+            color: var(--primary-bg);
+            border: none;
+            border-radius: 50%;
+            width: 35px;
+            height: 35px;
+            cursor: pointer;
+            font-size: 1rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s ease;
+            box-shadow: 0 2px 8px rgba(251, 191, 36, 0.3);
+        }
+
+        .help-btn:hover {
+            transform: scale(1.1);
+            box-shadow: 0 4px 15px rgba(251, 191, 36, 0.5);
+        }
+
+        .question-text {
+            text-align: center;
+            font-size: 0.9rem;
+            color: var(--text-secondary);
+            margin-bottom: 1.5rem;
+            font-weight: 300;
+        }
+
+        /* Expression Container */
+        .expressions-container {
+            display: grid;
+            grid-template-columns: 1fr auto 1fr;
+            gap: 1rem;
+            align-items: center;
+            margin-bottom: 1.5rem;
+            flex: 1;
+        }
+
+        .vs-text {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 1.2rem;
+            font-weight: 700;
+            color: var(--accent-gold);
+            text-align: center;
+            padding: 0.75rem;
+            background: linear-gradient(135deg, rgba(251, 191, 36, 0.1), rgba(251, 191, 36, 0.05));
+            border-radius: 0.75rem;
+            border: 1px solid rgba(251, 191, 36, 0.3);
+            text-shadow: 0 0 15px rgba(251, 191, 36, 0.5);
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); opacity: 0.8; }
+            50% { transform: scale(1.05); opacity: 1; }
+        }
+
+        /* Expression Buttons */
+        .expression-btn {
+            font-family: 'Fira Code', monospace;
+            font-size: 1rem;
+            background: linear-gradient(135deg, var(--tertiary-bg), var(--secondary-bg));
+            color: var(--text-primary);
+            border: 2px solid var(--border-color);
+            border-radius: 1rem;
+            padding: 1.5rem 1rem;
+            cursor: pointer;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            min-height: 100px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            line-height: 1.5;
+            position: relative;
+            overflow: hidden;
+            backdrop-filter: blur(10px);
+        }
+
+        .expression-btn::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(135deg, rgba(0, 212, 255, 0.1), rgba(124, 58, 237, 0.1));
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+
+        .expression-btn:hover:not(.disabled)::before {
+            opacity: 1;
+        }
+
+        .expression-btn:hover:not(.disabled) {
+            transform: translateY(-2px) scale(1.02);
+            border-color: var(--accent-blue);
+            box-shadow: 0 8px 25px rgba(0, 212, 255, 0.3);
+        }
+
+        .expression-btn:active:not(.disabled) {
+            transform: translateY(-1px) scale(1.01);
+        }
+
+        .expression-btn.disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            filter: grayscale(1);
+        }
+
+        .expression-btn.tool-hint-larger {
+            border-color: var(--success);
+            background: linear-gradient(135deg, rgba(34, 197, 94, 0.2), rgba(34, 197, 94, 0.1));
+        }
+
+        .expression-btn.tool-hint-smaller {
+            border-color: var(--error);
+            background: linear-gradient(135deg, rgba(239, 68, 68, 0.2), rgba(239, 68, 68, 0.1));
+        }
+
+        .expression-btn.tool-hint-equal {
+            border-color: var(--warning);
+            background: linear-gradient(135deg, rgba(245, 158, 11, 0.2), rgba(245, 158, 11, 0.1));
+        }
+
+        /* Enhanced Math Rendering */
+        .math-expression {
+            display: inline-block;
+            font-family: 'Fira Code', monospace;
+            font-size: 1rem;
+            line-height: 1.4;
+        }
+
+        .math-fraction {
+            display: inline-flex;
+            flex-direction: column;
+            align-items: center;
+            margin: 0 0.2em;
+            vertical-align: middle;
+        }
+
+        .math-numerator, .math-denominator {
+            display: block;
+            padding: 0.1em 0.2em;
+        }
+
+        .math-denominator {
+            border-top: 2px solid currentColor;
+        }
+
+        .math-power {
+            font-size: 0.7em;
+            vertical-align: super;
+            margin-left: 0.1em;
+        }
+
+        .math-log-base {
+            font-size: 0.65em;
+            vertical-align: sub;
+            margin-right: 0.1em;
+        }
+
+        .math-root-index {
+            font-size: 0.6em;
+            vertical-align: super;
+            margin-right: -0.2em;
+            position: relative;
+            top: -0.4em;
+            left: 0.1em;
+        }
+
+        .math-sqrt-symbol {
+            font-size: 1.2em;
+            vertical-align: middle;
+            margin-right: 0.1em;
+        }
+
+        .math-sum-symbol {
+            font-size: 1.4em;
+            vertical-align: middle;
+            margin-right: 0.15em;
+        }
+
+        .math-sum-limits {
+            display: inline-flex;
+            flex-direction: column;
+            font-size: 0.6em;
+            vertical-align: middle;
+            text-align: center;
+            margin-left: -0.25em;
+        }
+
+        .math-parentheses {
+            font-size: 1.1em;
+            margin: 0 0.1em;
+            vertical-align: middle;
+        }
+
+        .math-brackets {
+            font-size: 1.2em;
+            margin: 0 0.1em;
+            vertical-align: middle;
+            font-weight: bold;
+        }
+
+        /* Feedback Area */
+        .feedback-area {
+            min-height: 60px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            margin-bottom: 1rem;
+            border-radius: 0.75rem;
+            background: linear-gradient(135deg, rgba(255, 255, 255, 0.05), rgba(255, 255, 255, 0.02));
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            padding: 0.75rem;
+        }
+
+        .feedback-text {
+            font-size: 1rem;
+            font-weight: 600;
+            text-align: center;
+            margin-bottom: 0.25rem;
+            transition: all 0.3s ease;
+        }
+
+        .feedback-text.correct {
+            color: var(--success);
+            text-shadow: 0 0 15px rgba(34, 197, 94, 0.5);
+            animation: bounceIn 0.6s ease;
+        }
+
+        .feedback-text.incorrect {
+            color: var(--error);
+            text-shadow: 0 0 15px rgba(239, 68, 68, 0.5);
+            animation: shake 0.6s ease;
+        }
+
+        .feedback-text.game-over {
+            color: var(--warning);
+            font-family: 'JetBrains Mono', monospace;
+            text-shadow: 0 0 15px rgba(245, 158, 11, 0.5);
+            animation: zoomIn 0.8s ease;
+        }
+
+        @keyframes bounceIn {
+            0% { transform: scale(0.3); opacity: 0; }
+            50% { transform: scale(1.05); }
+            70% { transform: scale(0.9); }
+            100% { transform: scale(1); opacity: 1; }
+        }
+
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            10%, 30%, 50%, 70%, 90% { transform: translateX(-8px); }
+            20%, 40%, 60%, 80% { transform: translateX(8px); }
+        }
+
+        @keyframes zoomIn {
+            0% { transform: scale(0); opacity: 0; }
+            100% { transform: scale(1); opacity: 1; }
+        }
+
+        .correct-answer-display {
+            font-size: 0.8rem;
+            color: var(--text-muted);
+            text-align: center;
+            line-height: 1.3;
+            font-family: 'Fira Code', monospace;
+        }
+
+        .tool-feedback-area {
+            min-height: 30px;
+            font-size: 0.8rem;
+            color: var(--accent-blue);
+            text-align: center;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 0.75rem;
+        }
+
+        /* Control Buttons */
+        .controls {
+            display: flex;
+            gap: 0.75rem;
+            justify-content: center;
+        }
+
+        .control-btn {
+            font-family: 'Inter', sans-serif;
+            font-weight: 600;
+            background: linear-gradient(135deg, var(--accent-purple), var(--accent-blue));
+            color: white;
+            border: none;
+            padding: 0.75rem 1.5rem;
+            border-radius: 0.75rem;
+            cursor: pointer;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            font-size: 0.9rem;
+            box-shadow: 0 3px 10px rgba(124, 58, 237, 0.3);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .control-btn::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+            transition: left 0.5s ease;
+        }
+
+        .control-btn:hover::before {
+            left: 100%;
+        }
+
+        .control-btn:hover:not(:disabled) {
+            transform: translateY(-1px);
+            box-shadow: 0 5px 15px rgba(124, 58, 237, 0.4);
+        }
+
+        .control-btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .start-game-btn {
+            background: linear-gradient(135deg, var(--success), var(--accent-blue));
+            box-shadow: 0 3px 10px rgba(34, 197, 94, 0.3);
+        }
+
+        /* Tool System Sidebar */
+        .tool-sidebar {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+        }
+
+        .restart-section {
+            display: flex;
+            justify-content: center;
+        }
+
+        .restart-btn {
+            font-family: 'Inter', sans-serif;
+            font-weight: 500;
+            background: linear-gradient(135deg, rgba(100, 116, 139, 0.6), rgba(100, 116, 139, 0.4));
+            color: var(--text-secondary);
+            border: 1px solid rgba(100, 116, 139, 0.5);
+            padding: 0.5rem 1rem;
+            border-radius: 0.5rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-size: 0.8rem;
+            opacity: 0.6;
+            backdrop-filter: blur(5px);
+        }
+
+        .restart-btn:hover {
+            opacity: 1;
+            background: linear-gradient(135deg, var(--accent-red), #dc2626);
+            border-color: var(--accent-red);
+            color: white;
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(239, 68, 68, 0.3);
+        }
+
+        .tool-section {
+            background: linear-gradient(135deg, var(--secondary-bg), var(--tertiary-bg));
+            border-radius: 1rem;
+            padding: 1rem;
+            border: 1px solid var(--border-color);
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+        }
+
+        .tool-section h3 {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.9rem;
+            color: var(--accent-gold);
+            margin-bottom: 0.75rem;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .tool-section h3::before {
+            content: '';
+            width: 3px;
+            height: 15px;
+            background: linear-gradient(180deg, var(--accent-gold), var(--accent-blue));
+            border-radius: 2px;
+        }
+
+        .tool-belt {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+            min-height: 180px;
+            padding: 0.75rem;
+            background: linear-gradient(135deg, rgba(255, 255, 255, 0.05), rgba(255, 255, 255, 0.02));
+            border-radius: 0.75rem;
+            border: 2px dashed var(--border-color);
+        }
+
+        .tool-slot, .potential-tool-item {
+            font-family: 'Fira Code', monospace;
+            font-size: 0.8rem;
+            background: linear-gradient(135deg, var(--tertiary-bg), var(--secondary-bg));
+            color: var(--text-secondary);
+            border: 1px solid var(--border-color);
+            padding: 0.75rem;
+            border-radius: 0.5rem;
+            transition: all 0.3s ease;
+            min-height: 40px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            line-height: 1.3;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .tool-slot {
+            cursor: pointer;
+        }
+
+        .tool-slot:hover:not(.empty-slot) {
+            background: linear-gradient(135deg, var(--accent-blue), var(--accent-purple));
+            color: white;
+            transform: translateY(-1px);
+            box-shadow: 0 4px 15px rgba(0, 212, 255, 0.3);
+        }
+
+        .tool-slot.empty-slot {
+            background: linear-gradient(135deg, rgba(100, 116, 139, 0.2), rgba(100, 116, 139, 0.1));
+            border-style: dashed;
+            color: var(--text-muted);
+            font-style: italic;
+        }
+
+        .tool-slot.drag-over-active {
+            border-color: var(--accent-gold);
+            box-shadow: 0 0 15px rgba(251, 191, 36, 0.4);
+            background: linear-gradient(135deg, rgba(251, 191, 36, 0.2), rgba(251, 191, 36, 0.1));
+        }
+
+        .potential-tools-display {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+
+        .potential-tool-item {
+            cursor: grab;
+            border: 1px solid var(--accent-blue);
+            background: linear-gradient(135deg, rgba(0, 212, 255, 0.1), rgba(0, 212, 255, 0.05));
+        }
+
+        .potential-tool-item:hover {
+            background: linear-gradient(135deg, var(--accent-blue), var(--accent-purple));
+            color: white;
+            transform: translateY(-1px);
+            box-shadow: 0 4px 15px rgba(0, 212, 255, 0.3);
+        }
+
+        .potential-tool-item:active {
+            cursor: grabbing;
+        }
+
+        /* Responsive Design */
+        @media (max-width: 1024px) {
+            .game-container {
+                grid-template-columns: 1fr;
+                grid-template-rows: 1fr auto;
+                height: 100vh;
+            }
+
+            .tool-sidebar {
+                max-height: 200px;
+                overflow-y: auto;
+            }
+
+            .restart-section {
+                order: -1; /* Move restart button to top on mobile */
+                margin-bottom: 0.5rem;
+            }
+
+            .tool-belt {
+                flex-direction: row;
+                flex-wrap: wrap;
+                min-height: auto;
+            }
+
+            .potential-tools-display {
+                flex-direction: row;
+                flex-wrap: wrap;
+            }
+        }
+
+        @media (max-width: 768px) {
+            body {
+                padding: 0.25rem;
+            }
+
+            .game-container {
+                padding: 0.25rem;
+                gap: 0.5rem;
+            }
+
+            .expressions-container {
+                grid-template-columns: 1fr;
+                gap: 0.75rem;
+            }
+
+            .vs-text {
+                order: -1;
+                font-size: 1rem;
+                padding: 0.5rem;
+            }
+
+            .expression-btn {
+                padding: 1rem;
+                min-height: 80px;
+                font-size: 0.9rem;
+            }
+
+            .controls {
+                flex-direction: column;
+                align-items: center;
+                gap: 0.5rem;
+                min-height: 40px; /* Reserve space even when button is hidden */
+            }
+
+            .control-btn {
+                width: 100%;
+                max-width: 200px;
+                padding: 0.75rem 1rem;
+                font-size: 0.85rem;
+            }
+
+            .stats-bar {
+                grid-template-columns: repeat(2, 1fr);
+                gap: 0.5rem;
+            }
+
+            .stat-card {
+                padding: 0.75rem;
+            }
+
+            .stat-value {
+                font-size: 1.1rem;
+            }
+
+            .game-area {
+                padding: 1rem;
+            }
+
+            .game-title {
+                font-size: 1.2rem;
+                margin-bottom: 0.75rem;
+            }
+
+            .question-text {
+                font-size: 0.85rem;
+                margin-bottom: 1rem;
+            }
+
+            .tool-section {
+                padding: 0.75rem;
+            }
+
+            .tool-section h3 {
+                font-size: 0.8rem;
+                margin-bottom: 0.5rem;
+            }
+
+            .tool-belt {
+                padding: 0.5rem;
+                gap: 0.25rem;
+            }
+
+            .tool-slot, .potential-tool-item {
+                font-size: 0.7rem;
+                padding: 0.5rem;
+                min-height: 35px;
+            }
+
+            .feedback-area {
+                min-height: 50px;
+                padding: 0.5rem;
+                margin-bottom: 0.75rem;
+            }
+
+            .feedback-text {
+                font-size: 0.9rem;
+            }
+
+            .correct-answer-display {
+                font-size: 0.7rem;
+            }
+
+            .tool-feedback-area {
+                font-size: 0.75rem;
+                min-height: 25px;
+                margin-bottom: 0.5rem;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .stats-bar {
+                grid-template-columns: 1fr 1fr;
+            }
+
+            .stat-label {
+                font-size: 0.65rem;
+            }
+
+            .stat-value {
+                font-size: 1rem;
+            }
+
+            .expression-btn {
+                min-height: 70px;
+                padding: 0.75rem 0.5rem;
+                font-size: 0.8rem;
+            }
+
+            .game-title {
+                font-size: 1rem;
+            }
+
+            .vs-text {
+                font-size: 0.9rem;
+                padding: 0.4rem;
+            }
+
+            .tool-belt {
+                min-height: 120px;
+            }
+
+            .tool-slot, .potential-tool-item {
+                font-size: 0.65rem;
+                padding: 0.4rem;
+                min-height: 30px;
+                min-width: 80px;
+            }
+
+            .control-btn {
+                font-size: 0.8rem;
+                padding: 0.6rem 0.8rem;
+            }
+
+            .restart-btn {
+                font-size: 0.7rem;
+                padding: 0.4rem 0.8rem;
+            }
+        }
+
+        /* Help Modal */
+        .help-modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.8);
+            backdrop-filter: blur(5px);
+            z-index: 1000;
+            overflow-y: auto;
+            padding: 1rem;
+        }
+
+        .help-modal.show {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .help-content {
+            background: linear-gradient(135deg, var(--secondary-bg), var(--tertiary-bg));
+            border-radius: 1rem;
+            max-width: 800px;
+            width: 100%;
+            max-height: 90vh;
+            overflow-y: auto;
+            border: 1px solid var(--border-color);
+            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.5);
+        }
+
+        .help-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1.5rem;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .help-header h2 {
+            margin: 0;
+            color: var(--accent-gold);
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 1.5rem;
+        }
+
+        .close-btn {
+            background: none;
+            border: none;
+            color: var(--text-muted);
+            font-size: 1.5rem;
+            cursor: pointer;
+            padding: 0.5rem;
+            border-radius: 50%;
+            transition: all 0.3s ease;
+        }
+
+        .close-btn:hover {
+            background: var(--accent-red);
+            color: white;
+        }
+
+        .help-body {
+            padding: 1.5rem;
+        }
+
+        .symbol-section {
+            margin-bottom: 2rem;
+        }
+
+        .symbol-section h3 {
+            color: var(--accent-blue);
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 1.1rem;
+            margin-bottom: 1rem;
+            border-bottom: 2px solid var(--accent-blue);
+            padding-bottom: 0.5rem;
+        }
+
+        .symbol-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1rem;
+        }
+
+        .symbol-item {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            padding: 0.75rem;
+            background: linear-gradient(135deg, rgba(255, 255, 255, 0.05), rgba(255, 255, 255, 0.02));
+            border-radius: 0.5rem;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .symbol {
+            font-family: 'Fira Code', monospace;
+            font-size: 1.2rem;
+            color: var(--accent-gold);
+            font-weight: bold;
+            min-width: 40px;
+            text-align: center;
+        }
+
+        .definition {
+            font-size: 0.9rem;
+            color: var(--text-secondary);
+            flex: 1;
+        }
+
+        .definition a {
+            color: var(--accent-blue);
+            text-decoration: none;
+            margin-left: 0.5rem;
+            font-size: 0.8rem;
+        }
+
+        .definition a:hover {
+            color: var(--accent-purple);
+        }
+
+        @media (max-width: 768px) {
+            .help-content {
+                margin: 0.5rem;
+                max-height: 95vh;
+            }
+
+            .symbol-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .help-header h2 {
+                font-size: 1.2rem;
+            }
+
+            .title-row {
+                gap: 0.5rem;
+            }
+
+            .help-btn {
+                width: 30px;
+                height: 30px;
+                font-size: 0.9rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="background-particles" id="particles"></div>
+    
+    <div class="game-container">
+        <div class="main-game">
+            <div class="stats-bar">
+                <div class="stat-card">
+                    <div class="stat-label">Level</div>
+                    <div class="stat-value" id="level-display">0</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-label">Score</div>
+                    <div class="stat-value" id="score-display">0</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-label">Streak</div>
+                    <div class="stat-value" id="correct-streak-display">0</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-label">Lives</div>
+                    <div class="stat-value" id="life-points-display">
+                        <span class="hearts">❤️❤️❤️</span>
+                    </div>
+                </div>
+            </div>
+
+            <main class="game-area">
+                <div class="title-row">
+                    <h1 class="game-title">∞ Math Challenge ∞</h1>
+                    <button class="help-btn" id="help-btn">❓</button>
+                </div>
+                <p class="question-text">Which expression has the larger value?</p>
+                
+                <div class="expressions-container">
+                    <button id="expression-a-btn" class="expression-btn"></button>
+                    <div class="vs-text">VS</div>
+                    <button id="expression-b-btn" class="expression-btn"></button>
+                </div>
+
+                <div class="feedback-area">
+                    <div class="feedback-text" id="feedback-text">Click "Start Game" to begin!</div>
+                    <div class="correct-answer-display" id="correct-answer-display"></div>
+                </div>
+                
+                <div class="tool-feedback-area" id="tool-feedback-area"></div>
+
+                <div class="controls">
+                    <button id="next-question-btn" class="control-btn">Continue</button>
+                    <button id="start-game-btn" class="control-btn start-game-btn">Start Game</button>
+                </div>
+            </main>
+        </div>
+
+        <div class="tool-sidebar">
+            <div class="restart-section">
+                <button id="restart-btn" class="restart-btn" style="display: none;">🔄 Restart Game</button>
+            </div>
+            
+            <div class="tool-section">
+                <h3>🛠️ Tool Belt</h3>
+                <div class="tool-belt" id="tool-belt"></div>
+            </div>
+            
+            <div class="tool-section">
+                <h3>🎯 Available Tools</h3>
+                <div class="potential-tools-display" id="potential-tools-display"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Help Modal -->
+    <div class="help-modal" id="help-modal">
+        <div class="help-content">
+            <div class="help-header">
+                <h2>📚 Mathematical Symbols Guide</h2>
+                <button class="close-btn" id="close-help">✕</button>
+            </div>
+            <div class="help-body">
+                <div class="symbol-section">
+                    <h3>Basic Symbols (Level 0-1)</h3>
+                    <div class="symbol-grid">
+                        <div class="symbol-item">
+                            <span class="symbol">π</span>
+                            <span class="definition">Pi ≈ 3.14159... <a href="https://en.wikipedia.org/wiki/Pi" target="_blank">📖</a></span>
+                        </div>
+                        <div class="symbol-item">
+                            <span class="symbol">e</span>
+                            <span class="definition">Euler's number ≈ 2.71828... <a href="https://en.wikipedia.org/wiki/E_(mathematical_constant)" target="_blank">📖</a></span>
+                        </div>
+                        <div class="symbol-item">
+                            <span class="symbol">φ</span>
+                            <span class="definition">Golden ratio ≈ 1.618... <a href="https://en.wikipedia.org/wiki/Golden_ratio" target="_blank">📖</a></span>
+                        </div>
+                        <div class="symbol-item">
+                            <span class="symbol">γ</span>
+                            <span class="definition">Euler-Mascheroni constant ≈ 0.577... <a href="https://en.wikipedia.org/wiki/Euler%E2%80%93Mascheroni_constant" target="_blank">📖</a></span>
+                        </div>
+                        <div class="symbol-item">
+                            <span class="symbol">ln(x)</span>
+                            <span class="definition">Natural logarithm <a href="https://en.wikipedia.org/wiki/Natural_logarithm" target="_blank">📖</a></span>
+                        </div>
+                        <div class="symbol-item">
+                            <span class="symbol">√x</span>
+                            <span class="definition">Square root <a href="https://en.wikipedia.org/wiki/Square_root" target="_blank">📖</a></span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="symbol-section">
+                    <h3>Advanced Functions (Level 2-3)</h3>
+                    <div class="symbol-grid">
+                        <div class="symbol-item">
+                            <span class="symbol">sinh(x)</span>
+                            <span class="definition">Hyperbolic sine <a href="https://en.wikipedia.org/wiki/Hyperbolic_functions" target="_blank">📖</a></span>
+                        </div>
+                        <div class="symbol-item">
+                            <span class="symbol">arcsin(x)</span>
+                            <span class="definition">Inverse sine function <a href="https://en.wikipedia.org/wiki/Inverse_trigonometric_functions" target="_blank">📖</a></span>
+                        </div>
+                        <div class="symbol-item">
+                            <span class="symbol">K</span>
+                            <span class="definition">Catalan's constant ≈ 0.916... <a href="https://en.wikipedia.org/wiki/Catalan%27s_constant" target="_blank">📖</a></span>
+                        </div>
+                        <div class="symbol-item">
+                            <span class="symbol">ρ</span>
+                            <span class="definition">Plastic number ≈ 1.325... <a href="https://en.wikipedia.org/wiki/Plastic_number" target="_blank">📖</a></span>
+                        </div>
+                        <div class="symbol-item">
+                            <span class="symbol">x mod y</span>
+                            <span class="definition">Modular arithmetic <a href="https://en.wikipedia.org/wiki/Modular_arithmetic" target="_blank">📖</a></span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="symbol-section">
+                    <h3>Special Functions (Level 4-5)</h3>
+                    <div class="symbol-grid">
+                        <div class="symbol-item">
+                            <span class="symbol">ζ(s)</span>
+                            <span class="definition">Riemann zeta function <a href="https://en.wikipedia.org/wiki/Riemann_zeta_function" target="_blank">📖</a></span>
+                        </div>
+                        <div class="symbol-item">
+                            <span class="symbol">Γ(x)</span>
+                            <span class="definition">Gamma function <a href="https://en.wikipedia.org/wiki/Gamma_function" target="_blank">📖</a></span>
+                        </div>
+                        <div class="symbol-item">
+                            <span class="symbol">C(n,k)</span>
+                            <span class="definition">Binomial coefficient <a href="https://en.wikipedia.org/wiki/Binomial_coefficient" target="_blank">📖</a></span>
+                        </div>
+                        <div class="symbol-item">
+                            <span class="symbol">φ(n)</span>
+                            <span class="definition">Euler's totient function <a href="https://en.wikipedia.org/wiki/Euler%27s_totient_function" target="_blank">📖</a></span>
+                        </div>
+                        <div class="symbol-item">
+                            <span class="symbol">K(k)</span>
+                            <span class="definition">Complete elliptic integral <a href="https://en.wikipedia.org/wiki/Elliptic_integral" target="_blank">📖</a></span>
+                        </div>
+                        <div class="symbol-item">
+                            <span class="symbol">ϑ₃(0)</span>
+                            <span class="definition">Jacobi theta function <a href="https://en.wikipedia.org/wiki/Theta_function" target="_blank">📖</a></span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="symbol-section">
+                    <h3>Graduate Level (Level 6-7)</h3>
+                    <div class="symbol-grid">
+                        <div class="symbol-item">
+                            <span class="symbol">π(x)</span>
+                            <span class="definition">Prime counting function <a href="https://en.wikipedia.org/wiki/Prime_counting_function" target="_blank">📖</a></span>
+                        </div>
+                        <div class="symbol-item">
+                            <span class="symbol">α</span>
+                            <span class="definition">Fine structure constant ≈ 1/137 <a href="https://en.wikipedia.org/wiki/Fine-structure_constant" target="_blank">📖</a></span>
+                        </div>
+                        <div class="symbol-item">
+                            <span class="symbol">F(1)</span>
+                            <span class="definition">Fourier transform normalization <a href="https://en.wikipedia.org/wiki/Fourier_transform" target="_blank">📖</a></span>
+                        </div>
+                        <div class="symbol-item">
+                            <span class="symbol">χ(S²)</span>
+                            <span class="definition">Euler characteristic of sphere <a href="https://en.wikipedia.org/wiki/Euler_characteristic" target="_blank">📖</a></span>
+                        </div>
+                        <div class="symbol-item">
+                            <span class="symbol">|S₃|</span>
+                            <span class="definition">Order of symmetric group <a href="https://en.wikipedia.org/wiki/Symmetric_group" target="_blank">📖</a></span>
+                        </div>
+                        <div class="symbol-item">
+                            <span class="symbol">μ(n)</span>
+                            <span class="definition">Möbius function <a href="https://en.wikipedia.org/wiki/M%C3%B6bius_function" target="_blank">📖</a></span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="symbol-section">
+                    <h3>Legendary Symbols (Level 8+)</h3>
+                    <div class="symbol-grid">
+                        <div class="symbol-item">
+                            <span class="symbol">B(x,y)</span>
+                            <span class="definition">Beta function <a href="https://en.wikipedia.org/wiki/Beta_function" target="_blank">📖</a></span>
+                        </div>
+                        <div class="symbol-item">
+                            <span class="symbol">Li₂(x)</span>
+                            <span class="definition">Dilogarithm function <a href="https://en.wikipedia.org/wiki/Polylogarithm" target="_blank">📖</a></span>
+                        </div>
+                        <div class="symbol-item">
+                            <span class="symbol">erf(x)</span>
+                            <span class="definition">Error function <a href="https://en.wikipedia.org/wiki/Error_function" target="_blank">📖</a></span>
+                        </div>
+                        <div class="symbol-item">
+                            <span class="symbol">J₀(x)</span>
+                            <span class="definition">Bessel function <a href="https://en.wikipedia.org/wiki/Bessel_function" target="_blank">📖</a></span>
+                        </div>
+                        <div class="symbol-item">
+                            <span class="symbol">Re(z)</span>
+                            <span class="definition">Real part of complex number <a href="https://en.wikipedia.org/wiki/Complex_number" target="_blank">📖</a></span>
+                        </div>
+                        <div class="symbol-item">
+                            <span class="symbol">arg(z)</span>
+                            <span class="definition">Argument of complex number <a href="https://en.wikipedia.org/wiki/Argument_(complex_analysis)" target="_blank">📖</a></span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="symbol-section">
+                    <h3>Operations</h3>
+                    <div class="symbol-grid">
+                        <div class="symbol-item">
+                            <span class="symbol">∑</span>
+                            <span class="definition">Summation <a href="https://en.wikipedia.org/wiki/Summation" target="_blank">📖</a></span>
+                        </div>
+                        <div class="symbol-item">
+                            <span class="symbol">n!</span>
+                            <span class="definition">Factorial <a href="https://en.wikipedia.org/wiki/Factorial" target="_blank">📖</a></span>
+                        </div>
+                        <div class="symbol-item">
+                            <span class="symbol">logₐ(x)</span>
+                            <span class="definition">Logarithm base a <a href="https://en.wikipedia.org/wiki/Logarithm" target="_blank">📖</a></span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            // Create animated background particles
+            function createParticles() {
+                const particleContainer = document.getElementById('particles');
+                for (let i = 0; i < 30; i++) {
+                    const particle = document.createElement('div');
+                    particle.className = 'particle';
+                    particle.style.left = Math.random() * 100 + '%';
+                    particle.style.top = Math.random() * 100 + '%';
+                    particle.style.animationDelay = Math.random() * 6 + 's';
+                    particle.style.animationDuration = (Math.random() * 3 + 3) + 's';
+                    particleContainer.appendChild(particle);
+                }
+            }
+            createParticles();
+
+            // DOM Elements
+            const levelDisplay = document.getElementById('level-display');
+            const scoreDisplay = document.getElementById('score-display');
+            const correctStreakDisplay = document.getElementById('correct-streak-display');
+            const lifePointsDisplay = document.getElementById('life-points-display');
+            const expressionABtn = document.getElementById('expression-a-btn');
+            const expressionBBtn = document.getElementById('expression-b-btn');
+            const feedbackText = document.getElementById('feedback-text');
+            const correctAnswerDisplay = document.getElementById('correct-answer-display');
+            const nextQuestionBtn = document.getElementById('next-question-btn');
+            const startGameBtn = document.getElementById('start-game-btn');
+            const restartBtn = document.getElementById('restart-btn');
+            const toolFeedbackArea = document.getElementById('tool-feedback-area');
+            const toolBeltDiv = document.getElementById('tool-belt');
+            const potentialToolsDisplayDiv = document.getElementById('potential-tools-display');
+            const helpBtn = document.getElementById('help-btn');
+            const helpModal = document.getElementById('help-modal');
+            const closeHelpBtn = document.getElementById('close-help');
+
+            // Game State
+            let currentLevel = 0;
+            let score = 0;
+            let correctStreak = 0;
+            let lifePoints = 0;
+            let expressionA = { displayHTML: "", value: 0 };
+            let expressionB = { displayHTML: "", value: 0 };
+            let correctAnswer = '';
+            let gameActive = false;
+
+            const CORRECT_ANSWERS_TO_LEVEL_UP = [3, 4, 5, 6, 7, 8, 9, 10, 12, 15]; // Increasing difficulty
+            const MAX_LIFE_POINTS = 3;
+            const EPSILON = 1e-10;
+
+            let equippedTools = [];
+            const MAX_TOOLS = 3;
+            let activeToolIndex = -1;
+            let potentialTools = [];
+
+            // --- Utility Functions ---
+            function getRandomInt(min, max) { 
+                return Math.floor(Math.random() * (max - min + 1)) + min; 
+            }
+            
+            function getRandomFloat(min, max, decimals = 3) { 
+                const factor = Math.pow(10, decimals); 
+                return Math.round((Math.random() * (max - min) + min) * factor) / factor; 
+            }
+            
+            function getRandomElement(arr) { 
+                return arr[Math.floor(Math.random() * arr.length)]; 
+            }
+
+            function formatDisplayNumber(n) {
+                if (Number.isInteger(n)) return n.toString();
+                return parseFloat(n.toFixed(3)).toString();
+            }
+
+            // --- Enhanced Math Expression Generation ---
+            function generateAdvancedTerm(difficulty = 0) {
+                const basicCategories = [
+                    'transcendental', 'algebraic', 'trigonometric', 'logarithmic', 
+                    'exponential', 'factorial', 'summation'
+                ];
+                
+                const advancedCategories = [
+                    'special', 'combinatorial', 'number_theory', 'hyperbolic',
+                    'inverse_trig', 'advanced_constants', 'modular'
+                ];
+                
+                const expertCategories = [
+                    'beta_gamma', 'error_functions', 'bessel', 'polylog', 'distributions',
+                    'elliptic', 'theta_functions', 'zeta_variants', 'primes'
+                ];
+                
+                const graduateCategories = [
+                    'quantum_constants', 'fourier_analysis', 'topology', 'group_theory',
+                    'advanced_number_theory', 'statistical_mechanics', 'complex_analysis',
+                    'algebraic_geometry', 'differential_geometry'
+                ];
+                
+                let categories = [...basicCategories];
+                if (difficulty > 0) categories.push(...advancedCategories);
+                if (difficulty > 1) categories.push(...expertCategories);
+                if (difficulty > 2) categories.push(...graduateCategories);
+                
+                const category = getRandomElement(categories);
+                let displayHTML = "";
+                let val = 0;
+
+                switch (category) {
+                    case 'transcendental':
+                        const transcendentals = [
+                            { html: "e", value: Math.E },
+                            { html: "π", value: Math.PI },
+                            { html: "φ", value: (1 + Math.sqrt(5)) / 2 }, // Golden ratio
+                            { html: "γ", value: 0.5772156649 }, // Euler-Mascheroni constant
+                            { html: "δ", value: 4.669201609 }, // Feigenbaum delta
+                            { html: "α", value: 2.502907875 }, // Feigenbaum alpha
+                        ];
+                        const trans = getRandomElement(transcendentals);
+                        
+                        if (Math.random() < 0.6) {
+                            const power = getRandomElement([2, 3, 0.5, -1, 1/3, 2/3]);
+                            if (power === 0.5) {
+                                displayHTML = `<span class="math-sqrt-symbol">√</span><span class="math-parentheses">(</span>${trans.html}<span class="math-parentheses">)</span>`;
+                                val = Math.sqrt(trans.value);
+                            } else if (power === 1/3) {
+                                displayHTML = `<span class="math-root-index">3</span><span class="math-sqrt-symbol">√</span><span class="math-parentheses">(</span>${trans.html}<span class="math-parentheses">)</span>`;
+                                val = Math.cbrt(trans.value);
+                            } else if (power === -1) {
+                                displayHTML = `<span class="math-fraction"><span class="math-numerator">1</span><span class="math-denominator">${trans.html}</span></span>`;
+                                val = 1 / trans.value;
+                            } else {
+                                displayHTML = `${trans.html}<span class="math-power">${formatDisplayNumber(power)}</span>`;
+                                val = Math.pow(trans.value, power);
+                            }
+                        } else {
+                            displayHTML = trans.html;
+                            val = trans.value;
+                        }
+                        break;
+
+                    case 'hyperbolic':
+                        const args = [0.5, 1, 1.5, 2, Math.PI/4, Math.PI/2];
+                        const arg = getRandomElement(args);
+                        const argDisplay = args.indexOf(arg) > 3 ? (arg === Math.PI/4 ? "π/4" : "π/2") : arg.toString();
+                        const hFunc = getRandomElement(['sinh', 'cosh', 'tanh']);
+                        
+                        displayHTML = `${hFunc}<span class="math-parentheses">(</span>${argDisplay}<span class="math-parentheses">)</span>`;
+                        switch (hFunc) {
+                            case 'sinh': val = Math.sinh(arg); break;
+                            case 'cosh': val = Math.cosh(arg); break;
+                            case 'tanh': val = Math.tanh(arg); break;
+                        }
+                        break;
+
+                    case 'inverse_trig':
+                        const invArgs = [0, 0.5, 1/Math.sqrt(2), Math.sqrt(3)/2, 1];
+                        const invArg = getRandomElement(invArgs);
+                        const invArgDisplay = invArgs.indexOf(invArg) === 2 ? "1/√2" : 
+                                              invArgs.indexOf(invArg) === 3 ? "√3/2" : invArg.toString();
+                        const invFunc = getRandomElement(['arcsin', 'arccos', 'arctan']);
+                        
+                        displayHTML = `${invFunc}<span class="math-parentheses">(</span>${invArgDisplay}<span class="math-parentheses">)</span>`;
+                        switch (invFunc) {
+                            case 'arcsin': val = Math.asin(invArg); break;
+                            case 'arccos': val = Math.acos(invArg); break;
+                            case 'arctan': val = Math.atan(invArg); break;
+                        }
+                        break;
+
+                    case 'advanced_constants':
+                        const advConstants = [
+                            { html: "K", value: 0.9159655942 }, // Catalan's constant
+                            { html: "ρ", value: 1.3247179572 }, // Plastic number
+                            { html: "λ", value: 1.3035772690 }, // Conway's constant
+                            { html: "μ", value: 1.4513692349 }, // Ramanujan-Soldner constant
+                            { html: "Ω", value: 0.5671432904 }, // Omega constant
+                            { html: "A", value: 1.2824271291 }, // Glaisher-Kinkelin constant
+                            { html: "B", value: 1.9021605823 }, // Brun's constant (twin primes)
+                        ];
+                        const advConst = getRandomElement(advConstants);
+                        displayHTML = advConst.html;
+                        val = advConst.value;
+                        break;
+
+                    case 'modular':
+                        const modValues = [
+                            { html: "7 mod 3", value: 1 },
+                            { html: "13 mod 5", value: 3 },
+                            { html: "17 mod 7", value: 3 },
+                            { html: "23 mod 11", value: 1 },
+                            { html: "29 mod 13", value: 3 },
+                        ];
+                        const modVal = getRandomElement(modValues);
+                        displayHTML = modVal.html;
+                        val = modVal.value;
+                        break;
+
+                    case 'elliptic':
+                        const ellipticFuncs = [
+                            { html: "K<span class='math-parentheses'>(</span>1/2<span class='math-parentheses'>)</span>", value: 1.6857503549 }, // Complete elliptic integral
+                            { html: "E<span class='math-parentheses'>(</span>1/2<span class='math-parentheses'>)</span>", value: 1.4674622093 }, // Complete elliptic integral 2nd kind
+                            { html: "K<span class='math-parentheses'>(</span>√2/2<span class='math-parentheses'>)</span>", value: 1.8541019662 },
+                        ];
+                        const elliptic = getRandomElement(ellipticFuncs);
+                        displayHTML = elliptic.html;
+                        val = elliptic.value;
+                        break;
+
+                    case 'theta_functions':
+                        const thetaFuncs = [
+                            { html: "ϑ<span class='math-log-base'>3</span><span class='math-parentheses'>(</span>0<span class='math-parentheses'>)</span>", value: 1.9168284915 },
+                            { html: "ϑ<span class='math-log-base'>4</span><span class='math-parentheses'>(</span>0<span class='math-parentheses'>)</span>", value: 0.9189385332 },
+                        ];
+                        const theta = getRandomElement(thetaFuncs);
+                        displayHTML = theta.html;
+                        val = theta.value;
+                        break;
+
+                    case 'zeta_variants':
+                        const zetaVariants = [
+                            { html: "ζ<span class='math-parentheses'>(</span>3<span class='math-parentheses'>)</span>", value: 1.2020569032 }, // Apéry's constant
+                            { html: "ζ<span class='math-parentheses'>(</span>4<span class='math-parentheses'>)</span>", value: Math.PI**4 / 90 },
+                            { html: "ζ<span class='math-parentheses'>(</span>6<span class='math-parentheses'>)</span>", value: Math.PI**6 / 945 },
+                            { html: "L<span class='math-parentheses'>(</span>2<span class='math-parentheses'>)</span>", value: Math.PI**2 / 12 }, // Dirichlet eta
+                            { html: "η<span class='math-parentheses'>(</span>2<span class='math-parentheses'>)</span>", value: Math.PI**2 / 12 }, // Dirichlet eta
+                        ];
+                        const zetaVar = getRandomElement(zetaVariants);
+                        displayHTML = zetaVar.html;
+                        val = zetaVar.value;
+                        break;
+
+                    case 'primes':
+                        const primeFuncs = [
+                            { html: "π<span class='math-parentheses'>(</span>10<span class='math-parentheses'>)</span>", value: 4 }, // Prime counting function
+                            { html: "π<span class='math-parentheses'>(</span>20<span class='math-parentheses'>)</span>", value: 8 },
+                            { html: "π<span class='math-parentheses'>(</span>30<span class='math-parentheses'>)</span>", value: 10 },
+                            { html: "p<span class='math-log-base'>5</span>", value: 11 }, // 5th prime
+                            { html: "p<span class='math-log-base'>7</span>", value: 17 }, // 7th prime
+                        ];
+                        const primeFunc = getRandomElement(primeFuncs);
+                        displayHTML = primeFunc.html;
+                        val = primeFunc.value;
+                        break;
+
+                    case 'quantum_constants':
+                        const quantumConsts = [
+                            { html: "ℏ/k<span class='math-log-base'>B</span>", value: 7.6382e-12 }, // Reduced Planck / Boltzmann (scaled)
+                            { html: "α", value: 1/137.036 }, // Fine structure constant
+                            { html: "g<span class='math-log-base'>s</span>", value: 2.0023 }, // Electron g-factor (approx)
+                            { html: "R<span class='math-log-base'>∞</span>", value: 1.0973e7 }, // Rydberg constant (scaled)
+                        ];
+                        const quantum = getRandomElement(quantumConsts);
+                        displayHTML = quantum.html;
+                        val = quantum.value;
+                        break;
+
+                    case 'fourier_analysis':
+                        const fourierConsts = [
+                            { html: "F<span class='math-parentheses'>(</span>1<span class='math-parentheses'>)</span>", value: Math.sqrt(2/Math.PI) }, // Fourier transform normalization
+                            { html: "D<span class='math-log-base'>4</span>", value: Math.PI / (2 * Math.sqrt(2)) }, // Dirichlet kernel
+                            { html: "W<span class='math-parentheses'>(</span>π<span class='math-parentheses'>)</span>", value: 2/Math.PI }, // Weierstrass function value
+                        ];
+                        const fourier = getRandomElement(fourierConsts);
+                        displayHTML = fourier.html;
+                        val = fourier.value;
+                        break;
+
+                    case 'topology':
+                        const topoConsts = [
+                            { html: "χ<span class='math-parentheses'>(</span>S²<span class='math-parentheses'>)</span>", value: 2 }, // Euler characteristic of sphere
+                            { html: "χ<span class='math-parentheses'>(</span>T²<span class='math-parentheses'>)</span>", value: 0 }, // Euler characteristic of torus
+                            { html: "χ<span class='math-parentheses'>(</span>P²<span class='math-parentheses'>)</span>", value: 1 }, // Euler characteristic of projective plane
+                        ];
+                        const topo = getRandomElement(topoConsts);
+                        displayHTML = topo.html;
+                        val = topo.value;
+                        break;
+
+                    case 'group_theory':
+                        const groupConsts = [
+                            { html: "|S<span class='math-log-base'>3</span>|", value: 6 }, // Order of symmetric group
+                            { html: "|A<span class='math-log-base'>4</span>|", value: 12 }, // Order of alternating group
+                            { html: "|D<span class='math-log-base'>4</span>|", value: 8 }, // Order of dihedral group
+                            { html: "|GL<span class='math-log-base'>2</span>(ℤ₃)|", value: 48 }, // Order of general linear group
+                        ];
+                        const group = getRandomElement(groupConsts);
+                        displayHTML = group.html;
+                        val = group.value;
+                        break;
+
+                    case 'advanced_number_theory':
+                        const advNT = [
+                            { html: "μ<span class='math-parentheses'>(</span>6<span class='math-parentheses'>)</span>", value: 1 }, // Möbius function
+                            { html: "μ<span class='math-parentheses'>(</span>12<span class='math-parentheses'>)</span>", value: 0 },
+                            { html: "τ<span class='math-parentheses'>(</span>12<span class='math-parentheses'>)</span>", value: 6 }, // Divisor function
+                            { html: "σ<span class='math-parentheses'>(</span>6<span class='math-parentheses'>)</span>", value: 12 }, // Sum of divisors
+                            { html: "ω<span class='math-parentheses'>(</span>12<span class='math-parentheses'>)</span>", value: 2 }, // Number of distinct prime factors
+                        ];
+                        const advNTFunc = getRandomElement(advNT);
+                        displayHTML = advNTFunc.html;
+                        val = advNTFunc.value;
+                        break;
+
+                    case 'complex_analysis':
+                        const complexFuncs = [
+                            { html: "Re<span class='math-parentheses'>(</span>e^{iπ/4}<span class='math-parentheses'>)</span>", value: Math.cos(Math.PI/4) },
+                            { html: "Im<span class='math-parentheses'>(</span>e^{iπ/3}<span class='math-parentheses'>)</span>", value: Math.sin(Math.PI/3) },
+                            { html: "|1+i|", value: Math.sqrt(2) },
+                            { html: "arg<span class='math-parentheses'>(</span>-1<span class='math-parentheses'>)</span>", value: Math.PI },
+                        ];
+                        const complexFunc = getRandomElement(complexFuncs);
+                        displayHTML = complexFunc.html;
+                        val = complexFunc.value;
+                        break;
+
+                    // Keep existing cases but fall through to basic ones
+                    case 'algebraic':
+                        const algBase = getRandomInt(2, 12);
+                        const exponent = getRandomElement([2, 3, 4, 5, 0.5, 1/3, 2/3, 3/2]);
+                        
+                        if (exponent === 0.5) {
+                            displayHTML = `<span class="math-sqrt-symbol">√</span>${algBase}`;
+                            val = Math.sqrt(algBase);
+                        } else if (exponent === 1/3) {
+                            displayHTML = `<span class="math-root-index">3</span><span class="math-sqrt-symbol">√</span>${algBase}`;
+                            val = Math.cbrt(algBase);
+                        } else if (exponent === 2/3) {
+                            displayHTML = `<span class="math-parentheses">(</span><span class="math-root-index">3</span><span class="math-sqrt-symbol">√</span>${algBase}<span class="math-parentheses">)</span><span class="math-power">2</span>`;
+                            val = Math.pow(Math.cbrt(algBase), 2);
+                        } else {
+                            displayHTML = `${algBase}<span class="math-power">${formatDisplayNumber(exponent)}</span>`;
+                            val = Math.pow(algBase, exponent);
+                        }
+                        break;
+
+                    case 'trigonometric':
+                        const angles = {
+                            "0": 0, "π/12": Math.PI/12, "π/8": Math.PI/8, "π/6": Math.PI/6, 
+                            "π/5": Math.PI/5, "π/4": Math.PI/4, "π/3": Math.PI/3,
+                            "3π/8": 3*Math.PI/8, "2π/5": 2*Math.PI/5, "π/2": Math.PI/2, 
+                            "3π/5": 3*Math.PI/5, "2π/3": 2*Math.PI/3, "3π/4": 3*Math.PI/4,
+                            "4π/5": 4*Math.PI/5, "5π/6": 5*Math.PI/6, "π": Math.PI
+                        };
+                        const angleKey = getRandomElement(Object.keys(angles));
+                        const angle = angles[angleKey];
+                        const func = getRandomElement(['sin', 'cos', 'tan', 'sec', 'csc', 'cot']);
+                        
+                        displayHTML = `${func}<span class="math-parentheses">(</span>${angleKey}<span class="math-parentheses">)</span>`;
+                        
+                        switch (func) {
+                            case 'sin': val = Math.sin(angle); break;
+                            case 'cos': val = Math.cos(angle); break;
+                            case 'tan': 
+                                val = Math.tan(angle);
+                                if (Math.abs(val) > 100 || !isFinite(val)) {
+                                    displayHTML = `sin<span class="math-parentheses">(</span>${angleKey}<span class="math-parentheses">)</span>`;
+                                    val = Math.sin(angle);
+                                }
+                                break;
+                            case 'sec': 
+                                if (Math.abs(Math.cos(angle)) > 0.001) {
+                                    val = 1/Math.cos(angle);
+                                } else {
+                                    displayHTML = `cos<span class="math-parentheses">(</span>${angleKey}<span class="math-parentheses">)</span>`;
+                                    val = Math.cos(angle);
+                                }
+                                break;
+                            case 'csc':
+                                if (Math.abs(Math.sin(angle)) > 0.001) {
+                                    val = 1/Math.sin(angle);
+                                } else {
+                                    displayHTML = `sin<span class="math-parentheses">(</span>${angleKey}<span class="math-parentheses">)</span>`;
+                                    val = Math.sin(angle);
+                                }
+                                break;
+                            case 'cot':
+                                if (Math.abs(Math.sin(angle)) > 0.001) {
+                                    val = Math.cos(angle)/Math.sin(angle);
+                                } else {
+                                    displayHTML = `cos<span class="math-parentheses">(</span>${angleKey}<span class="math-parentheses">)</span>`;
+                                    val = Math.cos(angle);
+                                }
+                                break;
+                        }
+                        break;
+
+                    // Keep other existing cases...
+                    case 'logarithmic':
+                        const logArg = getRandomInt(2, 50);
+                        const logBases = [2, 3, 5, 10, Math.E];
+                        const logBase = getRandomElement(logBases);
+                        
+                        if (logBase === Math.E) {
+                            displayHTML = `ln<span class="math-parentheses">(</span>${logArg}<span class="math-parentheses">)</span>`;
+                            val = Math.log(logArg);
+                        } else {
+                            const baseDisplay = logBase === Math.E ? "e" : logBase.toString();
+                            displayHTML = `log<span class="math-log-base">${baseDisplay}</span><span class="math-parentheses">(</span>${logArg}<span class="math-parentheses">)</span>`;
+                            val = Math.log(logArg) / Math.log(logBase);
+                        }
+                        break;
+
+                    case 'exponential':
+                        const expBase = getRandomElement([2, 3, Math.E, Math.PI, Math.sqrt(2)]);
+                        const expPower = getRandomFloat(0.3, 4, 2);
+                        let expBaseDisplay;
+                        if (expBase === Math.E) expBaseDisplay = "e";
+                        else if (expBase === Math.PI) expBaseDisplay = "π";
+                        else if (expBase === Math.sqrt(2)) expBaseDisplay = "√2";
+                        else expBaseDisplay = expBase.toString();
+                        
+                        displayHTML = `${expBaseDisplay}<span class="math-power">${formatDisplayNumber(expPower)}</span>`;
+                        val = Math.pow(expBase, expPower);
+                        break;
+
+                    case 'factorial':
+                        const n = getRandomInt(3, 8);
+                        val = 1;
+                        for (let i = 2; i <= n; i++) val *= i;
+                        displayHTML = `${n}!`;
+                        break;
+
+                    case 'summation':
+                        const limit = getRandomInt(4, 8);
+                        const sumType = getRandomElement(['linear', 'quadratic', 'harmonic', 'cubic', 'alternating']);
+                        val = 0;
+                        
+                        switch (sumType) {
+                            case 'linear':
+                                for (let i = 1; i <= limit; i++) val += i;
+                                displayHTML = `<span class="math-sum-symbol">∑</span><span class="math-sum-limits"><span class="math-sum-upper">${limit}</span><span class="math-sum-lower">k=1</span></span>k`;
+                                break;
+                            case 'quadratic':
+                                for (let i = 1; i <= limit; i++) val += i * i;
+                                displayHTML = `<span class="math-sum-symbol">∑</span><span class="math-sum-limits"><span class="math-sum-upper">${limit}</span><span class="math-sum-lower">k=1</span></span>k<span class="math-power">2</span>`;
+                                break;
+                            case 'cubic':
+                                for (let i = 1; i <= limit; i++) val += i * i * i;
+                                displayHTML = `<span class="math-sum-symbol">∑</span><span class="math-sum-limits"><span class="math-sum-upper">${limit}</span><span class="math-sum-lower">k=1</span></span>k<span class="math-power">3</span>`;
+                                break;
+                            case 'harmonic':
+                                for (let i = 1; i <= limit; i++) val += 1 / i;
+                                displayHTML = `<span class="math-sum-symbol">∑</span><span class="math-sum-limits"><span class="math-sum-upper">${limit}</span><span class="math-sum-lower">k=1</span></span><span class="math-fraction"><span class="math-numerator">1</span><span class="math-denominator">k</span></span>`;
+                                break;
+                            case 'alternating':
+                                for (let i = 1; i <= limit; i++) val += Math.pow(-1, i+1) / i;
+                                displayHTML = `<span class="math-sum-symbol">∑</span><span class="math-sum-limits"><span class="math-sum-upper">${limit}</span><span class="math-sum-lower">k=1</span></span><span class="math-fraction"><span class="math-numerator">(-1)^{k+1}</span><span class="math-denominator">k</span></span>`;
+                                break;
+                        }
+                        break;
+
+                    // Keep all existing cases and add fallback
+                    default:
+                        // Fallback to basic transcendental
+                        displayHTML = "e";
+                        val = Math.E;
+                }
+
+                if (isNaN(val) || !isFinite(val) || val <= 0) {
+                    return generateAdvancedTerm(Math.max(0, difficulty - 1));
+                }
+
+                return { 
+                    displayHTML: `<span class="math-expression">${displayHTML}</span>`, 
+                    value: val 
+                };
+            }
+
+            // --- Advanced Comparison Pairs ---
+            const challengingComparisons = [
+                {
+                    a: { displayHTML: "<span class='math-expression'>e<span class='math-power'>π</span></span>", value: Math.pow(Math.E, Math.PI) },
+                    b: { displayHTML: "<span class='math-expression'>π<span class='math-power'>e</span></span>", value: Math.pow(Math.PI, Math.E) }
+                },
+                {
+                    a: { displayHTML: "<span class='math-expression'>ln<span class='math-parentheses'>(</span>π<span class='math-parentheses'>)</span></span>", value: Math.log(Math.PI) },
+                    b: { displayHTML: "<span class='math-expression'><span class='math-fraction'><span class='math-numerator'>π</span><span class='math-denominator'>e</span></span></span>", value: Math.PI / Math.E }
+                },
+                {
+                    a: { displayHTML: "<span class='math-expression'><span class='math-parentheses'>(</span><span class='math-sqrt-symbol'>√</span>2<span class='math-parentheses'>)</span><span class='math-power'><span class='math-sqrt-symbol'>√</span>3</span></span>", value: Math.pow(Math.sqrt(2), Math.sqrt(3)) },
+                    b: { displayHTML: "<span class='math-expression'><span class='math-parentheses'>(</span><span class='math-sqrt-symbol'>√</span>3<span class='math-parentheses'>)</span><span class='math-power'><span class='math-sqrt-symbol'>√</span>2</span></span>", value: Math.pow(Math.sqrt(3), Math.sqrt(2)) }
+                },
+                {
+                    a: { displayHTML: "<span class='math-expression'>sin<span class='math-parentheses'>(</span>e<span class='math-parentheses'>)</span></span>", value: Math.sin(Math.E) },
+                    b: { displayHTML: "<span class='math-expression'>cos<span class='math-parentheses'>(</span>π - e<span class='math-parentheses'>)</span></span>", value: Math.cos(Math.PI - Math.E) }
+                },
+                {
+                    a: { displayHTML: "<span class='math-expression'>φ<span class='math-power'>2</span></span>", value: Math.pow((1 + Math.sqrt(5)) / 2, 2) },
+                    b: { displayHTML: "<span class='math-expression'>φ + 1</span>", value: (1 + Math.sqrt(5)) / 2 + 1 }
+                }
+            ];
+
+            // --- Question Generation with Cherry Picking ---
+            function generateQuestion(level) {
+                // Use cherry picking for levels 3+
+                if (level >= 3) {
+                    return generateCherryPickedQuestion(level);
+                }
+                
+                // Simple generation for early levels
+                return generateBasicQuestion(level);
+            }
+
+            function generateCherryPickedQuestion(level) {
+                const sampleSize = Math.min(20 + level * 5, 100); // More samples at higher levels
+                const candidates = [];
+                
+                // Map game level to difficulty
+                const difficulty = Math.min(Math.floor(level / 2), 4);
+                
+                // Generate many candidate pairs
+                for (let i = 0; i < sampleSize; i++) {
+                    let termA, termB;
+                    let attempts = 0;
+                    
+                    do {
+                        attempts++;
+                        if (attempts > 20) break;
+                        
+                        if (level < 6) {
+                            termA = generateAdvancedTerm(difficulty);
+                            termB = generateAdvancedTerm(difficulty);
+                        } else if (level < 8) {
+                            // Complex compound expressions
+                            termA = generateCompoundExpression(
+                                generateAdvancedTerm(difficulty), 
+                                generateAdvancedTerm(difficulty), 
+                                getRandomElement(['+', '-', '×', '/'])
+                            );
+                            termB = generateCompoundExpression(
+                                generateAdvancedTerm(difficulty), 
+                                generateAdvancedTerm(difficulty), 
+                                getRandomElement(['+', '-', '×', '/'])
+                            );
+                        } else {
+                            // Graduate level: multi-layered expressions
+                            termA = generateGraduateExpression(difficulty);
+                            termB = generateGraduateExpression(difficulty);
+                        }
+                        
+                        if (Math.random() < 0.5) [termA, termB] = [termB, termA];
+                        
+                    } while (isNaN(termA.value) || isNaN(termB.value) || 
+                             !isFinite(termA.value) || !isFinite(termB.value) || 
+                             Math.abs(termA.value - termB.value) < EPSILON);
+                    
+                    if (termA && termB && isFinite(termA.value) && isFinite(termB.value)) {
+                        const diff = Math.abs(termA.value - termB.value);
+                        const ratio = Math.max(termA.value, termB.value) / Math.min(termA.value, termB.value);
+                        
+                        // Score based on how close they are (lower score = harder)
+                        const score = diff + (ratio - 1) * 0.1;
+                        
+                        candidates.push({
+                            termA, termB, score, diff, ratio
+                        });
+                    }
+                }
+                
+                if (candidates.length === 0) {
+                    return generateBasicQuestion(level);
+                }
+                
+                // Sort by difficulty (smallest differences first)
+                candidates.sort((a, b) => a.score - b.score);
+                
+                // Pick from the hardest 20% of candidates
+                const hardestCount = Math.max(1, Math.floor(candidates.length * 0.2));
+                const chosen = candidates[getRandomInt(0, hardestCount - 1)];
+                
+                expressionA = chosen.termA;
+                expressionB = chosen.termB;
+                correctAnswer = (expressionA.value > expressionB.value) ? 'A' : 'B';
+            }
+
+            function generateGraduateExpression(difficulty) {
+                const complexOperations = [
+                    () => {
+                        // Nested compositions like ln(γ + π²)
+                        const inner = generateAdvancedTerm(difficulty);
+                        const outer = generateAdvancedTerm(difficulty);
+                        const op = getRandomElement(['+', '-', '×']);
+                        let value;
+                        switch(op) {
+                            case '+': value = Math.log(inner.value + outer.value); break;
+                            case '-': value = Math.log(Math.abs(inner.value - outer.value) + 0.1); break;
+                            case '×': value = Math.log(inner.value * outer.value); break;
+                        }
+                        return {
+                            displayHTML: `<span class="math-expression">ln<span class="math-parentheses">(</span>${inner.displayHTML} ${op} ${outer.displayHTML}<span class="math-parentheses">)</span></span>`,
+                            value: value
+                        };
+                    },
+                    () => {
+                        // Power towers like e^(ln(π))
+                        const base = generateAdvancedTerm(difficulty);
+                        const exp = generateAdvancedTerm(Math.max(0, difficulty - 1));
+                        const value = Math.pow(base.value, exp.value);
+                        return {
+                            displayHTML: `<span class="math-expression"><span class="math-parentheses">(</span>${base.displayHTML}<span class="math-parentheses">)</span><span class="math-power">${exp.displayHTML}</span></span>`,
+                            value: value
+                        };
+                    },
+                    () => {
+                        // Continued fractions approximation
+                        const a = generateAdvancedTerm(difficulty);
+                        const b = generateAdvancedTerm(difficulty);
+                        const c = generateAdvancedTerm(difficulty);
+                        const value = a.value / (b.value + c.value);
+                        return {
+                            displayHTML: `<span class="math-expression"><span class="math-fraction"><span class="math-numerator">${a.displayHTML}</span><span class="math-denominator">${b.displayHTML} + ${c.displayHTML}</span></span></span>`,
+                            value: value
+                        };
+                    }
+                ];
+                
+                return getRandomElement(complexOperations)();
+            }
+
+            function generateBasicQuestion(level) {
+                const difficulty = Math.min(level, 2);
+                let termA, termB;
+                let attempts = 0;
+                
+                do {
+                    attempts++;
+                    if (attempts > 50) {
+                        // Fallback
+                        const fallback = getRandomElement(challengingComparisons);
+                        termA = fallback.a;
+                        termB = fallback.b;
+                        break;
+                    }
+                    
+                    termA = generateAdvancedTerm(difficulty);
+                    termB = generateAdvancedTerm(difficulty);
+                    
+                    if (Math.random() < 0.5) [termA, termB] = [termB, termA];
+                    
+                } while (!termA || !termB || 
+                         isNaN(termA.value) || isNaN(termB.value) || 
+                         !isFinite(termA.value) || !isFinite(termB.value) || 
+                         Math.abs(termA.value - termB.value) < EPSILON);
+                
+                expressionA = termA;
+                expressionB = termB;
+                correctAnswer = (expressionA.value > expressionB.value) ? 'A' : 'B';
+            }
+
+            function createCompoundExpression(term1, term2, operator) {
+                let value, displayHTML;
+                const op = operator === '×' ? '⋅' : operator;
+                
+                switch (operator) {
+                    case '+':
+                        value = term1.value + term2.value;
+                        displayHTML = `<span class="math-expression"><span class="math-parentheses">(</span>${term1.displayHTML}<span class="math-parentheses">)</span> ${op} <span class="math-parentheses">(</span>${term2.displayHTML}<span class="math-parentheses">)</span></span>`;
+                        break;
+                    case '-':
+                        value = term1.value - term2.value;
+                        displayHTML = `<span class="math-expression"><span class="math-parentheses">(</span>${term1.displayHTML}<span class="math-parentheses">)</span> ${op} <span class="math-parentheses">(</span>${term2.displayHTML}<span class="math-parentheses">)</span></span>`;
+                        break;
+                    case '×':
+                        value = term1.value * term2.value;
+                        displayHTML = `<span class="math-expression"><span class="math-parentheses">(</span>${term1.displayHTML}<span class="math-parentheses">)</span> ${op} <span class="math-parentheses">(</span>${term2.displayHTML}<span class="math-parentheses">)</span></span>`;
+                        break;
+                    case '/':
+                        if (Math.abs(term2.value) > EPSILON) {
+                            value = term1.value / term2.value;
+                            displayHTML = `<span class="math-expression"><span class="math-fraction"><span class="math-numerator">${term1.displayHTML}</span><span class="math-denominator">${term2.displayHTML}</span></span></span>`;
+                        } else {
+                            // Fallback to multiplication if division by zero
+                            value = term1.value * term2.value;
+                            displayHTML = `<span class="math-expression"><span class="math-parentheses">(</span>${term1.displayHTML}<span class="math-parentheses">)</span> ⋅ <span class="math-parentheses">(</span>${term2.displayHTML}<span class="math-parentheses">)</span></span>`;
+                        }
+                        break;
+                    default:
+                        value = term1.value + term2.value;
+                        displayHTML = `<span class="math-expression"><span class="math-parentheses">(</span>${term1.displayHTML}<span class="math-parentheses">)</span> + <span class="math-parentheses">(</span>${term2.displayHTML}<span class="math-parentheses">)</span></span>`;
+                }
+
+                return { displayHTML, value };
+            }
+
+            // --- Tool System ---
+            function renderToolSlots() {
+                toolBeltDiv.innerHTML = '';
+                for (let i = 0; i < MAX_TOOLS; i++) {
+                    const toolSlot = document.createElement('div');
+                    toolSlot.classList.add('tool-slot');
+                    toolSlot.dataset.slotIndex = i;
+
+                    if (equippedTools[i]) {
+                        toolSlot.innerHTML = equippedTools[i].displayHTML;
+                        toolSlot.addEventListener('click', () => toggleToolActive(i));
+                    } else {
+                        toolSlot.innerHTML = `Slot ${i + 1}`;
+                        toolSlot.classList.add('empty-slot');
+                    }
+
+                    // Drag and drop events
+                    toolSlot.addEventListener('dragover', (e) => {
+                        e.preventDefault();
+                        toolSlot.classList.add('drag-over-active');
+                    });
+                    
+                    toolSlot.addEventListener('dragleave', () => {
+                        toolSlot.classList.remove('drag-over-active');
+                    });
+                    
+                    toolSlot.addEventListener('drop', (e) => {
+                        e.preventDefault();
+                        toolSlot.classList.remove('drag-over-active');
+                        try {
+                            const draggedToolData = JSON.parse(e.dataTransfer.getData("application/json"));
+                            if (draggedToolData && draggedToolData.displayHTML && typeof draggedToolData.value === 'number') {
+                                equipTool(draggedToolData, i);
+                            }
+                        } catch (error) {
+                            console.error("Error parsing dropped data:", error);
+                        }
+                    });
+
+                    toolBeltDiv.appendChild(toolSlot);
+                }
+            }
+
+            function renderPotentialTools() {
+                potentialToolsDisplayDiv.innerHTML = '';
+                
+                if (!gameActive && score === 0 && currentLevel === 0) {
+                    potentialToolsDisplayDiv.innerHTML = '<p style="font-size:0.8rem; color:var(--text-muted); font-style:italic;">Tools appear here after answering</p>';
+                    return;
+                }
+                
+                if (potentialTools.length === 0 && gameActive) {
+                    potentialToolsDisplayDiv.innerHTML = '<p style="font-size:0.8rem; color:var(--text-muted); font-style:italic;">Answer to unlock tools</p>';
+                    return;
+                }
+                
+                if (potentialTools.length === 0 && !gameActive && (score > 0 || currentLevel > 0)) {
+                    potentialToolsDisplayDiv.innerHTML = '<p style="font-size:0.8rem; color:var(--text-muted); font-style:italic;">Game Over</p>';
+                    return;
+                }
+
+                potentialTools.forEach(tool => {
+                    const toolItem = document.createElement('div');
+                    toolItem.classList.add('potential-tool-item');
+                    toolItem.innerHTML = tool.displayHTML;
+                    toolItem.draggable = true;
+                    
+                    toolItem.addEventListener('dragstart', (e) => {
+                        try {
+                            const toolJson = JSON.stringify({
+                                displayHTML: tool.displayHTML, 
+                                value: tool.value
+                            });
+                            e.dataTransfer.setData("application/json", toolJson);
+                            e.dataTransfer.effectAllowed = "move";
+                        } catch (error) {
+                            console.error("Error stringifying tool data:", error);
+                        }
+                    });
+                    
+                    potentialToolsDisplayDiv.appendChild(toolItem);
+                });
+            }
+
+            function equipTool(toolData, slotIndex) {
+                if (slotIndex !== undefined && slotIndex >= 0 && slotIndex < MAX_TOOLS) {
+                    equippedTools[slotIndex] = {
+                        displayHTML: toolData.displayHTML,
+                        value: toolData.value
+                    };
+                }
+
+                while (equippedTools.length > MAX_TOOLS) {
+                    equippedTools.shift();
+                }
+
+                toolFeedbackArea.innerHTML = "";
+                renderToolSlots();
+            }
+
+            function toggleToolActive(toolIndex) {
+                if (!equippedTools[toolIndex] || !gameActive) return;
+
+                const tool = equippedTools[toolIndex];
+                
+                // Clear any previous hints
+                expressionABtn.classList.remove('tool-hint-larger', 'tool-hint-smaller', 'tool-hint-equal');
+                expressionBBtn.classList.remove('tool-hint-larger', 'tool-hint-smaller', 'tool-hint-equal');
+
+                // Compare tool with both expressions and show hints immediately
+                let hintClassA = "";
+                let hintClassB = "";
+                let feedbackTextA = "";
+                let feedbackTextB = "";
+
+                // Compare with Expression A
+                if (Math.abs(tool.value - expressionA.value) < EPSILON) {
+                    hintClassA = 'tool-hint-equal';
+                    feedbackTextA = "A ≈ Tool";
+                } else if (tool.value > expressionA.value) {
+                    hintClassA = 'tool-hint-smaller'; // A is smaller than tool
+                    feedbackTextA = "A < Tool";
+                } else {
+                    hintClassA = 'tool-hint-larger'; // A is larger than tool
+                    feedbackTextA = "A > Tool";
+                }
+
+                // Compare with Expression B
+                if (Math.abs(tool.value - expressionB.value) < EPSILON) {
+                    hintClassB = 'tool-hint-equal';
+                    feedbackTextB = "B ≈ Tool";
+                } else if (tool.value > expressionB.value) {
+                    hintClassB = 'tool-hint-smaller'; // B is smaller than tool
+                    feedbackTextB = "B < Tool";
+                } else {
+                    hintClassB = 'tool-hint-larger'; // B is larger than tool
+                    feedbackTextB = "B > Tool";
+                }
+
+                // Apply hints
+                expressionABtn.classList.add(hintClassA);
+                expressionBBtn.classList.add(hintClassB);
+
+                // Show comparison feedback
+                toolFeedbackArea.innerHTML = `🔍 ${feedbackTextA}, ${feedbackTextB} (Tool: ${tool.value.toFixed(4)})`;
+
+                // Clear hints after 3 seconds
+                setTimeout(() => {
+                    expressionABtn.classList.remove('tool-hint-larger', 'tool-hint-smaller', 'tool-hint-equal');
+                    expressionBBtn.classList.remove('tool-hint-larger', 'tool-hint-smaller', 'tool-hint-equal');
+                    toolFeedbackArea.innerHTML = "";
+                }, 3000);
+
+                // Reset active tool
+                activeToolIndex = -1;
+                renderToolSlots();
+            }
+
+            function animateHeartRefill() {
+                // Add popping animation to the newly gained heart
+                setTimeout(() => {
+                    const heartSpans = lifePointsDisplay.querySelectorAll('.heart');
+                    if (heartSpans[lifePoints - 1]) {
+                        heartSpans[lifePoints - 1].classList.add('pop');
+                    }
+                }, 100);
+            }
+
+            function animateAllHearts() {
+                // Animate all hearts when game starts
+                const heartSpans = lifePointsDisplay.querySelectorAll('.heart');
+                heartSpans.forEach((heart, index) => {
+                    setTimeout(() => {
+                        heart.classList.add('pop');
+                    }, index * 200); // Stagger the animations
+                });
+            }
+
+            function updateStats() {
+                // Add difficulty indicator
+                let difficultyIcon = "";
+                if (currentLevel >= 8) difficultyIcon = " 🌟";
+                else if (currentLevel >= 6) difficultyIcon = " 🎓";
+                else if (currentLevel >= 3) difficultyIcon = " 🔥";
+                
+                levelDisplay.textContent = currentLevel + difficultyIcon;
+                scoreDisplay.textContent = score;
+                correctStreakDisplay.textContent = correctStreak;
+                
+                // Create individual heart spans for animation
+                let heartsHTML = '';
+                for (let i = 0; i < MAX_LIFE_POINTS; i++) {
+                    const heartIcon = i < lifePoints ? '❤️' : '🖤';
+                    heartsHTML += `<span class="heart">${heartIcon}</span>`;
+                }
+                lifePointsDisplay.innerHTML = `<span class="hearts">${heartsHTML}</span>`;
+            }
+
+            // --- Game Flow ---
+            // --- Game Flow ---
+            function displayQuestion() {
+                expressionABtn.innerHTML = expressionA.displayHTML;
+                expressionBBtn.innerHTML = expressionB.displayHTML;
+                feedbackText.textContent = "";
+                correctAnswerDisplay.textContent = "";
+
+                feedbackText.className = 'feedback-text';
+                expressionABtn.disabled = false;
+                expressionBBtn.disabled = false;
+                expressionABtn.classList.remove('disabled');
+                expressionBBtn.classList.remove('disabled');
+
+                // Clear any tool hints
+                expressionABtn.classList.remove('tool-hint-larger', 'tool-hint-smaller', 'tool-hint-equal');
+                expressionBBtn.classList.remove('tool-hint-larger', 'tool-hint-smaller', 'tool-hint-equal');
+                toolFeedbackArea.innerHTML = "";
+
+                // Hide Next Challenge button - it will only show for incorrect answers
+                nextQuestionBtn.style.display = 'none';
+                nextQuestionBtn.disabled = true;
+                
+                if (gameActive) {
+                    startGameBtn.style.display = 'none';
+                    restartBtn.style.display = 'inline-block';
+                } else {
+                    startGameBtn.style.display = 'inline-block';
+                    startGameBtn.disabled = true;
+                    restartBtn.style.display = 'none';
+                }
+            }
+
+            function handleAnswer(chosenKey) {
+                if (!gameActive) return;
+
+                expressionABtn.disabled = true;
+                expressionBBtn.disabled = true;
+                expressionABtn.classList.add('disabled');
+                expressionBBtn.classList.add('disabled');
+
+                // Set potential tools
+                potentialTools = [
+                    { displayHTML: expressionA.displayHTML, value: expressionA.value },
+                    { displayHTML: expressionB.displayHTML, value: expressionB.value }
+                ];
+                renderPotentialTools();
+
+                if (chosenKey === correctAnswer) {
+                    feedbackText.textContent = "🎉 Correct!";
+                    feedbackText.className = 'feedback-text correct';
+                    score++;
+                    correctStreak++;
+                    
+                    let autoAdvanceDelay = 1000; // Default delay
+                    
+                    // Dynamic level up requirements
+                    const requiredForLevelUp = CORRECT_ANSWERS_TO_LEVEL_UP[Math.min(currentLevel, CORRECT_ANSWERS_TO_LEVEL_UP.length - 1)];
+                    
+                    if (correctStreak >= requiredForLevelUp && currentLevel < 15) {
+                        currentLevel++;
+                        correctStreak = 0;
+                        // Refill 1 heart on level up (max 3)
+                        if (lifePoints < MAX_LIFE_POINTS) {
+                            lifePoints++;
+                            animateHeartRefill();
+                        }
+                        
+                        // Show level-specific feedback
+                        let levelMessage = ` Level ${currentLevel}!`;
+                        if (currentLevel === 3) levelMessage += " 🔥 Cherry-picking activated!";
+                        else if (currentLevel === 6) levelMessage += " 🎓 Graduate level unlocked!";
+                        else if (currentLevel === 8) levelMessage += " 🌟 Legendary functions!";
+                        else if (currentLevel >= 10) levelMessage += " 🚀 Extreme difficulty!";
+                        
+                        feedbackText.textContent += levelMessage;
+                        autoAdvanceDelay = 1500; // Longer delay for level up
+                    }
+                    
+                    updateStats();
+                    
+                    // Auto-advance to next question after showing success feedback
+                    setTimeout(() => {
+                        if (gameActive && lifePoints > 0) {
+                            const loadingText = currentLevel > 0 && autoAdvanceDelay === 1500 ? 
+                                "🎉 Level Up! Loading next..." : "🎉 Correct! Loading next...";
+                            feedbackText.textContent = loadingText;
+                            setTimeout(() => {
+                                nextQuestion();
+                            }, 300);
+                        }
+                    }, autoAdvanceDelay);
+                    
+                } else {
+                    feedbackText.textContent = "❌ Incorrect";
+                    feedbackText.className = 'feedback-text incorrect';
+                    correctStreak = 0;
+                    lifePoints--;
+                    
+                    const actualLargerDisplay = correctAnswer === 'A' ? expressionA.displayHTML : expressionB.displayHTML;
+                    const actualSmallerDisplay = correctAnswer === 'A' ? expressionB.displayHTML : expressionA.displayHTML;
+                    const valLarger = correctAnswer === 'A' ? expressionA.value : expressionB.value;
+                    const valSmaller = correctAnswer === 'A' ? expressionB.value : expressionA.value;
+                    
+                    correctAnswerDisplay.innerHTML = `${actualLargerDisplay} (${valLarger.toFixed(4)}) > ${actualSmallerDisplay} (${valSmaller.toFixed(4)})`;
+                    
+                    updateStats();
+                    
+                    if (lifePoints <= 0) {
+                        setTimeout(gameOver, 1000);
+                    } else {
+                        // Show Next Challenge button only for incorrect answers
+                        nextQuestionBtn.disabled = false;
+                        nextQuestionBtn.style.display = 'inline-block';
+                    }
+                }
+            }
+
+            function nextQuestion() {
+                if (!gameActive || lifePoints <= 0) {
+                    if (lifePoints <= 0 && gameActive) gameOver();
+                    return;
+                }
+                
+                // Hide the continue button
+                nextQuestionBtn.disabled = true;
+                nextQuestionBtn.style.display = 'none';
+                if (activeToolIndex === -1) toolFeedbackArea.innerHTML = "";
+                
+                generateQuestion(currentLevel);
+                displayQuestion();
+            }
+
+            function startGame() {
+                currentLevel = 0;
+                score = 0;
+                correctStreak = 0;
+                lifePoints = MAX_LIFE_POINTS;
+                gameActive = true;
+                equippedTools = [];
+                activeToolIndex = -1;
+                potentialTools = [];
+                
+                renderToolSlots();
+                renderPotentialTools();
+                
+                // Hide start button and show restart button
+                startGameBtn.style.display = 'none';
+                restartBtn.style.display = 'inline-block';
+                
+                feedbackText.className = 'feedback-text';
+                toolFeedbackArea.innerHTML = "";
+                
+                updateStats();
+                
+                // Animate hearts popping in
+                setTimeout(() => {
+                    animateAllHearts();
+                }, 200);
+                
+                nextQuestion();
+            }
+
+            function gameOver() {
+                gameActive = false;
+                feedbackText.textContent = "🎮 GAME OVER!";
+                feedbackText.className = 'feedback-text game-over';
+                correctAnswerDisplay.textContent = `Final Score: ${score} at Level ${currentLevel}`;
+                
+                expressionABtn.disabled = true;
+                expressionBBtn.disabled = true;
+                nextQuestionBtn.disabled = true;
+                
+                // Show start button and hide restart button
+                startGameBtn.style.display = 'inline-block';
+                startGameBtn.disabled = false;
+                startGameBtn.textContent = "Play Again";
+                restartBtn.style.display = 'none';
+                
+                potentialToolsDisplayDiv.innerHTML = '<p style="font-size:0.8rem; color:var(--text-muted); font-style:italic;">Game Over</p>';
+            }
+
+            // Event Listeners
+            expressionABtn.addEventListener('click', () => handleAnswer('A'));
+            expressionBBtn.addEventListener('click', () => handleAnswer('B'));
+            nextQuestionBtn.addEventListener('click', nextQuestion);
+            startGameBtn.addEventListener('click', startGame);
+            restartBtn.addEventListener('click', startGame);
+
+            // Help Modal
+            helpBtn.addEventListener('click', () => {
+                helpModal.classList.add('show');
+            });
+
+            closeHelpBtn.addEventListener('click', () => {
+                helpModal.classList.remove('show');
+            });
+
+            helpModal.addEventListener('click', (e) => {
+                if (e.target === helpModal) {
+                    helpModal.classList.remove('show');
+                }
+            });
+
+            // Close help modal with Escape key
+            document.addEventListener('keydown', (e) => {
+                if (e.key === 'Escape' && helpModal.classList.contains('show')) {
+                    helpModal.classList.remove('show');
+                }
+            });
+
+            // Initial Setup
+            expressionABtn.disabled = true;
+            expressionBBtn.disabled = true;
+            expressionABtn.classList.add('disabled');
+            expressionBBtn.classList.add('disabled');
+            nextQuestionBtn.style.display = 'none';
+            restartBtn.style.display = 'none';
+            
+            renderToolSlots();
+            renderPotentialTools();
+            updateStats();
+        });
+    </script>
+</body>
+</html>
