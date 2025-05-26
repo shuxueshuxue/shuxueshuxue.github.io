@@ -1,8 +1,10 @@
 <!DOCTYPE html>
-<html lang="en"> <head>
+<html lang="en">
+<head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>⚔️ Numcraft: Epic Battle Arena</title> <style>
+    <title>⚔️ Numcraft: Epic Battle Arena</title>
+    <style>
         @import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700&family=MedievalSharp&display=swap');
         
         :root {
@@ -51,14 +53,14 @@
             padding-top: 10px; 
         }
 
-        .lang-toggle-container {
+        .options-menu-container { /* Was lang-toggle-container */
             position: fixed;
             top: 10px;
             right: 20px;
-            z-index: 1000;
+            z-index: 1002; 
         }
 
-        .lang-toggle-btn {
+        .options-menu-btn { /* Was lang-toggle-btn */
             background-color: var(--color-gold-dark);
             color: var(--color-text-light);
             border: 1px solid var(--color-gold);
@@ -69,7 +71,7 @@
             cursor: pointer;
             transition: background-color 0.3s;
         }
-        .lang-toggle-btn:hover {
+        .options-menu-btn:hover {
             background-color: var(--color-gold);
             color: var(--color-bg-dark1);
         }
@@ -94,7 +96,7 @@
             text-align: center;
             font-size: 1.1rem; 
             color: var(--color-text-neutral);
-            margin-bottom: 25px; 
+            margin-bottom: 25px; /* Reverted to original margin, options button is top right */
             font-style: italic;
         }
         
@@ -122,13 +124,12 @@
             text-shadow: 2px 2px 4px rgba(0,0,0,0.7);
         }
 
-        /* Collapsible Settings */
         #gameSettings .phase-title {
             cursor: pointer;
             position: relative;
         }
         #gameSettings .phase-title::after {
-            content: ' ▼'; /* Down arrow for expandable */
+            content: ' ▼'; 
             font-size: 0.8em;
             position: absolute;
             right: 10px;
@@ -137,20 +138,20 @@
             transition: transform 0.3s ease;
         }
         #gameSettings.collapsed .phase-title::after {
-            transform: translateY(-50%) rotate(-90deg); /* Left arrow for collapsed */
+            transform: translateY(-50%) rotate(-90deg); 
         }
         .settings-content {
-            max-height: 500px; /* Or enough to show content */
+            max-height: 500px; 
             overflow: hidden;
             transition: max-height 0.5s ease-in-out, opacity 0.5s ease-in-out, padding 0.5s ease-in-out;
             opacity: 1;
-            padding-top: 10px; /* Add some space when expanded */
+            padding-top: 10px; 
         }
         #gameSettings.collapsed .settings-content {
             max-height: 0;
             opacity: 0;
             padding-top: 0;
-            margin-bottom: 0; /* Remove margin when collapsed */
+            margin-bottom: 0; 
         }
         
         #gameSettings input[type="number"] {
@@ -168,7 +169,7 @@
             margin-right: 5px;
             font-size: 0.9rem; 
         }
-        #gameSettings .settings-grid > div { /* Target direct children of settings-grid for label+input pairs */
+        #gameSettings .settings-grid > div { 
             margin-bottom: 8px; 
             display: flex;
             align-items: center;
@@ -178,7 +179,6 @@
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); 
             gap: 8px; 
-            /* margin-bottom:12px; Removed, handled by .settings-content padding */
         }
 
         .number-pool {
@@ -486,14 +486,13 @@
             color: var(--ai-color-light);
         }
         
-        /* AI Taunt - now for floating text */
         .floating-taunt {
-            position: absolute; /* Positioned relative to .battle-arena or .team-display.ai */
+            position: absolute; 
             font-family: var(--font-title);
             font-size: 1.3em;
             font-style: italic;
             color: var(--ai-color-light);
-            background: rgba(100, 60, 150, 0.5); /* Semi-transparent background */
+            background: rgba(100, 60, 150, 0.5); 
             padding: 5px 10px;
             border-radius: 8px;
             border: 1px solid var(--ai-color);
@@ -502,17 +501,16 @@
             animation: floatAcrossAndFade 2.5s ease-out forwards;
             z-index: 15;
             pointer-events: none;
-            white-space: nowrap; /* Keep taunt on one line if possible */
+            white-space: nowrap; 
         }
 
         @keyframes floatAcrossAndFade {
             0% { transform: translate(0, 0) scale(0.7); opacity: 0; }
-            10% { transform: translate(-20px, -10px) scale(1); opacity: 1; } /* Appear */
-            80% { transform: translate(-100px, -50px) scale(0.9); opacity: 0.8; } /* Drift */
-            100% { transform: translate(-150px, -70px) scale(0.7); opacity: 0; } /* Fade out */
+            10% { transform: translate(-20px, -10px) scale(1); opacity: 1; } 
+            80% { transform: translate(-100px, -50px) scale(0.9); opacity: 0.8; } 
+            100% { transform: translate(-150px, -70px) scale(0.7); opacity: 0; } 
         }
         
-        /* Power Bar Styles */
         .power-bar-container {
             width: 100%;
             height: 25px;
@@ -537,7 +535,7 @@
         }
         .power-bar-player {
             background-color: var(--power-bar-player);
-            border-top-left-radius: 6px; /* Match container radius */
+            border-top-left-radius: 6px; 
             border-bottom-left-radius: 6px;
         }
         .power-bar-ai {
@@ -545,7 +543,99 @@
             border-top-right-radius: 6px;
             border-bottom-right-radius: 6px;
         }
+
+        /* Modal Styles (Generic for Rules and Options) */
+        .modal {
+            display: none; 
+            position: fixed; 
+            z-index: 1001; 
+            left: 0;
+            top: 0;
+            width: 100%; 
+            height: 100%; 
+            overflow: auto; 
+            background-color: rgba(0,0,0,0.7); 
+            backdrop-filter: blur(5px);
+            padding-top: 30px; 
+            padding-bottom: 30px;
+        }
+
+        .modal-content {
+            background: linear-gradient(145deg, var(--color-bg-dark2), var(--color-bg-dark3));
+            margin: 2% auto; 
+            padding: 25px;
+            border: 3px solid var(--border-epic);
+            border-radius: 15px;
+            width: 90%; 
+            max-width: 700px; /* Max width for rules modal */
+            box-shadow: 0 10px 30px rgba(0,0,0,0.7);
+            color: var(--color-text-neutral);
+            position: relative;
+        }
+        #optionsModal .modal-content { /* Specific smaller width for options modal */
+             max-width: 400px;
+        }
+
+        .modal-content .phase-title { 
+            margin-bottom: 20px;
+            font-size: 1.5rem; 
+        }
+        .modal-content p, .modal-content ul {
+            margin-bottom: 12px;
+            line-height: 1.7; 
+            font-size: 0.9rem; 
+        }
+        .modal-content ul {
+            list-style-position: outside; 
+            padding-left: 20px; 
+        }
+        .modal-content li {
+            margin-bottom: 8px;
+        }
+        .modal-content strong {
+            color: var(--color-gold);
+            font-weight: 600; 
+        }
+        .modal-content code {
+            background-color: rgba(0,0,0,0.3);
+            padding: 2px 5px;
+            border-radius: 4px;
+            font-family: 'Courier New', monospace;
+            color: var(--color-gold-light);
+        }
+
+        .modal-close-btn {
+            color: var(--color-gold);
+            float: right;
+            font-size: 32px; 
+            font-weight: bold;
+            position: absolute;
+            top: 10px;
+            right: 15px;
+            transition: color 0.3s, transform 0.3s;
+            line-height: 1; 
+        }
+
+        .modal-close-btn:hover,
+        .modal-close-btn:focus {
+            color: var(--color-gold-light);
+            text-decoration: none;
+            cursor: pointer;
+            transform: scale(1.15); 
+        }
         
+        /* Options Modal Specific Buttons */
+        #optionsModal .btn {
+            display: block;
+            width: 80%;
+            margin: 10px auto; /* Center buttons */
+            padding: 12px 20px; /* Slightly larger buttons */
+        }
+         #optionsModal .btn-lang { /* Specific styling for lang buttons if needed */
+            text-transform: none; /* Keep "English" and "中文" as is */
+        }
+
+
         @media (max-width: 768px) {
             .game-title { font-size: 2.2rem; }
             .game-subtitle { font-size: 1rem; }
@@ -561,22 +651,65 @@
             #gameSettings .settings-grid { grid-template-columns: 1fr; }
             #gameSettings .settings-grid > div { flex-direction: column; align-items: stretch; }
             #gameSettings input[type="number"] { width: 100%; margin-left: 0; margin-top: 4px; } 
-            .lang-toggle-container { top: 5px; right: 10px;}
-            .lang-toggle-btn { padding: 6px 10px; font-size: 0.8rem;}
+            .options-menu-container { top: 5px; right: 10px;} /* Adjusted */
+            .options-menu-btn { padding: 6px 10px; font-size: 0.8rem;} /* Adjusted */
             .power-bar-container { height: 20px; }
             .floating-taunt { font-size: 1.1em; }
+            .modal-content { width: 95%; margin: 20px auto; padding: 20px;}
+            .modal-content .phase-title { font-size: 1.3rem; }
+            .modal-content p, .modal-content ul { font-size: 0.85rem; }
+            #optionsModal .modal-content { max-width: 95%; }
+            #optionsModal .btn { width: 90%; }
         }
 
     </style>
 </head>
 <body>
-    <div class="lang-toggle-container">
-        <button id="langToggleBtn" class="lang-toggle-btn">切换中文</button>
+    <div class="options-menu-container">
+        <button id="optionsMenuBtn" class="options-menu-btn" data-lang-key="optionsMenuBtnText">Options ⚙️</button>
     </div>
 
     <div class="game-container">
         <h1 class="game-title" data-lang-key="gameTitle">⚔️ Numcraft ⚔️</h1>
         <p class="game-subtitle" data-lang-key="gameSubtitle">Epic Battle Arena - Where Numbers Clash in Ancient Combat</p>
+        
+        <div id="optionsModal" class="modal">
+            <div class="modal-content">
+                <span class="modal-close-btn" onclick="toggleOptionsModal(false)" data-lang-key="modalCloseBtnSymbol">&times;</span>
+                <h3 class="phase-title" data-lang-key="optionsModalTitle">Game Options</h3>
+                <button id="viewRulesBtnInOptions" class="btn" data-lang-key="viewRulesBtnText">📜 View Game Rules</button>
+                <hr style="border-color: var(--border-epic); margin: 15px 0;">
+                <button id="setLangEnBtn" class="btn btn-lang">English</button>
+                <button id="setLangCnBtn" class="btn btn-lang">中文</button>
+            </div>
+        </div>
+
+        <div id="rulesModal" class="modal">
+            <div class="modal-content">
+                <span class="modal-close-btn" onclick="toggleRulesModal(false)" data-lang-key="modalCloseBtnSymbol">&times;</span>
+                <h3 class="phase-title" data-lang-key="rulesTitle">📜 Game Rules</h3>
+                <div id="rulesTextContainer">
+                    <p><strong data-lang-key="rulesObjectiveTitle">Objective:</strong> <span data-lang-key="rulesObjectiveText">Be the first to win 3 consecutive rounds against the AI.</span></p>
+                    <p><strong data-lang-key="rulesSetupPhaseTitle">Setup Phase:</strong></p>
+                    <ul>
+                        <li data-lang-key="rulesSetup1">Adjust game settings (Pool Size, Team Size, Number Range) if desired, then click "New Campaign".</li>
+                        <li data-lang-key="rulesSetup2">A pool of unique numbers is generated.</li>
+                        <li data-lang-key="rulesSetup3">You and the AI take turns picking numbers to form your teams. Your team size is determined by the "Team Size" setting.</li>
+                        <li data-lang-key="rulesSetup4">Once both teams are full, click "Enter Battle".</li>
+                    </ul>
+                    <p><strong data-lang-key="rulesBattlePhaseTitle">Battle Phase:</strong></p>
+                    <ul>
+                        <li data-lang-key="rulesBattle1">The battle proceeds in turns, starting from Turn 2.</li>
+                        <li data-lang-key="rulesBattle2">In each turn, every number in your team and the AI's team is divided by the current turn number, and the remainder is calculated (e.g., <code>Number % Turn</code>).</li>
+                        <li data-lang-key="rulesBattle3">The highest remainder from your team battles the highest remainder from the AI's team.</li>
+                        <li><strong data-lang-key="rulesBattleWinRoundTitle">Winning a Round:</strong> <span data-lang-key="rulesBattleWinRoundText">If your highest remainder is greater than the AI's highest remainder, you win the round. If the AI's is greater, the AI wins. If they are equal, it's a tie.</span></li>
+                        <li><strong data-lang-key="rulesBattleWinGameTitle">Winning the Game:</strong> <span data-lang-key="rulesBattleWinGameText">The first side to win 3 rounds <em>consecutively</em> wins the entire game. If there's a tie in a round, both players' consecutive win streaks are reset to 0.</span></li>
+                        <li data-lang-key="rulesBattleContinueText">The battle continues until one side achieves 3 consecutive wins or a maximum number of turns (200) is reached, resulting in a stalemate.</li>
+                    </ul>
+                    <p><strong data-lang-key="rulesStrategyTitle">Strategy Tip:</strong> <span data-lang-key="rulesStrategyText">Numbers that produce high remainders against various turn numbers are generally more powerful. Consider the interaction of your chosen numbers with upcoming turn numbers!</span></p>
+                </div>
+            </div>
+        </div>
         
         <div id="gameSettings" class="game-phase collapsed"> <h2 class="phase-title" data-lang-key="settingsTitle" id="settingsToggle">⚙️ Game Settings</h2>
             <div class="settings-content">
@@ -666,11 +799,7 @@
                 enterBattleBtn: "⚔️ Enter Battle",
                 newCampaignBtn: "🎲 New Campaign",
                 arenaTitle: "🔥 Battle Arena 🔥",
-                // yourVictories: "Your Victories", // Replaced by power bar
-                // enemyVictories: "Enemy Victories", // Replaced by power bar
                 returnRecruitBtn: "🏰 Return to Recruitment",
-                langToggleToCn: "切换中文",
-                langToggleToEn: "Switch to English",
                 alertTeamsNotFull: "Both teams must be full before starting the battle!",
                 alertPoolSizeError: (poolSize, requiredSize) => `Pool size (${poolSize}) must be at least ${requiredSize} (twice team size). Please adjust.`,
                 alertMaxMinError: "Max number must be greater than Min number. Please adjust.",
@@ -687,20 +816,35 @@
                 battleEndDefeat: "💀 CRUSHING DEFEAT 💀",
                 battleEndConcluded: (turn) => `Battle concluded at turn ${turn}`,
                 battleEndStalemate: "Battle reached max turns. Stalemate!",
-                aiTaunts: {
-                    confident: [
-                        "Your army trembles!", "I shall crush you!", "Prepare for defeat!",
-                        "I am sure I can win!", "Great advantage!"
-                    ],
-                    worried: [
-                        "You think you're clever?", "This battle is far from over!", "I must reconsider...",
-                        "My army is stronger!", "Need to think twice..."
-                    ],
-                    desperate: [
-                        "Impossible! How?", "My calculations... wrong?!", "You learned too well!",
-                        "Seen through my trick?", "I am in trouble..."
-                    ]
-                }
+                aiTaunts: { /* ... same as before ... */ 
+                    confident: ["Your army trembles!", "I shall crush you!", "Prepare for defeat!", "I am sure I can win!", "Great advantage!"],
+                    worried: ["You think you're clever?", "This battle is far from over!", "I must reconsider...", "My army is stronger!", "Need to think twice..."],
+                    desperate: ["Impossible! How?", "My calculations... wrong?!", "You learned too well!", "Seen through my trick?", "I am in trouble..."]
+                },
+                optionsMenuBtnText: "Options ⚙️",
+                optionsModalTitle: "Game Options",
+                viewRulesBtnText: "📜 View Game Rules",
+                // Language choice buttons will have static text "English" and "中文"
+                rulesTitle: "📜 Game Rules",
+                modalCloseBtnSymbol: "×",
+                rulesObjectiveTitle: "Objective:",
+                rulesObjectiveText: "Be the first to win 3 consecutive rounds against the AI.",
+                rulesSetupPhaseTitle: "Setup Phase:",
+                rulesSetup1: "Adjust game settings (Pool Size, Team Size, Number Range) if desired, then click \"New Campaign\".",
+                rulesSetup2: "A pool of unique numbers is generated.",
+                rulesSetup3: "You and the AI take turns picking numbers to form your teams. Your team size is determined by the \"Team Size\" setting.",
+                rulesSetup4: "Once both teams are full, click \"Enter Battle\".",
+                rulesBattlePhaseTitle: "Battle Phase:",
+                rulesBattle1: "The battle proceeds in turns, starting from Turn 2.",
+                rulesBattle2: "In each turn, every number in your team and the AI's team is divided by the current turn number, and the remainder is calculated (e.g., <code>Number % Turn</code>).",
+                rulesBattle3: "The highest remainder from your team battles the highest remainder from the AI's team.",
+                rulesBattleWinRoundTitle: "Winning a Round:",
+                rulesBattleWinRoundText: "If your highest remainder is greater than the AI's highest remainder, you win the round. If the AI's is greater, the AI wins. If they are equal, it's a tie.",
+                rulesBattleWinGameTitle: "Winning the Game:",
+                rulesBattleWinGameText: "The first side to win 3 rounds <em>consecutively</em> wins the entire game. If there's a tie in a round, both players' consecutive win streaks are reset to 0.",
+                rulesBattleContinueText: "The battle continues until one side achieves 3 consecutive wins or a maximum number of turns (200) is reached, resulting in a stalemate.",
+                rulesStrategyTitle: "Strategy Tip:",
+                rulesStrategyText: "Numbers that produce high remainders against various turn numbers are generally more powerful. Consider the interaction of your chosen numbers with upcoming turn numbers!",
             },
             cn: {
                 gameTitle: "⚔️ 数字战场 ⚔️",
@@ -716,11 +860,7 @@
                 enterBattleBtn: "⚔️ 进入战场",
                 newCampaignBtn: "🎲 新的战役",
                 arenaTitle: "🔥 激战竞技场 🔥",
-                // yourVictories: "你的胜场", // Replaced by power bar
-                // enemyVictories: "敌方胜场", // Replaced by power bar
                 returnRecruitBtn: "🏰 返回招募",
-                langToggleToCn: "切换中文",
-                langToggleToEn: "Switch to English",
                 alertTeamsNotFull: "双方队伍必须满员才能开始战斗！",
                 alertPoolSizeError: (poolSize, requiredSize) => `数字池大小 (${poolSize}) 必须至少是队伍大小的两倍 (${requiredSize})。请调整。`,
                 alertMaxMinError: "最大数字必须大于最小数字。请调整。",
@@ -737,20 +877,34 @@
                 battleEndDefeat: "💀 惨痛的失败 💀",
                 battleEndConcluded: (turn) => `战斗在第 ${turn} 回合结束`,
                 battleEndStalemate: "战斗达到最大回合数，平局！",
-                aiTaunts: { 
-                    confident: [
-                        "你的军队在我强大的力量面前颤抖吧！", "我将以数学般的精度碾压你！", "凡人，准备迎接失败！",
-                        "我确信我能赢！", "我现在优势很大！"
-                    ],
-                    worried: [
-                        "你觉得自己很聪明，是吗？", "这场战斗远未结束！", "我必须重新考虑我的策略...",
-                        "我的军团更强！", "我可能需要三思而后行..."
-                    ],
-                    desperate: [
-                        "不可能！你是怎么预见到这一切的？", "我的计算…它们不可能是错的！", "你把古老的技艺学得太好了！",
-                        "你看穿我的计谋了吗？", "我现在有麻烦了..."
-                    ]
-                }
+                aiTaunts: { /* ... same as before ... */ 
+                    confident: ["你的军队在我强大的力量面前颤抖吧！", "我将以数学般的精度碾压你！", "凡人，准备迎接失败！", "我确信我能赢！", "我现在优势很大！"],
+                    worried: ["你觉得自己很聪明，是吗？", "这场战斗远未结束！", "我必须重新考虑我的策略...", "我的军团更强！", "我可能需要三思而后行..."],
+                    desperate: ["不可能！你是怎么预见到这一切的？", "我的计算…它们不可能是错的！", "你把古老的技艺学得太好了！", "你看穿我的计谋了吗？", "我现在有麻烦了..."]
+                },
+                optionsMenuBtnText: "选项 ⚙️",
+                optionsModalTitle: "游戏选项",
+                viewRulesBtnText: "📜 查看规则",
+                rulesTitle: "📜 游戏规则",
+                modalCloseBtnSymbol: "×",
+                rulesObjectiveTitle: "目标：",
+                rulesObjectiveText: "率先连续赢得3轮对抗AI的胜利。",
+                rulesSetupPhaseTitle: "设置阶段：",
+                rulesSetup1: "如果需要，调整游戏设置（数字池大小、队伍大小、数字范围），然后点击“新的战役”。",
+                rulesSetup2: "系统会生成一个独特的数字池。",
+                rulesSetup3: "你和AI轮流挑选数字来组建各自的队伍。你的队伍大小由“队伍大小”设置决定。",
+                rulesSetup4: "双方队伍满员后，点击“进入战场”。",
+                rulesBattlePhaseTitle: "战斗阶段：",
+                rulesBattle1: "战斗按回合进行，从第2回合开始。",
+                rulesBattle2: "在每个回合中，你队伍和AI队伍中的每个数字都会除以当前回合数，并计算余数（例如：<code>数字 % 回合数</code>）。",
+                rulesBattle3: "你队伍中的最大余数与AI队伍中的最大余数进行对战。",
+                rulesBattleWinRoundTitle: "赢得一轮：",
+                rulesBattleWinRoundText: "如果你的最大余数大于AI的最大余数，你赢得该轮。如果AI的更大，则AI获胜。如果相等，则为平局。",
+                rulesBattleWinGameTitle: "赢得游戏：",
+                rulesBattleWinGameText: "首先<em>连续</em>赢得3轮的一方赢得整场游戏。如果一轮中出现平局，则双方的连胜记录都将重置为0。",
+                rulesBattleContinueText: "战斗将持续进行，直到一方取得3次连续胜利，或者达到最大回合数（200回合），则为僵局。",
+                rulesStrategyTitle: "策略提示：",
+                rulesStrategyText: "那些能在不同回合数下产生较大余数的数字通常更强大。考虑你选择的数字与即将到来的回合数的相互作用！",
             }
         };
         let currentLang = 'en'; 
@@ -761,34 +915,32 @@
             document.querySelectorAll('[data-lang-key]').forEach(element => {
                 const key = element.getAttribute('data-lang-key');
                 const translation = translations[lang]?.[key];
-                if (typeof translation === 'function') {
-                    // If it's a function, it might need parameters (though not used here for static keys)
-                    // For now, just call it if it's a function, otherwise assign directly
-                    // This part is more for future-proofing if parameterized translations are needed for static keys
-                    try {
-                        element.textContent = translation();
-                    } catch (e) {
-                        element.textContent = translation; // Fallback if it's not a function or doesn't need params
+                
+                if (element.tagName === 'INPUT' && element.type === 'submit' || element.tagName === 'BUTTON') {
+                     if (translation && typeof translation !== 'function') {
+                        element.textContent = translation; 
+                     }
+                } else if (key === 'rulesBattleWinGameText' || key === 'rulesBattle2') { 
+                    if (translation && typeof translation !== 'function') {
+                        element.innerHTML = translation; 
                     }
                 } else if (translation) {
-                    element.textContent = translation;
+                     if (typeof translation === 'function') {
+                        try {
+                            if (element.textContent !== undefined) element.textContent = translation();
+                        } catch (e) {
+                             if (element.textContent !== undefined) element.textContent = translation; 
+                        }
+                    } else {
+                        if (element.textContent !== undefined) element.textContent = translation;
+                    }
                 }
             });
-            const langToggleBtn = document.getElementById('langToggleBtn');
-            if (lang === 'en') {
-                langToggleBtn.textContent = translations.en.langToggleToCn;
-            } else {
-                langToggleBtn.textContent = translations.cn.langToggleToEn;
-            }
+            // No direct language toggle button text to update anymore.
+            // The "Options" button text is handled by data-lang-key.
         }
-
-        function toggleLanguage() {
-            const newLang = currentLang === 'en' ? 'cn' : 'en';
-            setLanguage(newLang);
-             // After language switch, if AI taunt is visible, re-render it (not implemented here for simplicity)
-            // Or, better, make showAiTaunt always use currentLang
-        }
-
+        
+        // --- Game Logic (mostly unchanged below this point) ---
         let gameSettings = {
             poolSize: 9,
             teamSize: 3,
@@ -801,7 +953,7 @@
             playerTeam: [],
             aiTeam: [],
             teamSize: gameSettings.teamSize,
-            gamePhase: 'setup',
+            gamePhase: 'setup', 
             isAiThinking: false,
             playerOrder: 1 
         };
@@ -848,7 +1000,7 @@
             }
             return { winnerA: consecutiveWinsA >= 3, turns: turn };
         }
-
+        
         let lookupTableCache = { key: null, value: null };
 
         function getLookupTableJs(numbersForLookup, teamSize) {
@@ -968,12 +1120,9 @@
             const maxVal = gameSettings.maxNum;
 
             if (maxVal - minVal + 1 < requiredPoolSize) {
-                const alertMsg = translations[currentLang].alertRangeError || translations.en.alertRangeError;
-                console.error(alertMsg);
-                // Attempt to generate what's possible if range is too small
-                for (let i = minVal; i <= maxVal; i++) {
-                    numbers.add(i);
-                }
+                const alertMsgFn = translations[currentLang].alertRangeError || translations.en.alertRangeError;
+                console.error(alertMsgFn()); // Call if it's a function, or use directly
+                for (let i = minVal; i <= maxVal; i++) numbers.add(i);
             } else {
                 while (numbers.size < requiredPoolSize) {
                     numbers.add(Math.floor(Math.random() * (maxVal - minVal + 1)) + minVal);
@@ -982,21 +1131,19 @@
             return Array.from(numbers).sort((a, b) => a - b);
         }
 
-
         function applySettingsAndNewGame() {
             gameSettings.poolSize = parseInt(document.getElementById('poolSizeInput').value) || 9;
             gameSettings.teamSize = parseInt(document.getElementById('teamSizeInput').value) || 3;
             gameSettings.minNum = parseInt(document.getElementById('minNumInput').value) || 10;
             gameSettings.maxNum = parseInt(document.getElementById('maxNumInput').value) || 100;
 
-            const alertPoolError = translations[currentLang].alertPoolSizeError || translations.en.alertPoolSizeError;
+            const alertPoolErrorFn = translations[currentLang].alertPoolSizeError || translations.en.alertPoolSizeError;
             const alertMaxMin = translations[currentLang].alertMaxMinError || translations.en.alertMaxMinError;
-            const alertRange = translations[currentLang].alertRangeError || translations.en.alertRangeError;
+            const alertRangeFn = translations[currentLang].alertRangeError || translations.en.alertRangeError;
             const alertConfig = translations[currentLang].alertConfigError || translations.en.alertConfigError;
 
-
             if (gameSettings.poolSize < 2 * gameSettings.teamSize) {
-                alert(alertPoolError(gameSettings.poolSize, 2 * gameSettings.teamSize));
+                alert(alertPoolErrorFn(gameSettings.poolSize, 2 * gameSettings.teamSize));
                 gameSettings.poolSize = 2 * gameSettings.teamSize; 
                 document.getElementById('poolSizeInput').value = gameSettings.poolSize;
             }
@@ -1006,13 +1153,12 @@
                 document.getElementById('maxNumInput').value = gameSettings.maxNum;
             }
              if (gameSettings.maxNum - gameSettings.minNum + 1 < gameSettings.poolSize) {
-                alert(alertRange);
+                alert(alertRangeFn());
                 gameSettings.maxNum = gameSettings.minNum + gameSettings.poolSize -1;
-                if (gameSettings.maxNum > 200) gameSettings.maxNum = 200;
+                if (gameSettings.maxNum > 200) gameSettings.maxNum = 200; 
                 document.getElementById('maxNumInput').value = gameSettings.maxNum;
-
                 if (gameSettings.maxNum - gameSettings.minNum + 1 < gameSettings.poolSize){
-                    console.error(alertConfig);
+                    console.error(alertConfig); 
                     return; 
                 }
             }
@@ -1023,8 +1169,9 @@
             document.getElementById('gameSettings').style.display = 'block'; 
             document.getElementById('setupPhase').style.display = 'block';
             document.getElementById('battlePhase').style.display = 'none';
+            toggleOptionsModal(false); // Close options modal if open
+            toggleRulesModal(false); // Close rules modal if open
         }
-
 
         function initializeGame() {
             gameState.numberPool = generateNumberPool();
@@ -1036,10 +1183,10 @@
             renderNumberPool();
             renderTeams();
             document.getElementById('battleBtn').disabled = true;
-            document.getElementById('aiTauntContainer').innerHTML = ''; // Clear old taunts
+            document.getElementById('aiTauntContainer').innerHTML = ''; 
             document.getElementById('battleResult').innerHTML = ''; 
-            document.getElementById('battleLog').innerHTML = '';   
-            updatePowerBar(0,0); // Reset power bar
+            document.getElementById('battleLog').innerHTML = '';    
+            updatePowerBar(0,0); 
             setLanguage(currentLang); 
         }
 
@@ -1068,6 +1215,9 @@
                         token.onclick = null; 
                     } else { 
                         token.classList.remove('selected');
+                        if (gameState.playerTeam.length < gameState.teamSize && !gameState.isAiThinking) {
+                           token.onclick = () => selectNumber(num);
+                        }
                     }
                 }
             });
@@ -1096,11 +1246,12 @@
                  if (gameState.playerTeam.length <= gameState.teamSize) { 
                     gameState.isAiThinking = true;
                     document.getElementById('numberPool').style.opacity = '0.5'; 
-
+                    document.querySelectorAll('.number-pool .number-token:not(.selected)').forEach(t => t.onclick = null);
                     setTimeout(() => { 
                         aiPickNumber();
                         gameState.isAiThinking = false;
                         document.getElementById('numberPool').style.opacity = '1';
+                        renderNumberPool(); 
                         if (gameState.playerTeam.length === gameState.teamSize && gameState.aiTeam.length === gameState.teamSize) {
                             document.getElementById('battleBtn').disabled = false;
                         }
@@ -1113,11 +1264,7 @@
 
         function aiPickNumber() {
             if (gameState.aiTeam.length >= gameState.teamSize) return;
-            
-            const available = gameState.numberPool.filter(num => 
-                !gameState.playerTeam.includes(num) && !gameState.aiTeam.includes(num)
-            );
-            
+            const available = gameState.numberPool.filter(num => !gameState.playerTeam.includes(num) && !gameState.aiTeam.includes(num));
             if (available.length === 0) return; 
             
             const strategicChoice = greedyStrategyJs([...gameState.aiTeam], [...gameState.playerTeam], available, gameState.teamSize);
@@ -1127,9 +1274,7 @@
             if (choice === null && available.length > 0) {
                 choice = available[Math.floor(Math.random() * available.length)];
                 aiWinRate = 0.1; 
-            } else if (choice === null && available.length === 0) {
-                 return; 
-            }
+            } else if (choice === null && available.length === 0) return; 
             
             gameState.aiTeam.push(choice);
             markNumberAsSelected(choice, true);
@@ -1139,253 +1284,167 @@
         
         function showAiTaunt(winRate) {
             const tauntContainer = document.getElementById('aiTauntContainer');
-            tauntContainer.innerHTML = ''; // Clear previous taunts
-
+            tauntContainer.innerHTML = ''; 
             const currentTauntsSet = translations[currentLang].aiTaunts;
             let selectedTauntsCategoryKey;
-
             if (typeof winRate === 'undefined' || winRate === null || isNaN(winRate)) {
                 const playerStrength = gameState.playerTeam.reduce((a, b) => a + b, 0);
                 const aiStrength = gameState.aiTeam.reduce((a, b) => a + b, 0);
-                if (!aiStrength && !playerStrength && gameState.playerTeam.length === 0) { 
-                    selectedTauntsCategoryKey = 'worried';
-                } else if (aiStrength > playerStrength * 1.2) {
-                    selectedTauntsCategoryKey = 'confident';
-                } else if (aiStrength < playerStrength * 0.8) {
-                    selectedTauntsCategoryKey = 'desperate';
-                } else {
-                    selectedTauntsCategoryKey = 'worried';
-                }
+                if (!aiStrength && !playerStrength && gameState.playerTeam.length === 0) selectedTauntsCategoryKey = 'worried';
+                else if (aiStrength > playerStrength * 1.2) selectedTauntsCategoryKey = 'confident';
+                else if (aiStrength < playerStrength * 0.8) selectedTauntsCategoryKey = 'desperate';
+                else selectedTauntsCategoryKey = 'worried';
             } else { 
                 if (winRate > 0.75) selectedTauntsCategoryKey = 'confident';
                 else if (winRate > 0.35) selectedTauntsCategoryKey = 'worried';
                 else selectedTauntsCategoryKey = 'desperate';
             }
-            const selectedTaunts = currentTauntsSet[selectedTauntsCategoryKey] || currentTauntsSet.worried;
+            const selectedTaunts = currentTauntsSet[selectedTauntsCategoryKey] || currentTauntsSet.worried; 
             const tauntText = selectedTaunts[Math.floor(Math.random() * selectedTaunts.length)];
-            
             const tauntElement = document.createElement('div');
             tauntElement.className = 'floating-taunt';
             tauntElement.textContent = tauntText;
-
-            // Position taunt to float from AI's side (approximate)
-            // This might need adjustment based on actual layout
-            const aiTeamDisplay = document.querySelector('.team.ai'); // In setup phase
-            const aiBattleTeamDisplay = document.querySelector('.team-display.ai-battle-team'); // In battle phase
-
-            let anchorElement = gameState.gamePhase === 'battle' ? aiBattleTeamDisplay : aiTeamDisplay;
-            if (anchorElement) {
-                 const anchorRect = anchorElement.getBoundingClientRect();
-                 const containerRect = tauntContainer.getBoundingClientRect(); // Position relative to this container
-
-                 tauntElement.style.top = `${anchorRect.top - containerRect.top + anchorRect.height / 2 - 15}px`; // Mid-height of AI team
-                 tauntElement.style.left = `${anchorRect.left - containerRect.left + anchorRect.width / 2 - tauntElement.offsetWidth /2 }px`; // Centered on AI team
-                 // The animation itself handles the "floating away" part.
-            } else { // Fallback if anchor not found
-                 tauntElement.style.top = '0px';
-                 tauntElement.style.left = '50%';
-                 tauntElement.style.transform = 'translateX(-50%)';
+            const aiTeamDisplayAnchor = document.querySelector('.team.ai'); 
+            if (aiTeamDisplayAnchor) {
+                const anchorRect = aiTeamDisplayAnchor.getBoundingClientRect();
+                const containerRect = tauntContainer.getBoundingClientRect(); 
+                tauntElement.style.top = `${anchorRect.top - containerRect.top + (anchorRect.height / 2) - 15}px`; 
+                tauntElement.style.left = `${anchorRect.left - containerRect.left + (anchorRect.width / 2) - (tauntElement.offsetWidth / 2)}px`;
+            } else { 
+                tauntElement.style.top = '0px';
+                tauntElement.style.left = '50%';
+                tauntElement.style.transform = 'translateX(-50%)';
             }
-            
             tauntContainer.appendChild(tauntElement);
-
             setTimeout(() => {
                 if(tauntElement.parentNode) tauntElement.parentNode.removeChild(tauntElement);
-            }, 2450); // Slightly less than animation duration to ensure removal
+            }, 2450); 
         }
 
-
         function startBattle() {
+            const alertTeamsNotFullMsg = translations[currentLang].alertTeamsNotFull || translations.en.alertTeamsNotFull;
             if (gameState.playerTeam.length !== gameState.teamSize || gameState.aiTeam.length !== gameState.teamSize) {
-                alert(translations[currentLang].alertTeamsNotFull);
+                alert(alertTeamsNotFullMsg);
                 return;
             }
             gameState.gamePhase = 'battle';
             document.getElementById('setupPhase').style.display = 'none';
             document.getElementById('gameSettings').style.display = 'none'; 
             document.getElementById('battlePhase').style.display = 'block';
-
             document.getElementById('playerBattleTeamNumbers').innerHTML = gameState.playerTeam.map(num => `<div class="team-number" data-value="${num}">${num}</div>`).join('');
             document.getElementById('aiBattleTeamNumbers').innerHTML = gameState.aiTeam.map(num => `<div class="team-number" data-value="${num}">${num}</div>`).join('');
-            updatePowerBar(0,0); // Initialize power bar for battle
+            updatePowerBar(0,0); 
             simulateBattle();
         }
 
         function updatePowerBar(playerConsecutiveWins, aiConsecutiveWins) {
             const playerBar = document.getElementById('powerBarPlayer');
             const aiBar = document.getElementById('powerBarAi');
-            const totalSegments = 3 * 2; // Max 3 wins for each side for full swing
-            
-            let playerAdvantage = playerConsecutiveWins - aiConsecutiveWins; // -3 to +3
-
-            // Normalize advantage to a 0-1 scale where 0.5 is neutral
-            let playerShare = 0.5 + (playerAdvantage / (gameState.teamSize * 2)); // teamSize here represents max consecutive wins for victory
-            playerShare = Math.max(0.05, Math.min(0.95, playerShare)); // Clamp between 5% and 95% to always show both bars
-
+            const maxStreakForWin = 3; 
+            let playerAdvantage = playerConsecutiveWins - aiConsecutiveWins; 
+            let playerShare = 0.5 + (playerAdvantage / (maxStreakForWin * 2));
+            playerShare = Math.max(0.05, Math.min(0.95, playerShare)); 
             playerBar.style.width = `${playerShare * 100}%`;
             aiBar.style.width = `${(1 - playerShare) * 100}%`;
-
-            // Optional: Display text inside power bar segments
-            // playerBar.textContent = playerConsecutiveWins > 0 ? `${playerConsecutiveWins}` : '';
-            // aiBar.textContent = aiConsecutiveWins > 0 ? `${aiConsecutiveWins}` : '';
         }
-
 
         function getPowerColor(value, opponentValue, isPlayer) {
             const advantage = value - opponentValue;
-            if (value === opponentValue) return 'var(--color-text-neutral)'; // Tie
-            
-            if (advantage > 0) { // Winning this round
-                if (advantage > opponentValue * 0.5 || value > 2 * opponentValue && opponentValue > 0) return 'var(--color-gold-light)'; // Strong win
-                return isPlayer ? 'var(--player-color-light)' : 'var(--ai-color-light)'; // Normal win
-            } else { // Losing this round
-                if (Math.abs(advantage) > value * 0.5 || opponentValue > 2 * value && value > 0) return 'var(--disabled-text)'; // Strong loss
-                return 'var(--color-text-light)'; // Normal loss
-            }
+            if (value === opponentValue) return 'var(--color-text-neutral)'; 
+            if (advantage > 0) return isPlayer ? 'var(--player-color-light)' : 'var(--ai-color-light)'; 
+            else return 'var(--color-text-light)'; 
         }
         
         function animateActiveNumber(teamType, activeNumValue, moduloValue, opponentModuloValue) {
             const teamNumbersContainerId = teamType === 'player' ? 'playerBattleTeamNumbers' : 'aiBattleTeamNumbers';
             const teamNumbersContainer = document.getElementById(teamNumbersContainerId);
             if (!teamNumbersContainer) return;
-
             const teamNumberElements = teamNumbersContainer.querySelectorAll('.team-number');
             let targetElement = null;
-
             teamNumberElements.forEach(el => {
-                if (parseInt(el.dataset.value) === activeNumValue) {
-                    targetElement = el;
-                }
+                if (parseInt(el.dataset.value) === activeNumValue) targetElement = el;
             });
-
             if (targetElement) {
                 targetElement.classList.add('active-battle-unit');
-                
                 const floatText = document.createElement('span');
                 floatText.className = 'floating-value';
                 floatText.textContent = moduloValue;
-                
-                let powerColor = getPowerColor(moduloValue, opponentModuloValue, teamType === 'player');
-                floatText.style.color = powerColor;
-
+                floatText.style.color = getPowerColor(moduloValue, opponentModuloValue, teamType === 'player');
                 const teamDisplay = targetElement.closest('.team-display');
                 if (teamDisplay) {
-                    const targetRect = targetElement.getBoundingClientRect();
-                    const teamDisplayRect = teamDisplay.getBoundingClientRect();
-                    
-                    floatText.style.left = `${targetRect.left - teamDisplayRect.left + targetRect.width / 2 - 10}px`; 
-                    floatText.style.top = `${targetRect.top - teamDisplayRect.top - 10}px`; 
-                    teamDisplay.appendChild(floatText);
-
-                    setTimeout(() => {
-                        if (floatText.parentNode) floatText.parentNode.removeChild(floatText);
-                    }, 1150); 
+                    floatText.style.left = `${targetElement.offsetLeft + (targetElement.offsetWidth / 2) - (floatText.offsetWidth / 2)}px`; 
+                    floatText.style.top = `${targetElement.offsetTop - 20}px`; 
+                    teamDisplay.appendChild(floatText); 
+                    setTimeout(() => { if (floatText.parentNode) floatText.parentNode.removeChild(floatText); }, 1150); 
                 }
-
-                setTimeout(() => {
-                    targetElement.classList.remove('active-battle-unit');
-                }, 1000); 
+                setTimeout(() => { targetElement.classList.remove('active-battle-unit'); }, 1000); 
             }
         }
-
 
         function simulateBattle() {
             const battleLog = document.getElementById('battleLog');
             const battleResultEl = document.getElementById('battleResult');
-            
             battleLog.innerHTML = ''; 
             battleResultEl.innerHTML = ''; 
-            
             let consecutivePlayerWins = 0;
             let consecutiveAiWins = 0;
             let turn = 2;
             const maxTurns = 200; 
-
             const logEntry = (turnNumber, playerActiveNum, playerVal, aiActiveNum, aiVal, resultType, resultText) => {
                 const div = document.createElement('div');
                 div.className = `log-entry ${resultType}`; 
-                
                 let playerActionHtml = `${translations[currentLang].logPlayer} <span class="active-number">${playerActiveNum}</span> (${translations[currentLang].logValue}: ${playerVal})`;
                 let aiActionHtml = `${translations[currentLang].logAI} <span class="active-number">${aiActiveNum}</span> (${translations[currentLang].logValue}: ${aiVal})`;
-
-                div.innerHTML = `
-                    <div class="turn-header">${translations[currentLang].logTurn} ${turnNumber}</div>
-                    <div class="details">
-                        <span class="player-action">${playerActionHtml}</span>
-                        <span class="ai-action">${aiActionHtml}</span>
-                    </div>
-                    <div class="round-result">${resultText}</div>
-                `;
+                div.innerHTML = `<div class="turn-header">${translations[currentLang].logTurn} ${turnNumber}</div><div class="details"><span class="player-action">${playerActionHtml}</span><span class="ai-action">${aiActionHtml}</span></div><div class="round-result">${resultText}</div>`;
                 battleLog.appendChild(div);
                 battleLog.scrollTop = battleLog.scrollHeight; 
             };
-            
             updatePowerBar(consecutivePlayerWins, consecutiveAiWins);
-            
             const battleStep = () => {
                 if (turn > maxTurns || consecutivePlayerWins >= 3 || consecutiveAiWins >= 3) {
                     const playerOverallVictory = consecutivePlayerWins >= 3;
                     const battleEndTextKey = playerOverallVictory ? 'battleEndVictory' : 'battleEndDefeat';
-                    const battleEndConcludedText = translations[currentLang].battleEndConcluded(turn -1);
-                    
-                    battleResultEl.innerHTML = `
-                        <div class="battle-result ${playerOverallVictory ? 'victory' : 'defeat'}">
-                            ${translations[currentLang][battleEndTextKey]}
-                            <br>${battleEndConcludedText}
-                        </div>`;
+                    const battleEndConcludedTextFn = translations[currentLang].battleEndConcluded || translations.en.battleEndConcluded;
+                    battleResultEl.innerHTML = `<div class="battle-result ${playerOverallVictory ? 'victory' : 'defeat'}">${translations[currentLang][battleEndTextKey]}<br><small>${battleEndConcludedTextFn(turn -1)}</small></div>`;
                     if (turn > maxTurns && !(consecutivePlayerWins >=3 || consecutiveAiWins >= 3)) {
                          logEntry(turn -1, '-', '-', '-', '-', 'tie', translations[currentLang].battleEndStalemate);
                     }
                     return;
                 }
-                
-                let playerActiveNumberDetails = gameState.playerTeam.reduce((best, current) => {
-                    const currentVal = current % turn;
-                    return currentVal > best.val ? {num: current, val: currentVal} : best;
-                }, {num: gameState.playerTeam[0] || 0, val: (gameState.playerTeam[0] || 0) % turn});
-                
-                let aiActiveNumberDetails = gameState.aiTeam.reduce((best, current) => {
-                    const currentVal = current % turn;
-                    return currentVal > best.val ? {num: current, val: currentVal} : best;
-                }, {num: gameState.aiTeam[0] || 0, val: (gameState.aiTeam[0] || 0) % turn});
-
-                const playerMax = playerActiveNumberDetails.val;
-                const playerActiveNum = playerActiveNumberDetails.num;
-                const aiMax = aiActiveNumberDetails.val;
-                const aiActiveNum = aiActiveNumberDetails.num;
-                
-                let roundResultTextKey;
-                let roundResultType;
-                
-                if (playerMax > aiMax) {
-                    roundResultTextKey = 'logRoundWinPlayer';
-                    consecutivePlayerWins++;
-                    consecutiveAiWins = 0;
-                    roundResultType = 'player-win';
-                    animateActiveNumber('player', playerActiveNum, playerMax, aiMax);
-                } else if (aiMax > playerMax) {
-                    roundResultTextKey = 'logRoundWinAI';
-                    consecutiveAiWins++;
-                    consecutivePlayerWins = 0;
-                    roundResultType = 'ai-win';
-                    animateActiveNumber('ai', aiActiveNum, aiMax, playerMax);
-                } else {
-                    roundResultTextKey = 'logRoundTie';
-                    consecutivePlayerWins = 0; 
-                    consecutiveAiWins = 0;
-                    roundResultType = 'tie';
-                    animateActiveNumber('player', playerActiveNum, playerMax, aiMax);
-                    animateActiveNumber('ai', aiActiveNum, aiMax, playerMax);
-                }
-                
+                let playerActiveNumberDetails = gameState.playerTeam.reduce((best, current) => { const currentVal = current % turn; return currentVal > best.val ? {num: current, val: currentVal} : best; }, {num: gameState.playerTeam[0] || 0, val: (gameState.playerTeam[0] || 0) % turn});
+                let aiActiveNumberDetails = gameState.aiTeam.reduce((best, current) => { const currentVal = current % turn; return currentVal > best.val ? {num: current, val: currentVal} : best; }, {num: gameState.aiTeam[0] || 0, val: (gameState.aiTeam[0] || 0) % turn});
+                const playerMax = playerActiveNumberDetails.val; const playerActiveNum = playerActiveNumberDetails.num;
+                const aiMax = aiActiveNumberDetails.val; const aiActiveNum = aiActiveNumberDetails.num;
+                let roundResultTextKey, roundResultType;
+                if (playerMax > aiMax) { roundResultTextKey = 'logRoundWinPlayer'; consecutivePlayerWins++; consecutiveAiWins = 0; roundResultType = 'player-win'; animateActiveNumber('player', playerActiveNum, playerMax, aiMax); }
+                else if (aiMax > playerMax) { roundResultTextKey = 'logRoundWinAI'; consecutiveAiWins++; consecutivePlayerWins = 0; roundResultType = 'ai-win'; animateActiveNumber('ai', aiActiveNum, aiMax, playerMax); }
+                else { roundResultTextKey = 'logRoundTie'; consecutivePlayerWins = 0; consecutiveAiWins = 0; roundResultType = 'tie'; animateActiveNumber('player', playerActiveNum, playerMax, aiMax); animateActiveNumber('ai', aiActiveNum, aiMax, playerMax); }
                 logEntry(turn, playerActiveNum, playerMax, aiActiveNum, aiMax, roundResultType, translations[currentLang][roundResultTextKey]);
                 updatePowerBar(consecutivePlayerWins, consecutiveAiWins);
-                
                 turn++;
                 setTimeout(battleStep, 1300); 
             };
-            
             setTimeout(battleStep, 700); 
+        }
+
+        // --- Modal Toggles ---
+        function toggleOptionsModal(show) {
+            const modal = document.getElementById('optionsModal');
+            if (show) {
+                modal.style.display = 'block';
+                setLanguage(currentLang); // Ensure button texts in modal are correct
+            } else {
+                modal.style.display = 'none';
+            }
+        }
+        function toggleRulesModal(show) {
+            const modal = document.getElementById('rulesModal');
+            if (show) {
+                modal.style.display = 'block';
+                setLanguage(currentLang); 
+            } else {
+                modal.style.display = 'none';
+            }
         }
 
         window.onload = () => {
@@ -1393,22 +1452,42 @@
             document.getElementById('teamSizeInput').value = gameSettings.teamSize;
             document.getElementById('minNumInput').value = gameSettings.minNum;
             document.getElementById('maxNumInput').value = gameSettings.maxNum;
-            
             gameState.teamSize = gameSettings.teamSize; 
-            initializeGame(); 
-            document.getElementById('gameSettings').style.display = 'block'; 
-            // Make settings collapsible
+            
             const settingsToggle = document.getElementById('settingsToggle');
             const gameSettingsDiv = document.getElementById('gameSettings');
-            settingsToggle.addEventListener('click', () => {
-                gameSettingsDiv.classList.toggle('collapsed');
-            });
-            // Ensure it starts collapsed (already added 'collapsed' class in HTML)
+            settingsToggle.addEventListener('click', () => gameSettingsDiv.classList.toggle('collapsed'));
 
             document.getElementById('setupPhase').style.display = 'block';
             document.getElementById('battlePhase').style.display = 'none';
-            document.getElementById('langToggleBtn').addEventListener('click', toggleLanguage);
+            
+            // Options Menu Listeners
+            document.getElementById('optionsMenuBtn').addEventListener('click', () => toggleOptionsModal(true));
+            document.getElementById('viewRulesBtnInOptions').addEventListener('click', () => {
+                toggleOptionsModal(false); // Close options modal
+                toggleRulesModal(true);    // Open rules modal
+            });
+            document.getElementById('setLangEnBtn').addEventListener('click', () => {
+                setLanguage('en');
+                toggleOptionsModal(false);
+            });
+            document.getElementById('setLangCnBtn').addEventListener('click', () => {
+                setLanguage('cn');
+                toggleOptionsModal(false);
+            });
+            
+            // Close modals on backdrop click
+            [document.getElementById('optionsModal'), document.getElementById('rulesModal')].forEach(modal => {
+                modal.addEventListener('click', function(event) {
+                    if (event.target === modal) {
+                        if (modal.id === 'optionsModal') toggleOptionsModal(false);
+                        if (modal.id === 'rulesModal') toggleRulesModal(false);
+                    }
+                });
+            });
+
             setLanguage('en'); 
+            initializeGame(); 
         };
     </script>
 </body>
