@@ -2,8 +2,8 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Math Challenge Game - Advanced</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <title>Math Challenge Game - Mobile Optimized</title>
     <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700&family=Inter:wght@300;400;600;700&family=Fira+Code:wght@400;500&display=swap" rel="stylesheet">
     <style>
         :root {
@@ -27,17 +27,19 @@
             margin: 0;
             padding: 0;
             box-sizing: border-box;
+            touch-action: manipulation;
         }
         body {
             font-family: 'Inter', sans-serif;
             background: linear-gradient(135deg, var(--primary-bg) 0%, #0f172a 100%);
             color: var(--text-primary);
-            height: 100vh;
+            min-height: 100vh;
             padding: 0.5rem;
-            overflow: hidden;
+            overflow-x: hidden;
             position: relative;
+            -webkit-overflow-scrolling: touch;
         }
-        /* Animated background particles */
+        
         .background-particles {
             position: fixed;
             top: 0;
@@ -60,22 +62,23 @@
             0%, 100% { transform: translateY(0px) rotate(0deg); opacity: 0.3; }
             50% { transform: translateY(-20px) rotate(180deg); opacity: 0.8; }
         }
+        
         .game-container {
             max-width: 1400px;
             margin: 0 auto;
-            height: 100vh;
+            min-height: 100vh;
             display: grid;
             grid-template-columns: 1fr 300px;
             gap: 1rem;
             padding: 0.5rem;
         }
-        /* Main Game Area */
+        
         .main-game {
             display: flex;
             flex-direction: column;
             gap: 1rem;
         }
-        /* Stats Bar */
+        
         .stats-bar {
             display: grid;
             grid-template-columns: repeat(5, 1fr);
@@ -90,6 +93,7 @@
             transition: all 0.3s ease;
             position: relative;
             overflow: hidden;
+            min-height: 70px;
         }
         .stat-card::before {
             content: '';
@@ -137,7 +141,7 @@
             50% { transform: scale(1.3); opacity: 0.8; }
             100% { transform: scale(1); opacity: 1; }
         }
-        /* Round Mode Indicator */
+        
         .round-mode {
             font-size: 0.7rem;
             color: var(--accent-blue);
@@ -145,7 +149,7 @@
             font-family: 'JetBrains Mono', monospace;
             text-shadow: 0 0 10px rgba(0, 212, 255, 0.5);
         }
-        /* Game Area */
+        
         .game-area {
             background: linear-gradient(135deg, var(--secondary-bg), var(--tertiary-bg));
             border-radius: 1rem;
@@ -180,15 +184,17 @@
             color: var(--primary-bg);
             border: none;
             border-radius: 50%;
-            width: 35px;
-            height: 35px;
+            width: 40px;
+            height: 40px;
             cursor: pointer;
-            font-size: 1rem;
+            font-size: 1.1rem;
             display: flex;
             align-items: center;
             justify-content: center;
             transition: all 0.3s ease;
             box-shadow: 0 2px 8px rgba(251, 191, 36, 0.3);
+            min-width: 44px;
+            min-height: 44px;
         }
         .help-btn:hover {
             transform: scale(1.1);
@@ -196,12 +202,13 @@
         }
         .question-text {
             text-align: center;
-            font-size: 0.9rem;
+            font-size: 1rem;
             color: var(--text-secondary);
             margin-bottom: 1.5rem;
-            font-weight: 300;
+            font-weight: 400;
+            line-height: 1.5;
         }
-        /* Expression Container */
+        
         .expressions-container {
             display: grid;
             grid-template-columns: 1fr auto 1fr;
@@ -227,10 +234,10 @@
             0%, 100% { transform: scale(1); opacity: 0.8; }
             50% { transform: scale(1.05); opacity: 1; }
         }
-        /* Expression Buttons */
+        
         .expression-btn {
             font-family: 'Fira Code', monospace;
-            font-size: 1rem; 
+            font-size: 1.1rem;
             background: linear-gradient(135deg, var(--tertiary-bg), var(--secondary-bg));
             color: var(--text-primary);
             border: 2px solid var(--border-color);
@@ -238,19 +245,19 @@
             padding: 1.5rem 1rem;
             cursor: pointer;
             transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-            min-height: 120px; 
-            height: 100%; 
+            min-height: 140px;
+            height: 100%;
             display: flex;
-            flex-direction: column; 
+            flex-direction: column;
             align-items: center;
             justify-content: center;
             text-align: center;
-            line-height: 1.4; 
+            line-height: 1.5;
             position: relative;
-            overflow: hidden; 
+            overflow: hidden;
             backdrop-filter: blur(10px);
+            min-width: 44px;
         }
-
         .expression-btn::before {
             content: '';
             position: absolute;
@@ -279,7 +286,7 @@
             filter: grayscale(1);
         }
         .expression-btn.tool-hint-larger {
-            border-color: var(--success) !important; 
+            border-color: var(--success) !important;
             background: linear-gradient(135deg, rgba(34, 197, 94, 0.2), rgba(34, 197, 94, 0.1)) !important;
         }
         .expression-btn.tool-hint-smaller {
@@ -291,12 +298,12 @@
             background: linear-gradient(135deg, rgba(245, 158, 11, 0.2), rgba(245, 158, 11, 0.1)) !important;
         }
 
-        /* Enhanced Math Rendering - Reverted to User's Original */
         .math-expression {
             display: inline-block;
             font-family: 'Fira Code', monospace;
             font-size: 1rem;
             line-height: 1.4;
+            word-break: break-word;
         }
         .math-fraction {
             display: inline-flex;
@@ -359,11 +366,9 @@
             vertical-align: middle;
             font-weight: bold;
         }
-        /* End of Reverted Math Rendering CSS */
 
-        /* Feedback Area */
         .feedback-area {
-            min-height: 60px;
+            min-height: 80px;
             display: flex;
             flex-direction: column;
             justify-content: center;
@@ -373,14 +378,15 @@
             background: linear-gradient(135deg, rgba(255, 255, 255, 0.05), rgba(255, 255, 255, 0.02));
             backdrop-filter: blur(10px);
             border: 1px solid rgba(255, 255, 255, 0.1);
-            padding: 0.75rem;
+            padding: 1rem;
         }
         .feedback-text {
-            font-size: 1rem;
+            font-size: 1.1rem;
             font-weight: 600;
             text-align: center;
-            margin-bottom: 0.25rem;
+            margin-bottom: 0.5rem;
             transition: all 0.3s ease;
+            line-height: 1.4;
         }
         .feedback-text.correct {
             color: var(--success);
@@ -414,28 +420,32 @@
             100% { transform: scale(1); opacity: 1; }
         }
         .correct-answer-display {
-            font-size: 0.8rem;
+            font-size: 0.9rem;
             color: var(--text-muted);
             text-align: center;
-            line-height: 1.3;
+            line-height: 1.4;
             font-family: 'Fira Code', monospace;
+            word-break: break-word;
         }
         .tool-feedback-area {
-            min-height: 30px;
-            font-size: 0.8rem;
+            min-height: 40px;
+            font-size: 0.9rem;
             color: var(--accent-blue);
             text-align: center;
             display: flex;
             align-items: center;
             justify-content: center;
-            margin-bottom: 0.75rem;
+            margin-bottom: 1rem;
             font-family: 'Fira Code', monospace;
+            line-height: 1.4;
+            padding: 0.5rem;
         }
-        /* Control Buttons */
+        
         .controls {
             display: flex;
-            gap: 0.75rem;
+            gap: 1rem;
             justify-content: center;
+            flex-wrap: wrap;
         }
         .control-btn {
             font-family: 'Inter', sans-serif;
@@ -443,14 +453,16 @@
             background: linear-gradient(135deg, var(--accent-purple), var(--accent-blue));
             color: white;
             border: none;
-            padding: 0.75rem 1.5rem;
+            padding: 1rem 2rem;
             border-radius: 0.75rem;
             cursor: pointer;
             transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-            font-size: 0.9rem;
+            font-size: 1rem;
             box-shadow: 0 3px 10px rgba(124, 58, 237, 0.3);
             position: relative;
             overflow: hidden;
+            min-height: 44px;
+            min-width: 120px;
         }
         .control-btn::before {
             content: '';
@@ -478,7 +490,7 @@
             background: linear-gradient(135deg, var(--success), var(--accent-blue));
             box-shadow: 0 3px 10px rgba(34, 197, 94, 0.3);
         }
-        /* Tool System Sidebar */
+        
         .tool-sidebar {
             display: flex;
             flex-direction: column;
@@ -494,13 +506,14 @@
             background: linear-gradient(135deg, rgba(100, 116, 139, 0.6), rgba(100, 116, 139, 0.4));
             color: var(--text-secondary);
             border: 1px solid rgba(100, 116, 139, 0.5);
-            padding: 0.5rem 1rem;
+            padding: 0.75rem 1.5rem;
             border-radius: 0.5rem;
             cursor: pointer;
             transition: all 0.3s ease;
-            font-size: 0.8rem;
+            font-size: 0.9rem;
             opacity: 0.6;
             backdrop-filter: blur(5px);
+            min-height: 44px;
         }
         .restart-btn:hover {
             opacity: 1;
@@ -519,7 +532,7 @@
         }
         .tool-section h3 {
             font-family: 'JetBrains Mono', monospace;
-            font-size: 0.9rem;
+            font-size: 1rem;
             color: var(--accent-gold);
             margin-bottom: 0.75rem;
             font-weight: 600;
@@ -546,21 +559,23 @@
         }
         .tool-slot, .potential-tool-item {
             font-family: 'Fira Code', monospace;
-            font-size: 0.8rem;
+            font-size: 0.9rem;
             background: linear-gradient(135deg, var(--tertiary-bg), var(--secondary-bg));
             color: var(--text-secondary);
             border: 1px solid var(--border-color);
-            padding: 0.75rem;
+            padding: 1rem;
             border-radius: 0.5rem;
             transition: all 0.3s ease;
-            min-height: 45px; 
+            min-height: 50px;
             display: flex;
             justify-content: center;
             align-items: center;
             text-align: center;
             line-height: 1.3;
             position: relative;
-            overflow: hidden; 
+            overflow: hidden;
+            word-break: break-word;
+            min-width: 44px;
         }
         .tool-slot {
             cursor: pointer;
@@ -577,13 +592,13 @@
             color: var(--text-muted);
             font-style: italic;
         }
-        .tool-slot.empty-slot.awaiting-tool { 
+        .tool-slot.empty-slot.awaiting-tool {
             border-color: var(--accent-gold);
             box-shadow: 0 0 15px rgba(251, 191, 36, 0.4);
             background: linear-gradient(135deg, rgba(251, 191, 36, 0.2), rgba(251, 191, 36, 0.1));
             animation: pulse 1.5s infinite;
         }
-        .tool-slot.drag-over-active { 
+        .tool-slot.drag-over-active {
             border-color: var(--accent-gold);
             box-shadow: 0 0 15px rgba(251, 191, 36, 0.4);
             background: linear-gradient(135deg, rgba(251, 191, 36, 0.2), rgba(251, 191, 36, 0.1));
@@ -607,7 +622,7 @@
         .potential-tool-item:active {
             cursor: grabbing;
         }
-        .potential-tool-item.selected { 
+        .potential-tool-item.selected {
             border-color: var(--accent-gold);
             background: linear-gradient(135deg, rgba(251, 191, 36, 0.3), rgba(251, 191, 36, 0.15));
             box-shadow: 0 0 15px rgba(251, 191, 36, 0.5);
@@ -618,202 +633,25 @@
             position: absolute;
             top: 4px;
             right: 8px;
-            font-size: 0.7rem;
+            font-size: 0.8rem;
             color: var(--accent-gold);
         }
 
-        /* Mobile Tool Instructions */
         .mobile-tool-instructions {
-            font-size: 0.7rem;
+            font-size: 0.8rem;
             color: var(--text-muted);
             text-align: center;
-            margin-bottom: 0.5rem;
+            margin-bottom: 0.75rem;
             font-style: italic;
-            display: none; 
+            display: none;
+            padding: 0.5rem;
+            line-height: 1.4;
         }
-        .mobile-tool-instructions.managing-tools { 
+        .mobile-tool-instructions.managing-tools {
             color: var(--accent-gold);
             font-weight: 600;
         }
         
-        /* Responsive Design */
-        @media (max-width: 1024px) {
-            .game-container {
-                grid-template-columns: 1fr;
-                grid-template-rows: 1fr auto; 
-                height: auto; 
-                min-height: 100vh; 
-            }
-            .tool-sidebar {
-                max-height: none; 
-                overflow-y: visible;
-                 order: 2; 
-            }
-             .main-game {
-                order: 1;
-            }
-            .restart-section {
-                order: -1; 
-                margin-bottom: 0.5rem;
-            }
-            .tool-belt {
-                flex-direction: row;
-                flex-wrap: wrap;
-                min-height: auto;
-                justify-content: space-around; 
-            }
-            .tool-slot {
-                flex-basis: calc(33.33% - 1rem); 
-            }
-            .potential-tools-display {
-                flex-direction: row;
-                flex-wrap: wrap;
-                justify-content: space-around;
-            }
-             .potential-tool-item {
-                flex-basis: calc(33.33% - 1rem); 
-            }
-            .mobile-tool-instructions {
-                display: block; 
-            }
-            .potential-tool-item {
-                cursor: pointer; 
-            }
-        }
-        @media (max-width: 768px) {
-            body {
-                padding: 0.25rem;
-            }
-            .game-container {
-                padding: 0.25rem;
-                gap: 0.5rem;
-            }
-            .expressions-container {
-                grid-template-columns: 1fr; 
-                gap: 0.75rem;
-            }
-            .vs-text {
-                order: -1; 
-                font-size: 1rem;
-                padding: 0.5rem;
-                margin-bottom: 0.5rem;
-            }
-            .expression-btn {
-                padding: 1rem;
-                min-height: 100px; 
-                font-size: 0.9rem;
-            }
-            .controls {
-                flex-direction: column;
-                align-items: center;
-                gap: 0.5rem;
-                min-height: 40px; 
-            }
-            .control-btn {
-                width: 100%;
-                max-width: 200px;
-                padding: 0.75rem 1rem;
-                font-size: 0.85rem;
-            }
-            .stats-bar {
-                grid-template-columns: repeat(3, 1fr); 
-                gap: 0.5rem;
-            }
-            .stat-card {
-                padding: 0.75rem;
-            }
-            .stat-value {
-                font-size: 1.1rem;
-            }
-            .game-area {
-                padding: 1rem;
-            }
-            .game-title {
-                font-size: 1.2rem;
-                margin-bottom: 0.75rem;
-            }
-            .question-text {
-                font-size: 0.85rem;
-                margin-bottom: 1rem;
-            }
-            .tool-section {
-                padding: 0.75rem;
-            }
-            .tool-section h3 {
-                font-size: 0.8rem;
-                margin-bottom: 0.5rem;
-            }
-            .tool-belt {
-                padding: 0.5rem;
-                gap: 0.25rem;
-            }
-            .tool-slot, .potential-tool-item {
-                font-size: 0.7rem;
-                padding: 0.5rem;
-                min-height: 40px; 
-                flex-basis: calc(50% - 0.5rem); 
-            }
-            .feedback-area {
-                min-height: 50px;
-                padding: 0.5rem;
-                margin-bottom: 0.75rem;
-            }
-            .feedback-text {
-                font-size: 0.9rem;
-            }
-            .correct-answer-display {
-                font-size: 0.7rem;
-            }
-            .tool-feedback-area {
-                font-size: 0.75rem;
-                min-height: 25px;
-                margin-bottom: 0.5rem;
-            }
-        }
-        @media (max-width: 480px) {
-            .stats-bar {
-                grid-template-columns: 1fr 1fr; 
-                grid-template-rows: repeat(3, auto); 
-            }
-            .stat-label {
-                font-size: 0.65rem;
-            }
-            .stat-value {
-                font-size: 1rem;
-            }
-            .expression-btn {
-                min-height: 80px; 
-                padding: 0.75rem 0.5rem;
-                font-size: 0.8rem;
-            }
-            .game-title {
-                font-size: 1rem;
-            }
-            .vs-text {
-                font-size: 0.9rem;
-                padding: 0.4rem;
-            }
-            .tool-belt {
-                min-height: 120px; 
-            }
-            .tool-slot, .potential-tool-item {
-                font-size: 0.65rem;
-                padding: 0.4rem;
-                min-height: 35px; 
-                min-width: 80px;
-                flex-basis: calc(50% - 0.5rem); 
-            }
-            .control-btn {
-                font-size: 0.8rem;
-                padding: 0.6rem 0.8rem;
-            }
-            .restart-btn {
-                font-size: 0.7rem;
-                padding: 0.4rem 0.8rem;
-            }
-        }
-
-        /* Help Modal */
         .help-modal {
             display: none;
             position: fixed;
@@ -829,8 +667,9 @@
         }
         .help-modal.show {
             display: flex;
-            align-items: center;
+            align-items: flex-start;
             justify-content: center;
+            padding-top: 2rem;
         }
         .help-content {
             background: linear-gradient(135deg, var(--secondary-bg), var(--tertiary-bg));
@@ -848,10 +687,10 @@
             align-items: center;
             padding: 1.5rem;
             border-bottom: 1px solid var(--border-color);
-            position: sticky; 
+            position: sticky;
             top: 0;
-            background: linear-gradient(135deg, var(--secondary-bg), var(--tertiary-bg)); 
-            z-index: 1; 
+            background: linear-gradient(135deg, var(--secondary-bg), var(--tertiary-bg));
+            z-index: 1;
         }
         .help-header h2 {
             margin: 0;
@@ -868,6 +707,11 @@
             padding: 0.5rem;
             border-radius: 50%;
             transition: all 0.3s ease;
+            min-width: 44px;
+            min-height: 44px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
         }
         .close-btn:hover {
             background: var(--accent-red);
@@ -889,61 +733,392 @@
         }
         .symbol-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); 
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
             gap: 1rem;
         }
         .symbol-item {
             display: flex;
             align-items: center;
             gap: 0.75rem;
-            padding: 0.75rem;
+            padding: 1rem;
             background: linear-gradient(135deg, rgba(255, 255, 255, 0.05), rgba(255, 255, 255, 0.02));
             border-radius: 0.5rem;
             border: 1px solid rgba(255, 255, 255, 0.1);
         }
-        .symbol { 
+        .symbol {
             font-family: 'Fira Code', monospace;
-            font-size: 1rem; 
+            font-size: 1.1rem;
             color: var(--accent-gold);
-            min-width: 60px; 
+            min-width: 70px;
             text-align: center;
             line-height: 1.4;
         }
         .definition {
-            font-size: 0.9rem;
+            font-size: 0.95rem;
             color: var(--text-secondary);
             flex: 1;
+            line-height: 1.4;
         }
         .definition a {
             color: var(--accent-blue);
             text-decoration: none;
             margin-left: 0.5rem;
-            font-size: 0.8rem;
+            font-size: 0.85rem;
+            display: inline-block;
+            padding: 0.25rem;
         }
         .definition a:hover {
             color: var(--accent-purple);
         }
+        
+        /* Responsive Design */
+        @media (max-width: 1024px) {
+            .game-container {
+                grid-template-columns: 1fr;
+                grid-template-rows: auto 1fr;
+                height: auto;
+                min-height: 100vh;
+                gap: 0.75rem;
+                padding: 0.5rem;
+            }
+            .tool-sidebar {
+                order: 2;
+                max-height: none;
+                overflow-y: visible;
+            }
+            .main-game {
+                order: 1;
+            }
+            .restart-section {
+                order: -1;
+                margin-bottom: 0.75rem;
+            }
+            .tool-belt {
+                flex-direction: row;
+                flex-wrap: wrap;
+                min-height: auto;
+                justify-content: center;
+                gap: 0.75rem;
+            }
+            .tool-slot {
+                flex: 1;
+                min-width: 120px;
+                max-width: 200px;
+            }
+            .potential-tools-display {
+                flex-direction: row;
+                flex-wrap: wrap;
+                justify-content: center;
+                gap: 0.75rem;
+            }
+            .potential-tool-item {
+                flex: 1;
+                min-width: 120px;
+                max-width: 200px;
+                cursor: pointer;
+            }
+            .mobile-tool-instructions {
+                display: block;
+            }
+        }
+        
         @media (max-width: 768px) {
+            body {
+                padding: 0.25rem;
+                font-size: 16px;
+            }
+            .game-container {
+                padding: 0.25rem;
+                gap: 0.5rem;
+            }
+            .game-area {
+                padding: 1rem;
+            }
+            .stats-bar {
+                grid-template-columns: repeat(2, 1fr);
+                grid-template-rows: repeat(3, auto);
+                gap: 0.5rem;
+            }
+            .stat-card {
+                padding: 0.75rem;
+                min-height: 60px;
+            }
+            .stat-label {
+                font-size: 0.7rem;
+                margin-bottom: 0.2rem;
+            }
+            .stat-value {
+                font-size: 1.1rem;
+            }
+            .game-title {
+                font-size: 1.3rem;
+            }
+            .help-btn {
+                width: 36px;
+                height: 36px;
+                font-size: 1rem;
+            }
+            .question-text {
+                font-size: 0.95rem;
+                margin-bottom: 1rem;
+            }
+            .expressions-container {
+                grid-template-columns: 1fr;
+                gap: 1rem;
+            }
+            .vs-text {
+                order: -1;
+                font-size: 1rem;
+                padding: 0.5rem;
+                margin-bottom: 0.5rem;
+            }
+            .expression-btn {
+                padding: 1.25rem 1rem;
+                min-height: 120px;
+                font-size: 1rem;
+            }
+            .math-expression {
+                font-size: 0.95rem;
+            }
+            .feedback-area {
+                min-height: 70px;
+                padding: 0.75rem;
+                margin-bottom: 0.75rem;
+            }
+            .feedback-text {
+                font-size: 1rem;
+                margin-bottom: 0.4rem;
+            }
+            .correct-answer-display {
+                font-size: 0.8rem;
+            }
+            .tool-feedback-area {
+                font-size: 0.8rem;
+                min-height: 35px;
+                margin-bottom: 0.75rem;
+            }
+            .controls {
+                flex-direction: column;
+                align-items: center;
+                gap: 0.75rem;
+            }
+            .control-btn {
+                width: 100%;
+                max-width: 280px;
+                padding: 1rem;
+                font-size: 0.95rem;
+            }
+            .tool-section {
+                padding: 0.75rem;
+            }
+            .tool-section h3 {
+                font-size: 0.9rem;
+                margin-bottom: 0.5rem;
+            }
+            .tool-belt {
+                padding: 0.5rem;
+                gap: 0.5rem;
+            }
+            .tool-slot, .potential-tool-item {
+                font-size: 0.8rem;
+                padding: 0.75rem 0.5rem;
+                min-height: 48px;
+                min-width: 100px;
+            }
+            .restart-btn {
+                font-size: 0.85rem;
+                padding: 0.75rem 1.25rem;
+            }
+            .mobile-tool-instructions {
+                font-size: 0.75rem;
+                padding: 0.4rem;
+            }
             .help-content {
                 margin: 0.5rem;
                 max-height: 95vh;
             }
-            .symbol-grid {
-                grid-template-columns: 1fr;
+            .help-header {
+                padding: 1rem;
             }
             .help-header h2 {
                 font-size: 1.2rem;
             }
-            .title-row {
-                gap: 0.5rem;
+            .help-body {
+                padding: 1rem;
             }
-            .help-btn {
-                width: 30px;
-                height: 30px;
+            .symbol-grid {
+                grid-template-columns: 1fr;
+                gap: 0.75rem;
+            }
+            .symbol-item {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 0.5rem;
+                padding: 0.75rem;
+            }
+            .symbol {
+                min-width: auto;
+                width: 100%;
+                text-align: left;
+                font-size: 1rem;
+            }
+            .definition {
                 font-size: 0.9rem;
             }
         }
-
+        
+        @media (max-width: 480px) {
+            .stats-bar {
+                grid-template-columns: 1fr 1fr;
+                grid-template-rows: repeat(3, auto);
+            }
+            .stat-label {
+                font-size: 0.65rem;
+            }
+            .stat-value {
+                font-size: 1rem;
+            }
+            .game-title {
+                font-size: 1.1rem;
+            }
+            .title-row {
+                gap: 0.5rem;
+                flex-wrap: wrap;
+            }
+            .help-btn {
+                width: 34px;
+                height: 34px;
+                font-size: 0.9rem;
+            }
+            .question-text {
+                font-size: 0.9rem;
+            }
+            .vs-text {
+                font-size: 0.9rem;
+                padding: 0.4rem;
+            }
+            .expression-btn {
+                min-height: 100px;
+                padding: 1rem 0.75rem;
+                font-size: 0.9rem;
+            }
+            .math-expression {
+                font-size: 0.85rem;
+            }
+            .feedback-text {
+                font-size: 0.95rem;
+            }
+            .correct-answer-display {
+                font-size: 0.75rem;
+            }
+            .tool-feedback-area {
+                font-size: 0.75rem;
+                min-height: 30px;
+            }
+            .control-btn {
+                font-size: 0.9rem;
+                padding: 0.9rem;
+                max-width: 250px;
+            }
+            .tool-belt {
+                min-height: 100px;
+                gap: 0.4rem;
+            }
+            .tool-slot, .potential-tool-item {
+                font-size: 0.75rem;
+                padding: 0.6rem 0.4rem;
+                min-height: 44px;
+                min-width: 90px;
+                flex: 1 1 calc(50% - 0.4rem);
+            }
+            .restart-btn {
+                font-size: 0.8rem;
+                padding: 0.6rem 1rem;
+            }
+            .mobile-tool-instructions {
+                font-size: 0.7rem;
+            }
+            .help-header h2 {
+                font-size: 1.1rem;
+            }
+            .close-btn {
+                font-size: 1.3rem;
+                min-width: 40px;
+                min-height: 40px;
+            }
+            .symbol {
+                font-size: 0.95rem;
+            }
+            .definition {
+                font-size: 0.85rem;
+            }
+        }
+        
+        @media (max-width: 375px) {
+            body {
+                padding: 0.15rem;
+            }
+            .game-container {
+                padding: 0.15rem;
+            }
+            .game-area {
+                padding: 0.75rem;
+            }
+            .stats-bar {
+                gap: 0.3rem;
+            }
+            .stat-card {
+                padding: 0.5rem;
+                min-height: 55px;
+            }
+            .tool-slot, .potential-tool-item {
+                font-size: 0.7rem;
+                padding: 0.5rem 0.3rem;
+                min-height: 42px;
+                min-width: 80px;
+            }
+            .expression-btn {
+                min-height: 90px;
+                padding: 0.75rem 0.5rem;
+            }
+            .control-btn {
+                max-width: 220px;
+                padding: 0.8rem;
+            }
+        }
+        
+        @media (max-height: 500px) and (orientation: landscape) {
+            .game-container {
+                grid-template-columns: 1fr 280px;
+                grid-template-rows: none;
+                height: 100vh;
+                overflow: hidden;
+            }
+            .tool-sidebar {
+                order: initial;
+                overflow-y: auto;
+            }
+            .main-game {
+                order: initial;
+                overflow-y: auto;
+            }
+            .expressions-container {
+                grid-template-columns: 1fr auto 1fr;
+            }
+            .vs-text {
+                order: initial;
+            }
+            .stats-bar {
+                grid-template-columns: repeat(5, 1fr);
+                grid-template-rows: none;
+            }
+            .feedback-area {
+                min-height: 60px;
+            }
+            .expression-btn {
+                min-height: 100px;
+            }
+        }
     </style>
 </head>
 <body>
@@ -1033,7 +1208,7 @@
 
     <script>
         document.addEventListener('DOMContentLoaded', () => {
-            // --- DOM Elements ---
+            // DOM Elements
             const levelDisplay = document.getElementById('level-display');
             const scoreDisplay = document.getElementById('score-display');
             const correctStreakDisplay = document.getElementById('correct-streak-display');
@@ -1055,7 +1230,7 @@
             const helpBodyContent = document.getElementById('help-body-content');
             const mobileToolInstructions = document.querySelector('.mobile-tool-instructions');
 
-            // --- Game State ---
+            // Game State
             let currentLevel = 0;
             let score = 0;
             let correctStreak = 0;
@@ -1080,7 +1255,7 @@
             let selectedMobileTool = null; 
             let isMobileDevice = false;
 
-            // --- Utility Functions ---
+            // Utility Functions
             function getRandomInt(min, max) { return Math.floor(Math.random() * (max - min + 1)) + min; }
             function getRandomFloat(min, max, decimals = 3) { 
                 const factor = Math.pow(10, decimals);
@@ -1132,7 +1307,7 @@
                 return res;
             }
 
-            // --- Expression Generation System ---
+            // Expression Generation System
             const SINGLETON_GENERATORS = {
                 constant: (difficulty, targetMode) => {
                     const constants = [ 
@@ -1352,10 +1527,9 @@
 
             function generateComplexExpression(difficulty, targetMode, depth = 0) {
                 let term;
-                // Adjusted maxDepth and probability for less complex combinations
-                const maxDepth = Math.min(1 + Math.floor(difficulty / 3), 2); // Max depth 1 for diff 0-2 (levels 0-5), Max depth 2 for diff 3+ (levels 6+)
+                const maxDepth = Math.min(1 + Math.floor(difficulty / 3), 2);
                 
-                if (depth >= maxDepth || Math.random() < 0.55 - difficulty * 0.05) { // Increased base chance for singleton
+                if (depth >= maxDepth || Math.random() < 0.55 - difficulty * 0.05) {
                     term = generateSingletonTerm(difficulty, targetMode);
                     term.isCombinedFromTop = false; 
                 } else {
@@ -1412,7 +1586,7 @@
             }
 
             function performCherryPicking(level) {
-                const numCandidates = 35 + level * 4; // Slightly more candidates
+                const numCandidates = 35 + level * 4;
                 let candidates = [];
 
                 for (let i = 0; i < numCandidates; i++) {
@@ -1424,20 +1598,18 @@
                         const valA = pair.expr1.value;
                         const valB = pair.expr2.value;
                         
-                        // Filter 1: Different signs (unless one is very close to zero)
                         if ((valA * valB < 0) && (Math.abs(valA) > EPSILON*10 && Math.abs(valB) > EPSILON*10) ) {
                             continue; 
                         }
 
-                        // Filter 2: Ratio difference too large
                         const minAbsVal = Math.min(Math.abs(valA), Math.abs(valB));
                         const maxAbsVal = Math.max(Math.abs(valA), Math.abs(valB));
-                        if (minAbsVal < EPSILON) { // Avoid division by zero if one is effectively zero
-                            if (maxAbsVal > 1) continue; // If one is zero and other is large, skip
+                        if (minAbsVal < EPSILON) {
+                            if (maxAbsVal > 1) continue;
                         } else {
                             const ratio = maxAbsVal / minAbsVal;
-                            const maxAllowedRatio = 10 - level * 0.3; // Ratio becomes stricter with level
-                            if (ratio > Math.max(2.5, maxAllowedRatio)) { // e.g. Level 0: ratio > 10, Level 10: ratio > 7
+                            const maxAllowedRatio = 10 - level * 0.3;
+                            if (ratio > Math.max(2.5, maxAllowedRatio)) {
                                 continue;
                             }
                         }
@@ -1447,29 +1619,27 @@
                         }
 
                         const diff = Math.abs(valA - valB);
-                        const magnitude = Math.max(Math.abs(valA), Math.abs(valB), 0.1); // Min magnitude to avoid large scores for tiny numbers
+                        const magnitude = Math.max(Math.abs(valA), Math.abs(valB), 0.1);
                         const relativeDifference = diff / magnitude; 
                         const complexityScoreValue = (pair.expr1.complexity + pair.expr2.complexity);
 
                         let challengeScore = 0;
-                        const idealRelativeDiffMin = 0.005; // Target 0.5% difference
-                        const idealRelativeDiffMax = 0.10;  // Up to 10% difference is good
-                        const veryClosePenaltyThreshold = 0.0005; // Below 0.05% is too hard/frustrating
+                        const idealRelativeDiffMin = 0.005;
+                        const idealRelativeDiffMax = 0.10;
+                        const veryClosePenaltyThreshold = 0.0005;
 
                         if (relativeDifference < veryClosePenaltyThreshold) {
-                            challengeScore -= 10000; // Massive penalty for being too similar
+                            challengeScore -= 10000;
                         } else if (relativeDifference >= idealRelativeDiffMin && relativeDifference <= idealRelativeDiffMax) {
-                            challengeScore += 500; // Strong reward for ideal closeness
-                             // Bonus for being closer to the minimum ideal difference
+                            challengeScore += 500;
                             challengeScore += (1 - (relativeDifference - idealRelativeDiffMin) / (idealRelativeDiffMax - idealRelativeDiffMin)) * 250; 
                         } else if (relativeDifference < idealRelativeDiffMin) { 
-                             // Still reward, but less than ideal, and penalize more the further it is from idealMin
                             challengeScore += 100 - (idealRelativeDiffMin - relativeDifference) * 2000; 
-                        } else { // relativeDifference > idealRelativeDiffMax (too far apart)
+                        } else {
                             challengeScore -= (relativeDifference - idealRelativeDiffMax) * 200; 
                         }
                         
-                        challengeScore += complexityScoreValue * 1.5; // Reduced complexity weight
+                        challengeScore += complexityScoreValue * 1.5;
 
                         candidates.push({ ...pair, challengeScore });
                     }
@@ -1491,14 +1661,13 @@
 
                 candidates.sort((a, b) => b.challengeScore - a.challengeScore); 
 
-                const topPercent = Math.max(0.05, 0.4 - level * 0.02); // Even more selective from top candidates
+                const topPercent = Math.max(0.05, 0.4 - level * 0.02);
                 const selectionPoolSize = Math.max(1, Math.floor(candidates.length * topPercent));
                 
                 return candidates[getRandomInt(0, selectionPoolSize - 1)];
             }
 
-
-            // --- Tool System ---
+            // Tool System
             function renderToolSlots() {
                 toolBeltDiv.innerHTML = '';
                 for (let i = 0; i < MAX_TOOLS; i++) {
@@ -1553,13 +1722,13 @@
             function renderPotentialTools() {
                 potentialToolsDisplayDiv.innerHTML = '';
                 if (!gameActive && score === 0 && currentLevel === 0) {
-                    potentialToolsDisplayDiv.innerHTML = '<p style="font-size:0.8rem; color:var(--text-muted); font-style:italic;">Tools appear after answering.</p>';
+                    potentialToolsDisplayDiv.innerHTML = '<p style="font-size:0.8rem; color:var(--text-muted); font-style:italic; padding:1rem; text-align:center;">Tools appear after answering.</p>';
                     return;
                 }
                 if (potentialTools.length === 0) {
                      potentialToolsDisplayDiv.innerHTML = gameActive ? 
-                        '<p style="font-size:0.8rem; color:var(--text-muted); font-style:italic;">Answer to unlock tools.</p>' :
-                        '<p style="font-size:0.8rem; color:var(--text-muted); font-style:italic;">Game Over</p>';
+                        '<p style="font-size:0.8rem; color:var(--text-muted); font-style:italic; padding:1rem; text-align:center;">Answer to unlock tools.</p>' :
+                        '<p style="font-size:0.8rem; color:var(--text-muted); font-style:italic; padding:1rem; text-align:center;">Game Over</p>';
                     return;
                 }
 
@@ -1587,9 +1756,6 @@
 
             function equipTool(toolData, slotIndex) { 
                 if (slotIndex >= 0 && slotIndex < MAX_TOOLS) {
-                    if (equippedTools[slotIndex]) {
-                        // const oldTool = equippedTools[slotIndex];
-                    }
                     equippedTools[slotIndex] = { ...toolData }; 
                 }
                 renderToolSlots();
@@ -1634,7 +1800,7 @@
                 }, 3500);
             }
 
-            // --- Mobile Tool Interaction ---
+            // Mobile Tool Interaction
             function updateMobileInstructions() {
                 if (!isMobileDevice || !mobileToolInstructions) return;
                 mobileToolInstructions.style.display = 'block'; 
@@ -1685,8 +1851,7 @@
                 if(selectedMobileTool && selectedMobileTool.element) selectedMobileTool.element.classList.remove('selected');
             }
 
-
-            // --- Game Flow & UI Updates ---
+            // Game Flow & UI Updates
             function updateStats() {
                 let difficultyIcon = "";
                 if (currentLevel >= 12) difficultyIcon = " 🌌"; 
@@ -1771,7 +1936,6 @@
                 ];
                 potentialTools.sort((a,b) => b.complexity - a.complexity || b.value - a.value);
                 renderPotentialTools();
-
 
                 if (chosenButtonKey === correctAnswerKey) {
                     feedbackText.textContent = "🎉 Correct!";
@@ -1936,7 +2100,7 @@
                 startGameBtn.textContent = "Play Again";
                 restartBtn.style.display = 'none';
 
-                potentialToolsDisplayDiv.innerHTML = '<p style="font-size:0.8rem; color:var(--text-muted); font-style:italic;">Game Over</p>';
+                potentialToolsDisplayDiv.innerHTML = '<p style="font-size:0.8rem; color:var(--text-muted); font-style:italic; padding:1rem; text-align:center;">Game Over</p>';
                 roundModeDisplay.innerHTML = `<div class="round-mode">Ready</div>`;
                 if (selectedMobileTool && selectedMobileTool.element) selectedMobileTool.element.classList.remove('selected');
                 selectedMobileTool = null;
@@ -1944,7 +2108,7 @@
                 updateMobileInstructions();
             }
 
-            // --- Help Modal Content ---
+            // Help Modal Content
             const symbolGuide = [ 
                 { level: 0, symbol: "π", definition: "Pi (≈ 3.14159)", link: "https://en.wikipedia.org/wiki/Pi" },
                 { level: 0, symbol: "e", definition: "Euler's number (≈ 2.71828)", link: "https://en.wikipedia.org/wiki/E_(mathematical_constant)" },
@@ -2009,8 +2173,7 @@
                 }
             }
 
-
-            // --- Initial Setup & Event Listeners ---
+            // Initial Setup & Event Listeners
             function init() {
                 const particleContainer = document.getElementById('particles');
                 if (particleContainer) { 
@@ -2036,7 +2199,6 @@
                 updateMobileStatus();
                 window.addEventListener('resize', updateMobileStatus);
 
-
                 expressionABtn.addEventListener('click', () => handleAnswer('A'));
                 expressionBBtn.addEventListener('click', () => handleAnswer('B'));
                 nextQuestionBtn.addEventListener('click', prepareNextQuestion);
@@ -2048,8 +2210,10 @@
                 helpModal.addEventListener('click', (e) => { if (e.target === helpModal) helpModal.classList.remove('show'); });
                 document.addEventListener('keydown', (e) => { if (e.key === 'Escape' && helpModal.classList.contains('show')) helpModal.classList.remove('show'); });
 
-                expressionABtn.disabled = true; expressionBBtn.disabled = true;
-                expressionABtn.classList.add('disabled'); expressionBBtn.classList.add('disabled');
+                expressionABtn.disabled = true; 
+                expressionBBtn.disabled = true;
+                expressionABtn.classList.add('disabled'); 
+                expressionBBtn.classList.add('disabled');
                 nextQuestionBtn.style.display = 'none';
                 restartBtn.style.display = 'none';
                 
