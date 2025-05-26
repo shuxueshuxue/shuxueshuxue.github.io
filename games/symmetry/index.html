@@ -18,6 +18,8 @@
             overflow: hidden;
             user-select: none;
             min-height: 100vh;
+            touch-action: manipulation; /* 优化触摸响应 */
+            -webkit-tap-highlight-color: transparent; /* 移除点击高亮 */
         }
 
         .container {
@@ -49,6 +51,8 @@
             height: 100%;
             position: relative;
             animation: fadeIn 0.5s ease-in-out;
+            overflow-y: auto;
+            -webkit-overflow-scrolling: touch;
         }
 
         .screen.active {
@@ -56,6 +60,11 @@
             flex-direction: column;
             align-items: center;
             justify-content: center;
+        }
+
+        #gameArea.screen.active {
+            justify-content: flex-start;
+            overflow-y: auto;
         }
 
         @keyframes fadeIn {
@@ -245,10 +254,46 @@
             align-items: flex-start;
             padding: 30px;
             justify-content: center;
+            width: 100%;
+            height: 100%;
+            overflow: auto;
         }
 
         .table-section {
             text-align: center;
+            flex: 1;
+            min-width: 0;
+        }
+
+        .table-container {
+            overflow: auto;
+            max-width: 100%;
+            max-height: 70vh;
+            padding: 10px;
+            border-radius: 10px;
+            background: rgba(20, 20, 35, 0.5);
+            -webkit-overflow-scrolling: touch; /* iOS 滑动优化 */
+            scrollbar-width: thin;
+            scrollbar-color: rgba(78, 205, 196, 0.6) rgba(40, 40, 60, 0.3);
+        }
+
+        .table-container::-webkit-scrollbar {
+            width: 8px;
+            height: 8px;
+        }
+
+        .table-container::-webkit-scrollbar-track {
+            background: rgba(40, 40, 60, 0.3);
+            border-radius: 4px;
+        }
+
+        .table-container::-webkit-scrollbar-thumb {
+            background: rgba(78, 205, 196, 0.6);
+            border-radius: 4px;
+        }
+
+        .table-container::-webkit-scrollbar-thumb:hover {
+            background: rgba(78, 205, 196, 0.8);
         }
 
         .multiplication-table {
@@ -260,6 +305,7 @@
             box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
             backdrop-filter: blur(10px);
             border: 1px solid rgba(78, 205, 196, 0.3);
+            min-width: fit-content;
         }
 
         .cell {
@@ -855,16 +901,80 @@
         @media (max-width: 1200px) {
             .game-area {
                 flex-direction: column;
-                gap: 30px;
+                gap: 20px;
+                padding: 20px;
+                height: calc(100vh - 80px);
+                overflow-y: auto;
             }
             
             .control-panel {
                 width: 100%;
-                max-width: 400px;
+                max-width: 500px;
+                margin: 0 auto;
+            }
+
+            .table-container {
+                max-height: 50vh;
             }
         }
 
-        @media (max-width: 768px) {
+                    @media (max-width: 768px) {
+            .game-area {
+                padding: 10px;
+                gap: 15px;
+                height: calc(100vh - 60px);
+                justify-content: flex-start;
+            }
+
+            .table-container {
+                max-height: 45vh;
+                padding: 5px;
+                width: 100%;
+                display: flex;
+                justify-content: center;
+            }
+
+            .table-section {
+                width: 100%;
+                min-width: 0;
+            }
+
+            .cell {
+                width: 32px;
+                height: 32px;
+                font-size: 14px;
+                min-width: 32px;
+                flex-shrink: 0;
+            }
+
+            .multiplication-table {
+                gap: 2px;
+                padding: 6px;
+                margin: 0 auto;
+            }
+
+            .control-panel {
+                padding: 20px;
+                max-width: 100%;
+                width: 100%;
+                margin: 0;
+            }
+
+            .info-section {
+                padding: 15px;
+                font-size: 14px;
+            }
+
+            .control-button {
+                padding: 14px;
+                font-size: 15px;
+            }
+
+            #gameTitle {
+                font-size: 22px;
+                margin-bottom: 20px;
+            }
+
             .gallery-grid {
                 grid-template-columns: 1fr;
             }
@@ -873,11 +983,13 @@
                 flex-direction: column;
                 gap: 15px;
                 text-align: center;
+                padding: 20px;
             }
             
             .level-label {
                 width: 100%;
                 text-align: center;
+                font-size: 20px;
             }
             
             .level-content {
@@ -888,28 +1000,24 @@
             .level-buttons {
                 flex-direction: column;
                 width: 100%;
+                gap: 15px;
             }
             
             .level-button {
                 width: 100%;
+                padding: 12px 20px;
+                font-size: 15px;
+                min-width: auto;
             }
             
             .puzzle-hint {
                 text-align: center;
-            }
-
-            .cell {
-                width: 40px;
-                height: 40px;
-                font-size: 16px;
-            }
-
-            .multiplication-table {
-                gap: 2px;
+                font-size: 13px;
             }
 
             .main-menu {
                 gap: 20px;
+                padding: 20px;
             }
 
             .menu-button {
@@ -919,8 +1027,120 @@
             }
 
             .game-title {
-                width: 350px;
-                height: 100px;
+                width: 300px;
+                height: 80px;
+            }
+
+            .back-button {
+                top: 15px;
+                left: 15px;
+                padding: 12px 20px;
+                font-size: 14px;
+            }
+
+            .hint-icon {
+                top: 15px;
+                right: 15px;
+                width: 50px;
+                height: 50px;
+                font-size: 24px;
+            }
+
+            .hint-tooltip {
+                top: 70px;
+                max-width: 280px;
+                font-size: 13px;
+            }
+
+            .tutorial {
+                padding: 20px;
+                width: 95%;
+            }
+
+            .tutorial h1 {
+                font-size: 28px;
+            }
+
+            .tutorial h2 {
+                font-size: 20px;
+            }
+
+            .tutorial p {
+                font-size: 15px;
+            }
+
+            .settings {
+                width: 95%;
+                padding: 20px;
+            }
+
+            .gallery {
+                width: 95%;
+                padding: 20px;
+            }
+
+            .game-menu {
+                width: 95%;
+                padding: 20px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .cell {
+                width: 28px;
+                height: 28px;
+                font-size: 12px;
+            }
+
+            .multiplication-table {
+                gap: 1px;
+                padding: 4px;
+            }
+
+            .table-container {
+                max-height: 40vh;
+                padding: 3px;
+            }
+
+            .game-area {
+                padding: 5px;
+                gap: 10px;
+            }
+
+            .control-panel {
+                padding: 15px;
+            }
+
+            .info-section {
+                padding: 12px;
+                font-size: 13px;
+            }
+
+            .menu-button {
+                width: 200px;
+                padding: 16px 25px;
+                font-size: 15px;
+            }
+
+            .game-title {
+                width: 250px;
+                height: 70px;
+            }
+
+            .level-button {
+                padding: 10px 15px;
+                font-size: 14px;
+            }
+
+            .mobile-input-dialog {
+                padding: 20px;
+                margin: 20px;
+            }
+
+            .mobile-input-field {
+                width: 100px;
+                padding: 12px;
+                font-size: 20px;
             }
         }
     </style>
@@ -956,7 +1176,9 @@
             <div class="game-area">
                 <div class="table-section">
                     <h2 id="gameTitle" style="margin-bottom: 30px;">Order 4 Group</h2>
-                    <div id="multiplicationTable" class="multiplication-table"></div>
+                    <div class="table-container">
+                        <div id="multiplicationTable" class="multiplication-table"></div>
+                    </div>
                 </div>
                 <div class="control-panel">
                     <div class="info-section">
@@ -1695,7 +1917,12 @@
             const container = document.getElementById('multiplicationTable');
             if (!container) return;
             container.innerHTML = '';
-            container.style.gridTemplateColumns = `repeat(${state.currentOrder + 1}, 45px)`;
+            
+            const cellSize = state.isMobile && window.innerWidth < 768 ? 32 : 45;
+            const gap = state.isMobile && window.innerWidth < 768 ? 2 : 3;
+            
+            container.style.gridTemplateColumns = `repeat(${state.currentOrder + 1}, ${cellSize}px)`;
+            container.style.gap = `${gap}px`;
             
             // 空角落
             const corner = document.createElement('div');
@@ -2404,6 +2631,13 @@
 
         // 初始化游戏
         document.addEventListener('DOMContentLoaded', init);
+
+        // 窗口大小变化时重新渲染表格
+        window.addEventListener('resize', () => {
+            if (state.currentPage === 'gameArea') {
+                setTimeout(renderTable, 100); // 延迟渲染，确保CSS已应用
+            }
+        });
     </script>
 </body>
 </html>
