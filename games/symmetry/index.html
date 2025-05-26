@@ -149,6 +149,7 @@
         /* 游戏菜单 */
         .game-menu {
             width: 950px;
+            max-width: 95vw;
             max-height: 85vh;
             overflow-y: auto;
             padding: 30px;
@@ -167,7 +168,6 @@
             background: rgba(30, 30, 50, 0.8);
             border: 2px solid rgba(160, 82, 45, 0.6);
             border-radius: 15px;
-            cursor: pointer;
             transition: all 0.4s ease;
             backdrop-filter: blur(10px);
         }
@@ -186,6 +186,13 @@
             text-align: left;
             color: #fff;
             text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+        }
+
+        .level-content {
+            display: flex;
+            flex-direction: column;
+            align-items: flex-end;
+            gap: 10px;
         }
 
         .level-buttons {
@@ -221,6 +228,14 @@
             border-color: #444;
             cursor: not-allowed;
             background: rgba(30, 30, 30, 0.6);
+        }
+
+        .puzzle-hint {
+            font-size: 14px;
+            color: #888;
+            font-style: italic;
+            text-align: right;
+            margin-top: 5px;
         }
 
         /* 游戏界面 */
@@ -757,6 +772,72 @@
             backdrop-filter: blur(5px);
         }
 
+        /* 移动端输入框 */
+        .mobile-input-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.8);
+            z-index: 2000;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .mobile-input-overlay.active {
+            display: flex;
+        }
+
+        .mobile-input-dialog {
+            background: rgba(30, 30, 50, 0.95);
+            padding: 30px;
+            border-radius: 15px;
+            border: 2px solid #4ecdc4;
+            text-align: center;
+            backdrop-filter: blur(15px);
+        }
+
+        .mobile-input-dialog h3 {
+            color: #4ecdc4;
+            margin-bottom: 20px;
+        }
+
+        .mobile-input-field {
+            width: 120px;
+            padding: 15px;
+            font-size: 24px;
+            text-align: center;
+            background: rgba(50, 50, 70, 0.8);
+            color: #fff;
+            border: 2px solid #646464;
+            border-radius: 8px;
+            margin: 20px 0;
+        }
+
+        .mobile-input-buttons {
+            display: flex;
+            gap: 15px;
+            justify-content: center;
+            margin-top: 20px;
+        }
+
+        .mobile-input-btn {
+            padding: 12px 25px;
+            background: rgba(78, 205, 196, 0.3);
+            color: #fff;
+            border: 2px solid #4ecdc4;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 16px;
+        }
+
+        .mobile-input-btn.cancel {
+            background: rgba(255, 107, 107, 0.3);
+            border-color: #ff6b6b;
+        }
+
         /* 成功动画 */
         @keyframes celebration {
             0% { transform: scale(1) rotate(0deg); }
@@ -791,6 +872,17 @@
             .level-row {
                 flex-direction: column;
                 gap: 15px;
+                text-align: center;
+            }
+            
+            .level-label {
+                width: 100%;
+                text-align: center;
+            }
+            
+            .level-content {
+                width: 100%;
+                align-items: center;
             }
             
             .level-buttons {
@@ -800,6 +892,35 @@
             
             .level-button {
                 width: 100%;
+            }
+            
+            .puzzle-hint {
+                text-align: center;
+            }
+
+            .cell {
+                width: 40px;
+                height: 40px;
+                font-size: 16px;
+            }
+
+            .multiplication-table {
+                gap: 2px;
+            }
+
+            .main-menu {
+                gap: 20px;
+            }
+
+            .menu-button {
+                width: 220px;
+                padding: 18px 30px;
+                font-size: 16px;
+            }
+
+            .game-title {
+                width: 350px;
+                height: 100px;
             }
         }
     </style>
@@ -926,6 +1047,18 @@
         </div>
     </div>
 
+    <!-- 移动端输入框 -->
+    <div id="mobileInputOverlay" class="mobile-input-overlay">
+        <div class="mobile-input-dialog">
+            <h3>Enter Value</h3>
+            <input type="number" id="mobileInputField" class="mobile-input-field" min="0" max="19">
+            <div class="mobile-input-buttons">
+                <button class="mobile-input-btn cancel" onclick="closeMobileInput()">Cancel</button>
+                <button class="mobile-input-btn" onclick="confirmMobileInput()">OK</button>
+            </div>
+        </div>
+    </div>
+
     <script>
         // 游戏状态
         const state = {
@@ -937,8 +1070,59 @@
             selectedHeader: null,
             immutableCells: [],
             hint: '',
-            language: 'en'
+            language: 'en',
+            isMobile: false,
+            mobileInputTarget: null
         };
+
+        // 检测是否为移动设备
+        function detectMobile() {
+            return (('ontouchstart' in window) || (navigator.maxTouchPoints > 0) || (navigator.msMaxTouchPoints > 0));
+        }
+
+        // 移动端输入处理
+        function showMobileInput(row, col) {
+            if (!state.isMobile) return false;
+            
+            state.mobileInputTarget = [row, col];
+            const overlay = document.getElementById('mobileInputOverlay');
+            const inputField = document.getElementById('mobileInputField');
+            
+            if (overlay && inputField) {
+                inputField.max = state.currentOrder - 1;
+                inputField.value = state.multiTable[row][col] === -1 ? '' : state.multiTable[row][col];
+                overlay.classList.add('active');
+                setTimeout(() => inputField.focus(), 100);
+                return true;
+            }
+            return false;
+        }
+
+        function closeMobileInput() {
+            const overlay = document.getElementById('mobileInputOverlay');
+            if (overlay) {
+                overlay.classList.remove('active');
+                state.mobileInputTarget = null;
+            }
+        }
+
+        function confirmMobileInput() {
+            if (!state.mobileInputTarget) return;
+            
+            const [row, col] = state.mobileInputTarget;
+            const inputField = document.getElementById('mobileInputField');
+            const value = parseInt(inputField.value);
+            
+            if (isNaN(value) || value < 0 || value >= state.currentOrder) {
+                state.multiTable[row][col] = -1;
+            } else {
+                state.multiTable[row][col] = value;
+            }
+            
+            renderTable();
+            updateElementInfo();
+            closeMobileInput();
+        }
 
         // 格子展示配置 - 默认为 order - 2 (可在代码中调整)
         function getCellDisplayCount(order) {
@@ -1272,7 +1456,7 @@
                 hintTooltip: 'Click to see hint',
                 message: 'Message',
                 noPuzzlesAvailable: 'No puzzles available - discover groups first in exploration mode!',
-                noPuzzlesHint: 'Complete groups in exploration mode to unlock puzzles for this order.',
+                noPuzzlesHint: 'Discover groups first to unlock puzzles',
                 puzzleCompleted: 'Puzzle completed successfully!'
             },
             cn: {
@@ -1302,7 +1486,7 @@
                 hintTooltip: '点击查看提示',
                 message: '消息',
                 noPuzzlesAvailable: '无可用谜题 - 请先在探索模式中发现群！',
-                noPuzzlesHint: '在探索模式中完成群以解锁此阶数的谜题。',
+                noPuzzlesHint: '先发现群以解锁谜题',
                 puzzleCompleted: '谜题完成成功！'
             }
         };
@@ -1313,6 +1497,9 @@
 
         // 初始化
         function init() {
+            // 检测移动设备
+            state.isMobile = detectMobile();
+            
             // 加载设置
             state.language = storage.settings.language || 'en';
             
@@ -1321,6 +1508,20 @@
 
             const languageSelect = document.getElementById('languageSelect');
             if (languageSelect) languageSelect.value = state.language;
+            
+            // 移动端输入框事件监听
+            if (state.isMobile) {
+                const inputField = document.getElementById('mobileInputField');
+                if (inputField) {
+                    inputField.addEventListener('keydown', (e) => {
+                        if (e.key === 'Enter') {
+                            confirmMobileInput();
+                        } else if (e.key === 'Escape') {
+                            closeMobileInput();
+                        }
+                    });
+                }
+            }
             
             // 更新文本
             updateLanguage();
@@ -1389,36 +1590,34 @@
                 const row = document.createElement('div');
                 row.className = 'level-row';
                 
-                let puzzleButtonContent;
-                let puzzleButtonClass = 'level-button';
-                let puzzleButtonOnClick = `startPuzzle(${order})`;
-                
                 if (hasDiscoveredGroups) {
-                    puzzleButtonContent = `${t('puzzle')} ${solvedPuzzles}/${discoveredGroupsCount}`;
+                    // 有已发现的群：显示两个按钮
+                    row.innerHTML = `
+                        <div class="level-label">${t('order')} ${order}</div>
+                        <div class="level-content">
+                            <div class="level-buttons">
+                                <button class="level-button" onclick="startExploration(${order})">
+                                    ${t('discovered')} ${discovered}/${total}
+                                </button>
+                                <button class="level-button" onclick="startPuzzle(${order})">
+                                    ${t('puzzle')} ${solvedPuzzles}/${discoveredGroupsCount}
+                                </button>
+                            </div>
+                        </div>
+                    `;
                 } else {
-                    puzzleButtonContent = t('noPuzzlesAvailable');
-                    puzzleButtonClass += ' disabled';
-                    puzzleButtonOnClick = 'return false;';
-                }
-                
-                row.innerHTML = `
-                    <div class="level-label">${t('order')} ${order}</div>
-                    <div class="level-buttons">
-                        <button class="level-button" onclick="startExploration(${order})">
-                            ${t('discovered')} ${discovered}/${total}
-                        </button>
-                        <button class="${puzzleButtonClass}" onclick="${puzzleButtonOnClick}">
-                            ${puzzleButtonContent}
-                        </button>
-                    </div>
-                `;
-                
-                // 如果没有已发现的群，添加提示
-                if (!hasDiscoveredGroups) {
-                    const hint = document.createElement('div');
-                    hint.className = 'no-groups-hint';
-                    hint.textContent = t('noPuzzlesHint');
-                    row.appendChild(hint);
+                    // 没有已发现的群：只显示发现按钮和提示
+                    row.innerHTML = `
+                        <div class="level-label">${t('order')} ${order}</div>
+                        <div class="level-content">
+                            <div class="level-buttons">
+                                <button class="level-button" onclick="startExploration(${order})">
+                                    ${t('discovered')} ${discovered}/${total}
+                                </button>
+                            </div>
+                            <div class="puzzle-hint">${t('noPuzzlesHint')}</div>
+                        </div>
+                    `;
                 }
                 
                 levelList.appendChild(row);
@@ -1629,8 +1828,19 @@
 
         // 选择单元格
         function selectCell(row, col) {
+            // 检查是否是不可变单元格
+            if (state.immutableCells.some(([r, c]) => r === row && c === col)) return;
+            
             state.selectedCell = [row, col];
             state.selectedHeader = null;
+            
+            // 移动端：直接弹出输入框
+            if (state.isMobile) {
+                if (showMobileInput(row, col)) {
+                    return; // 成功显示移动端输入框，不需要渲染表格
+                }
+            }
+            
             renderTable();
             updateElementInfo();
         }
@@ -1772,6 +1982,9 @@
                 backToGameMenu();
                 return;
             }
+            
+            // 移动端使用输入框，跳过键盘输入
+            if (state.isMobile) return;
             
             if (!state.selectedCell) return;
             
