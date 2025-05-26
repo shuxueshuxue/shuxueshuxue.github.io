@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Symmetry - Group Theory Game</title>
     <style>
         * {
@@ -11,630 +11,607 @@
             box-sizing: border-box;
         }
 
-        body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background: linear-gradient(135deg, #0c0c0c 0%, #1a1a2e 50%, #16213e 100%);
-            color: #e0e6ed;
+        html, body {
+            height: 100%;
             overflow: hidden;
+            font-family: 'Segoe UI', 'SF Pro Display', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: linear-gradient(135deg, #1e1e2e 0%, #2d2d44 50%, #3c3c5a 100%);
+            color: #e8e8f0;
             user-select: none;
-            min-height: 100vh;
-            touch-action: manipulation; /* 优化触摸响应 */
-            -webkit-tap-highlight-color: transparent; /* 移除点击高亮 */
+            -webkit-tap-highlight-color: transparent;
+            touch-action: manipulation;
         }
 
         .container {
             width: 100vw;
             height: 100vh;
-            display: flex;
-            justify-content: center;
-            align-items: center;
             position: relative;
-        }
-
-        /* 背景装饰 */
-        .container::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background: radial-gradient(circle at 20% 50%, rgba(78, 205, 196, 0.1) 0%, transparent 50%),
-                        radial-gradient(circle at 80% 20%, rgba(255, 107, 107, 0.1) 0%, transparent 50%),
-                        radial-gradient(circle at 40% 80%, rgba(130, 119, 255, 0.1) 0%, transparent 50%);
-            pointer-events: none;
+            overflow: hidden;
         }
 
         .screen {
             display: none;
+            position: absolute;
+            top: 0;
+            left: 0;
             width: 100%;
             height: 100%;
-            position: relative;
-            animation: fadeIn 0.5s ease-in-out;
-            overflow-y: auto;
-            -webkit-overflow-scrolling: touch;
+            background: linear-gradient(135deg, #1e1e2e 0%, #2d2d44 50%, #3c3c5a 100%);
         }
 
         .screen.active {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-        }
-
-        #gameArea.screen.active {
-            justify-content: flex-start;
-            overflow-y: auto;
-        }
-
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(20px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-
-        @keyframes pulse {
-            0%, 100% { transform: scale(1); }
-            50% { transform: scale(1.05); }
-        }
-
-        @keyframes glow {
-            0%, 100% { box-shadow: 0 0 5px rgba(78, 205, 196, 0.3); }
-            50% { box-shadow: 0 0 20px rgba(78, 205, 196, 0.6), 0 0 30px rgba(78, 205, 196, 0.3); }
+            display: block;
         }
 
         /* 主菜单 */
         .main-menu {
-            text-align: center;
-            position: relative;
+            width: 100%;
+            height: 100%;
             display: flex;
             flex-direction: column;
             align-items: center;
-            gap: 25px;
-            z-index: 10;
+            justify-content: center;
+            padding: 20px;
+            text-align: center;
         }
 
         .game-title {
-            width: 450px;
-            height: 120px;
-            margin-bottom: 40px;
-            background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 450 120"><text x="50%" y="50%" font-family="Arial Black" font-size="48" fill="url(%23grad)" text-anchor="middle" dominant-baseline="middle">SYMMETRY</text><defs><linearGradient id="grad" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" style="stop-color:%23ff6b6b"/><stop offset="30%" style="stop-color:%234ecdc4"/><stop offset="70%" style="stop-color:%238277ff"/><stop offset="100%" style="stop-color:%23ff6b6b"/></linearGradient></defs></svg>') no-repeat center;
-            background-size: contain;
-            animation: glow 3s infinite;
+            font-size: clamp(36px, 8vw, 72px);
+            font-weight: 300;
+            color: #7c9ad9;
+            margin-bottom: 50px;
+            text-shadow: 0 2px 20px rgba(124, 154, 217, 0.3);
+            letter-spacing: 8px;
+            font-family: 'SF Pro Display', -apple-system, system-ui, sans-serif;
         }
 
         .menu-button {
             display: block;
-            width: 250px;
-            padding: 20px 35px;
-            background: rgba(30, 30, 50, 0.8);
-            color: #e0e6ed;
-            border: 2px solid #4ecdc4;
-            border-radius: 12px;
-            font-size: 18px;
-            font-weight: 600;
+            width: 280px;
+            max-width: 80vw;
+            padding: 18px 24px;
+            margin: 12px 0;
+            background: rgba(124, 154, 217, 0.1);
+            color: #e8e8f0;
+            border: 1px solid rgba(124, 154, 217, 0.3);
+            border-radius: 8px;
+            font-family: inherit;
+            font-size: 16px;
+            font-weight: 500;
             cursor: pointer;
-            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-            text-align: center;
-            position: relative;
-            overflow: hidden;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
             backdrop-filter: blur(10px);
         }
 
-        .menu-button::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: -100%;
-            width: 100%;
-            height: 100%;
-            background: linear-gradient(90deg, transparent, rgba(78, 205, 196, 0.3), transparent);
-            transition: left 0.5s;
-        }
-
-        .menu-button:hover::before {
-            left: 100%;
-        }
-
         .menu-button:hover {
-            color: #4ecdc4;
-            border-color: #4ecdc4;
-            background: rgba(78, 205, 196, 0.15);
-            transform: translateY(-3px);
-            box-shadow: 0 8px 25px rgba(78, 205, 196, 0.3);
-        }
-
-        .triangle-decoration {
-            position: absolute;
-            left: -150px;
-            top: 50%;
-            transform: translateY(-50%);
-            width: 200px;
-            height: 200px;
-            background: conic-gradient(from 0deg, rgba(78, 205, 196, 0.3), rgba(255, 107, 107, 0.3), rgba(130, 119, 255, 0.3), rgba(78, 205, 196, 0.3));
-            clip-path: polygon(50% 0%, 0% 100%, 100% 100%);
-            animation: pulse 4s infinite;
+            background: rgba(124, 154, 217, 0.2);
+            border-color: rgba(124, 154, 217, 0.6);
+            color: #7c9ad9;
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(124, 154, 217, 0.2);
         }
 
         /* 游戏菜单 */
         .game-menu {
-            width: 950px;
-            max-width: 95vw;
-            max-height: 85vh;
+            width: 100%;
+            height: 100%;
             overflow-y: auto;
-            padding: 30px;
-            background: rgba(20, 20, 35, 0.9);
-            border-radius: 20px;
-            backdrop-filter: blur(15px);
-            border: 1px solid rgba(78, 205, 196, 0.3);
+            padding: 20px;
+            position: relative;
+        }
+
+        .game-menu h2 {
+            text-align: center;
+            color: #7c9ad9;
+            font-size: 32px;
+            font-weight: 300;
+            margin-bottom: 40px;
+            text-shadow: 0 2px 10px rgba(124, 154, 217, 0.3);
+        }
+
+        .level-list {
+            max-width: 800px;
+            margin: 0 auto;
         }
 
         .level-row {
+            margin: 20px 0;
+            padding: 24px;
+            background: rgba(124, 154, 217, 0.05);
+            border: 1px solid rgba(124, 154, 217, 0.2);
+            border-radius: 12px;
             display: flex;
             align-items: center;
             justify-content: space-between;
-            margin: 20px 0;
-            padding: 25px 35px;
-            background: rgba(30, 30, 50, 0.8);
-            border: 2px solid rgba(160, 82, 45, 0.6);
-            border-radius: 15px;
-            transition: all 0.4s ease;
+            flex-wrap: wrap;
+            gap: 20px;
             backdrop-filter: blur(10px);
+            transition: all 0.3s ease;
         }
 
         .level-row:hover {
-            border-color: #4ecdc4;
-            background: rgba(78, 205, 196, 0.1);
-            transform: translateX(10px);
-            box-shadow: 0 5px 20px rgba(78, 205, 196, 0.2);
+            background: rgba(124, 154, 217, 0.1);
+            border-color: rgba(124, 154, 217, 0.4);
+            transform: translateX(8px);
         }
 
         .level-label {
-            font-size: 24px;
-            font-weight: 700;
-            width: 200px;
-            text-align: left;
-            color: #fff;
-            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+            font-size: 22px;
+            font-weight: 600;
+            color: #7c9ad9;
+            min-width: 140px;
         }
 
         .level-content {
             display: flex;
             flex-direction: column;
             align-items: flex-end;
-            gap: 10px;
+            gap: 12px;
         }
 
         .level-buttons {
             display: flex;
-            gap: 25px;
-            align-items: center;
+            gap: 16px;
+            flex-wrap: wrap;
         }
 
         .level-button {
-            padding: 15px 30px;
-            background: rgba(50, 50, 70, 0.8);
-            color: #e0e6ed;
-            border: 2px solid #646464;
-            border-radius: 10px;
+            padding: 12px 24px;
+            background: rgba(68, 88, 126, 0.3);
+            color: #e8e8f0;
+            border: 1px solid rgba(124, 154, 217, 0.3);
+            border-radius: 8px;
+            font-family: inherit;
+            font-size: 14px;
+            font-weight: 500;
             cursor: pointer;
             transition: all 0.3s ease;
-            font-size: 16px;
-            font-weight: 500;
-            min-width: 160px;
-            text-align: center;
+            white-space: nowrap;
             backdrop-filter: blur(5px);
         }
 
         .level-button:hover:not(.disabled) {
-            color: #4ecdc4;
-            border-color: #4ecdc4;
-            background: rgba(78, 205, 196, 0.15);
-            transform: scale(1.05);
+            background: rgba(124, 154, 217, 0.2);
+            border-color: rgba(124, 154, 217, 0.6);
+            color: #7c9ad9;
+            transform: translateY(-2px);
         }
 
         .level-button.disabled {
             color: #666;
             border-color: #444;
             cursor: not-allowed;
-            background: rgba(30, 30, 30, 0.6);
+            background: rgba(40, 40, 50, 0.3);
         }
 
         .puzzle-hint {
-            font-size: 14px;
-            color: #888;
+            font-size: 13px;
+            color: #9ca3af;
             font-style: italic;
-            text-align: right;
-            margin-top: 5px;
         }
 
-        /* 游戏界面 */
+        /* 游戏区域 */
         .game-area {
-            display: flex;
-            gap: 60px;
-            align-items: flex-start;
-            padding: 30px;
-            justify-content: center;
             width: 100%;
             height: 100%;
-            overflow: auto;
+            display: flex;
+            flex-direction: column;
+            position: relative;
         }
 
-        .table-section {
+        .game-header {
+            padding: 20px 24px;
+            background: rgba(124, 154, 217, 0.05);
+            border-bottom: 1px solid rgba(124, 154, 217, 0.2);
             text-align: center;
+            backdrop-filter: blur(10px);
+        }
+
+        .game-title-text {
+            font-size: 28px;
+            color: #7c9ad9;
+            font-weight: 500;
+        }
+
+        .game-content {
             flex: 1;
-            min-width: 0;
+            display: flex;
+            overflow: hidden;
         }
 
-        .table-container {
+        .table-area {
+            flex: 1;
             overflow: auto;
-            max-width: 100%;
-            max-height: 70vh;
-            padding: 10px;
-            border-radius: 10px;
-            background: rgba(20, 20, 35, 0.5);
-            -webkit-overflow-scrolling: touch; /* iOS 滑动优化 */
-            scrollbar-width: thin;
-            scrollbar-color: rgba(78, 205, 196, 0.6) rgba(40, 40, 60, 0.3);
-        }
-
-        .table-container::-webkit-scrollbar {
-            width: 8px;
-            height: 8px;
-        }
-
-        .table-container::-webkit-scrollbar-track {
-            background: rgba(40, 40, 60, 0.3);
-            border-radius: 4px;
-        }
-
-        .table-container::-webkit-scrollbar-thumb {
-            background: rgba(78, 205, 196, 0.6);
-            border-radius: 4px;
-        }
-
-        .table-container::-webkit-scrollbar-thumb:hover {
-            background: rgba(78, 205, 196, 0.8);
+            padding: 30px;
+            position: relative;
+            display: flex;
+            justify-content: center;
+            align-items: flex-start;
         }
 
         .multiplication-table {
             display: inline-grid;
-            gap: 3px;
-            background: rgba(30, 30, 50, 0.9);
+            gap: 2px;
+            background: rgba(124, 154, 217, 0.1);
             padding: 8px;
-            border-radius: 15px;
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+            border-radius: 12px;
+            margin: 0 auto;
+            min-width: max-content;
             backdrop-filter: blur(10px);
-            border: 1px solid rgba(78, 205, 196, 0.3);
-            min-width: fit-content;
+            border: 1px solid rgba(124, 154, 217, 0.2);
         }
 
         .cell {
-            width: 45px;
-            height: 45px;
+            width: 40px;
+            height: 40px;
             display: flex;
             align-items: center;
             justify-content: center;
             cursor: pointer;
-            font-size: 18px;
-            font-weight: 700;
-            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-            border: 2px solid transparent;
-            border-radius: 8px;
+            font-size: 16px;
+            font-weight: 600;
+            border: 1px solid rgba(124, 154, 217, 0.2);
+            background: rgba(45, 45, 68, 0.8);
+            color: #e8e8f0;
+            transition: all 0.2s ease;
             position: relative;
-            overflow: hidden;
+            border-radius: 4px;
         }
 
-        .cell::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background: linear-gradient(45deg, transparent, rgba(255, 255, 255, 0.1), transparent);
-            opacity: 0;
-            transition: opacity 0.3s;
-        }
-
-        .cell:hover::before {
-            opacity: 1;
+        .cell:hover {
+            border-color: rgba(124, 154, 217, 0.6);
+            background: rgba(124, 154, 217, 0.2);
+            transform: scale(1.05);
         }
 
         .cell.header {
-            font-weight: bold;
+            background: rgba(124, 154, 217, 0.3);
             color: #fff;
-            cursor: pointer;
-            background: rgba(50, 50, 70, 0.9);
-            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.5);
+            border-color: rgba(124, 154, 217, 0.5);
+            font-weight: 700;
         }
 
         .cell.header.selected {
-            border: 3px solid #ff6b6b;
+            background: rgba(255, 107, 107, 0.8);
+            color: #fff;
+            box-shadow: 0 0 15px rgba(255, 107, 107, 0.5);
             transform: scale(1.1);
-            box-shadow: 0 0 15px rgba(255, 107, 107, 0.6);
-        }
-
-        .cell:not(.header):hover {
-            border: 2px solid #646464;
-            transform: scale(1.1);
-            box-shadow: 0 0 10px rgba(100, 100, 100, 0.3);
         }
 
         .cell.selected {
-            border: 2px solid #4ecdc4;
-            transform: scale(1.1);
-            box-shadow: 0 0 15px rgba(78, 205, 196, 0.6);
+            background: rgba(124, 154, 217, 0.4);
+            border-color: rgba(124, 154, 217, 0.8);
+            box-shadow: 0 0 10px rgba(124, 154, 217, 0.4);
+            transform: scale(1.05);
         }
 
         .cell.immutable {
-            background: rgba(26, 26, 26, 0.9) !important;
-            color: #ff6b6b !important;
+            background: rgba(139, 69, 19, 0.3) !important;
+            color: #deb887 !important;
             cursor: not-allowed;
-            font-weight: bold;
-            box-shadow: inset 0 0 10px rgba(255, 107, 107, 0.3);
+            box-shadow: inset 0 0 8px rgba(139, 69, 19, 0.4);
+            border-color: rgba(139, 69, 19, 0.6) !important;
         }
 
         .control-panel {
-            background: rgba(30, 30, 50, 0.9);
-            padding: 30px;
-            border: 2px solid rgba(160, 82, 45, 0.6);
-            border-radius: 20px;
-            width: 280px;
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
-            backdrop-filter: blur(15px);
+            width: 320px;
+            max-width: 100%;
+            background: rgba(124, 154, 217, 0.05);
+            border-left: 1px solid rgba(124, 154, 217, 0.2);
+            padding: 24px;
+            overflow-y: auto;
+            backdrop-filter: blur(10px);
         }
 
         .info-section {
-            margin-bottom: 30px;
-            font-size: 15px;
-            line-height: 1.8;
+            margin-bottom: 24px;
             padding: 20px;
-            background: rgba(20, 20, 35, 0.8);
+            background: rgba(68, 88, 126, 0.2);
             border-radius: 12px;
-            border: 1px solid rgba(78, 205, 196, 0.2);
+            border: 1px solid rgba(124, 154, 217, 0.2);
         }
 
         .info-section strong {
-            color: #4ecdc4;
+            color: #7c9ad9;
             display: block;
-            margin-bottom: 15px;
-            font-size: 18px;
-            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+            margin-bottom: 12px;
+            font-size: 16px;
+            font-weight: 600;
         }
 
         .control-button {
             width: 100%;
-            padding: 16px;
-            margin: 15px 0;
-            background: rgba(50, 50, 70, 0.8);
-            color: #e0e6ed;
-            border: 2px solid #646464;
-            border-radius: 12px;
+            padding: 14px;
+            margin: 12px 0;
+            background: rgba(124, 154, 217, 0.1);
+            color: #e8e8f0;
+            border: 1px solid rgba(124, 154, 217, 0.3);
+            border-radius: 8px;
+            font-family: inherit;
+            font-size: 16px;
+            font-weight: 500;
             cursor: pointer;
             transition: all 0.3s ease;
-            font-size: 16px;
-            font-weight: 600;
             backdrop-filter: blur(5px);
         }
 
         .control-button:hover {
-            border-color: #4ecdc4;
-            color: #4ecdc4;
-            background: rgba(78, 205, 196, 0.15);
+            background: rgba(124, 154, 217, 0.2);
+            border-color: rgba(124, 154, 217, 0.6);
+            color: #7c9ad9;
             transform: translateY(-2px);
-            box-shadow: 0 5px 15px rgba(78, 205, 196, 0.3);
         }
 
         .control-button.primary {
-            border-color: #4ecdc4;
-            background: rgba(78, 205, 196, 0.3);
-            color: #fff;
-        }
-
-        .control-button.primary:hover {
-            background: rgba(78, 205, 196, 0.4);
+            background: rgba(124, 154, 217, 0.3);
+            border-color: rgba(124, 154, 217, 0.6);
+            box-shadow: 0 4px 15px rgba(124, 154, 217, 0.2);
         }
 
         /* 画廊 */
         .gallery {
-            width: 90%;
-            max-width: 1200px;
-            height: 85vh;
+            width: 100%;
+            height: 100%;
             overflow-y: auto;
-            padding: 30px;
-            background: rgba(20, 20, 35, 0.9);
-            border-radius: 15px;
-            backdrop-filter: blur(15px);
-            border: 1px solid rgba(78, 205, 196, 0.3);
+            padding: 24px;
+        }
+
+        .gallery h2 {
+            text-align: center;
+            color: #7c9ad9;
+            font-size: 32px;
+            font-weight: 300;
+            margin-bottom: 40px;
+            text-shadow: 0 2px 10px rgba(124, 154, 217, 0.3);
         }
 
         .gallery-grid {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-            gap: 20px;
-            margin-top: 30px;
+            gap: 24px;
+            max-width: 1200px;
+            margin: 0 auto;
         }
 
         .group-card {
-            border: 2px solid rgba(78, 205, 196, 0.3);
-            padding: 20px;
-            background: rgba(30, 30, 50, 0.6);
-            border-radius: 12px;
-            transition: all 0.3s ease;
-            backdrop-filter: blur(10px);
+            border: 1px solid rgba(124, 154, 217, 0.3);
+            padding: 24px;
+            background: rgba(124, 154, 217, 0.05);
+            border-radius: 16px;
             text-align: center;
             min-height: 200px;
             display: flex;
             flex-direction: column;
             justify-content: center;
-            align-items: center;
+            transition: all 0.3s ease;
+            backdrop-filter: blur(10px);
         }
 
         .group-card:hover {
-            border-color: #4ecdc4;
-            background: rgba(78, 205, 196, 0.1);
-            transform: translateY(-3px);
-            box-shadow: 0 8px 25px rgba(78, 205, 196, 0.2);
+            border-color: rgba(124, 154, 217, 0.6);
+            background: rgba(124, 154, 217, 0.1);
+            transform: translateY(-4px);
+            box-shadow: 0 12px 40px rgba(124, 154, 217, 0.15);
         }
 
         .group-card.unknown {
-            color: #666;
-            font-size: 48px;
-            background: rgba(40, 40, 60, 0.3);
-            border-color: rgba(100, 100, 100, 0.3);
-        }
-
-        .group-card.unknown:hover {
-            border-color: #999;
-            background: rgba(60, 60, 80, 0.4);
-        }
-
-        .group-info {
-            text-align: center;
+            color: #9ca3af;
+            border-color: rgba(156, 163, 175, 0.3);
+            background: rgba(75, 85, 99, 0.1);
         }
 
         .group-info h3 {
-            color: #4ecdc4;
+            color: #7c9ad9;
             font-size: 24px;
-            margin-bottom: 8px;
+            margin-bottom: 12px;
             font-weight: 600;
         }
 
         .group-info .order {
-            color: #ff6b6b;
+            color: #f59e0b;
             font-size: 16px;
-            font-weight: 500;
-            margin-bottom: 8px;
+            font-weight: 600;
+            margin: 8px 0;
         }
 
         .group-info .description {
-            color: #b4b4b4;
+            color: #d1d5db;
             font-size: 14px;
-            line-height: 1.4;
+            margin-top: 12px;
+            line-height: 1.5;
         }
 
         .group-table-preview {
-            width: 120px;
-            height: 120px;
+            width: 90px;
+            height: 90px;
             display: grid;
             gap: 1px;
-            background: rgba(20, 20, 35, 0.8);
-            padding: 3px;
-            border-radius: 6px;
-            margin: 15px auto 0;
-            border: 1px solid rgba(78, 205, 196, 0.2);
+            background: rgba(45, 45, 68, 0.5);
+            margin: 16px auto 0;
+            padding: 4px;
+            border-radius: 8px;
+            border: 1px solid rgba(124, 154, 217, 0.2);
         }
 
         .preview-cell {
-            background: rgba(60, 60, 80, 0.8);
+            background: rgba(124, 154, 217, 0.3);
+            font-size: 9px;
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 10px;
+            color: #fff;
             border-radius: 2px;
-            font-weight: 600;
         }
 
-        /* 教程 */
-        .tutorial {
-            width: 95%;
-            max-width: 900px;
-            height: 85vh;
+        /* 教程和设置 */
+        .tutorial, .settings {
+            width: 100%;
+            height: 100%;
             overflow-y: auto;
-            padding: 40px;
-            background: rgba(20, 20, 35, 0.9);
-            border: 2px solid rgba(160, 82, 45, 0.6);
-            border-radius: 20px;
-            backdrop-filter: blur(15px);
+            padding: 24px;
         }
 
-        .tutorial h1 {
-            color: #4ecdc4;
+        .tutorial h1, .settings h2 {
             text-align: center;
-            margin-bottom: 30px;
-            font-size: 36px;
-            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+            color: #7c9ad9;
+            font-size: 32px;
+            font-weight: 300;
+            margin-bottom: 40px;
+            text-shadow: 0 2px 10px rgba(124, 154, 217, 0.3);
         }
 
         .tutorial h2 {
-            color: #4ecdc4;
-            margin: 30px 0 20px;
-            font-size: 24px;
-            border-bottom: 2px solid rgba(78, 205, 196, 0.3);
-            padding-bottom: 10px;
+            color: #7c9ad9;
+            font-size: 22px;
+            font-weight: 500;
+            margin: 32px 0 16px;
+            border-bottom: 1px solid rgba(124, 154, 217, 0.3);
+            padding-bottom: 8px;
         }
 
         .tutorial p {
-            margin: 15px 0;
-            line-height: 1.8;
-            font-size: 16px;
+            margin: 16px 0;
+            line-height: 1.7;
+            color: #d1d5db;
+            font-size: 15px;
         }
 
         .tutorial strong {
-            color: #ff6b6b;
-        }
-
-        /* 设置 */
-        .settings {
-            width: 500px;
-            padding: 40px;
-            background: rgba(20, 20, 35, 0.9);
-            border: 2px solid rgba(160, 82, 45, 0.6);
-            border-radius: 20px;
-            backdrop-filter: blur(15px);
+            color: #f59e0b;
+            font-weight: 600;
         }
 
         .setting-item {
-            margin: 30px 0;
+            margin: 28px 0;
             display: flex;
             justify-content: space-between;
             align-items: center;
-            font-size: 18px;
+            padding: 20px;
+            background: rgba(124, 154, 217, 0.05);
+            border: 1px solid rgba(124, 154, 217, 0.2);
+            border-radius: 12px;
+            backdrop-filter: blur(10px);
         }
 
         .toggle {
-            width: 70px;
-            height: 35px;
-            background: rgba(50, 50, 70, 0.8);
-            border-radius: 20px;
+            width: 56px;
+            height: 32px;
+            background: rgba(75, 85, 99, 0.8);
+            border: 1px solid rgba(156, 163, 175, 0.3);
+            border-radius: 16px;
             position: relative;
             cursor: pointer;
             transition: all 0.3s ease;
-            border: 2px solid #646464;
         }
 
         .toggle.on {
-            background: rgba(78, 205, 196, 0.8);
-            border-color: #4ecdc4;
+            background: rgba(124, 154, 217, 0.8);
+            border-color: rgba(124, 154, 217, 0.6);
         }
 
         .toggle-slider {
-            width: 30px;
-            height: 30px;
-            background: linear-gradient(145deg, #ffffff, #e6e6e6);
+            width: 26px;
+            height: 26px;
+            background: linear-gradient(145deg, #ffffff, #e5e7eb);
             border-radius: 50%;
             position: absolute;
             top: 2px;
             left: 2px;
             transition: all 0.3s ease;
-            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
         }
 
         .toggle.on .toggle-slider {
-            transform: translateX(35px);
+            transform: translateX(24px);
         }
 
         select {
-            padding: 12px;
-            background: rgba(50, 50, 70, 0.8);
-            color: #fff;
-            border: 2px solid #646464;
+            padding: 10px 12px;
+            background: rgba(68, 88, 126, 0.8);
+            color: #e8e8f0;
+            border: 1px solid rgba(124, 154, 217, 0.3);
             border-radius: 8px;
-            font-size: 16px;
+            font-family: inherit;
+            font-size: 14px;
             backdrop-filter: blur(5px);
         }
 
-        /* 消息框 */
+        /* 返回按钮和提示图标 */
+        .back-button {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            padding: 12px 16px;
+            background: rgba(124, 154, 217, 0.1);
+            color: #e8e8f0;
+            border: 1px solid rgba(124, 154, 217, 0.3);
+            border-radius: 8px;
+            font-family: inherit;
+            font-size: 14px;
+            font-weight: 500;
+            cursor: pointer;
+            z-index: 100;
+            transition: all 0.3s ease;
+            backdrop-filter: blur(10px);
+        }
+
+        .back-button:hover {
+            background: rgba(124, 154, 217, 0.2);
+            border-color: rgba(124, 154, 217, 0.6);
+            color: #7c9ad9;
+            transform: translateX(-4px);
+        }
+
+        .hint-icon {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            width: 48px;
+            height: 48px;
+            background: rgba(124, 154, 217, 0.2);
+            border: 1px solid rgba(124, 154, 217, 0.4);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            font-size: 20px;
+            color: #7c9ad9;
+            font-weight: 600;
+            z-index: 100;
+            transition: all 0.3s ease;
+            backdrop-filter: blur(10px);
+        }
+
+        .hint-icon:hover {
+            background: rgba(124, 154, 217, 0.3);
+            border-color: rgba(124, 154, 217, 0.6);
+            transform: scale(1.05);
+        }
+
+        .hint-tooltip {
+            position: absolute;
+            top: 60px;
+            right: 0;
+            background: rgba(45, 45, 68, 0.95);
+            color: #f59e0b;
+            padding: 16px;
+            border-radius: 8px;
+            max-width: 320px;
+            display: none;
+            border: 1px solid rgba(124, 154, 217, 0.3);
+            font-size: 13px;
+            line-height: 1.5;
+            z-index: 101;
+            backdrop-filter: blur(15px);
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+        }
+
+        .hint-icon:hover .hint-tooltip {
+            display: block;
+        }
+
+        /* 模态框 */
         .modal {
             display: none;
             position: fixed;
@@ -642,180 +619,61 @@
             left: 0;
             width: 100%;
             height: 100%;
-            background: rgba(0, 0, 0, 0.8);
+            background: rgba(0, 0, 0, 0.6);
             z-index: 1000;
             justify-content: center;
             align-items: center;
-            backdrop-filter: blur(5px);
+            backdrop-filter: blur(8px);
         }
 
         .modal.active {
             display: flex;
-            animation: fadeIn 0.3s ease-in-out;
         }
 
         .modal-content {
-            background: rgba(30, 30, 50, 0.95);
-            padding: 50px;
-            border: 3px solid #4ecdc4;
-            border-radius: 20px;
-            max-width: 600px;
+            background: rgba(45, 45, 68, 0.95);
+            padding: 32px;
+            border: 1px solid rgba(124, 154, 217, 0.4);
+            border-radius: 16px;
+            max-width: 85vw;
+            max-height: 80vh;
             text-align: center;
-            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
-            backdrop-filter: blur(15px);
-            animation: pulse 0.3s ease-in-out;
+            overflow-y: auto;
+            backdrop-filter: blur(20px);
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.4);
         }
 
         .modal-content h3 {
-            color: #4ecdc4;
-            margin-bottom: 20px;
+            color: #7c9ad9;
+            margin-bottom: 16px;
             font-size: 24px;
+            font-weight: 500;
         }
 
         .modal-content p {
-            font-size: 18px;
+            color: #d1d5db;
+            margin-bottom: 24px;
             line-height: 1.6;
-            margin-bottom: 30px;
+            font-size: 16px;
         }
 
         .modal-button {
-            padding: 15px 40px;
-            margin-top: 20px;
-            background: rgba(78, 205, 196, 0.3);
-            color: #fff;
-            border: 2px solid #4ecdc4;
-            border-radius: 12px;
+            padding: 12px 24px;
+            background: rgba(124, 154, 217, 0.2);
+            color: #e8e8f0;
+            border: 1px solid rgba(124, 154, 217, 0.4);
+            border-radius: 8px;
+            font-family: inherit;
+            font-size: 16px;
+            font-weight: 500;
             cursor: pointer;
             transition: all 0.3s ease;
-            font-size: 16px;
-            font-weight: 600;
         }
 
         .modal-button:hover {
-            background: rgba(78, 205, 196, 0.5);
-            transform: translateY(-2px);
-            box-shadow: 0 5px 15px rgba(78, 205, 196, 0.3);
-        }
-
-        /* 提示图标 */
-        .hint-icon {
-            position: absolute;
-            top: 30px;
-            right: 30px;
-            width: 60px;
-            height: 60px;
-            background: linear-gradient(145deg, #4ecdc4, #3ba99c);
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            cursor: pointer;
-            font-size: 28px;
-            color: #000;
-            font-weight: bold;
-            transition: all 0.3s ease;
-            box-shadow: 0 5px 15px rgba(78, 205, 196, 0.4);
-        }
-
-        .hint-icon:hover {
-            transform: scale(1.1);
-            box-shadow: 0 8px 25px rgba(78, 205, 196, 0.6);
-        }
-
-        .hint-tooltip {
-            position: absolute;
-            top: 80px;
-            right: 0;
-            background: rgba(30, 0, 70, 0.95);
-            color: #dc7800;
-            padding: 20px;
-            border-radius: 12px;
-            max-width: 350px;
-            display: none;
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
-            backdrop-filter: blur(10px);
-            border: 1px solid rgba(220, 120, 0, 0.3);
-            font-size: 14px;
-            line-height: 1.5;
-        }
-
-        .hint-icon:hover .hint-tooltip {
-            display: block;
-            animation: fadeIn 0.3s ease-in-out;
-        }
-
-        /* 返回按钮 */
-        .back-button {
-            position: absolute;
-            top: 30px;
-            left: 30px;
-            padding: 15px 25px;
-            background: rgba(50, 50, 70, 0.8);
-            color: #e0e6ed;
-            border: 2px solid #646464;
-            border-radius: 12px;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            font-size: 16px;
-            font-weight: 600;
-            backdrop-filter: blur(10px);
-        }
-
-        .back-button:hover {
-            border-color: #4ecdc4;
-            color: #4ecdc4;
-            background: rgba(78, 205, 196, 0.15);
-            transform: translateX(-5px);
-            box-shadow: 0 5px 15px rgba(78, 205, 196, 0.3);
-        }
-
-        /* 滚动条 */
-        ::-webkit-scrollbar {
-            width: 14px;
-        }
-
-        ::-webkit-scrollbar-track {
-            background: rgba(26, 26, 26, 0.8);
-            border-radius: 8px;
-        }
-
-        ::-webkit-scrollbar-thumb {
-            background: linear-gradient(180deg, #646464, #4ecdc4);
-            border-radius: 8px;
-            border: 2px solid rgba(26, 26, 26, 0.8);
-        }
-
-        ::-webkit-scrollbar-thumb:hover {
-            background: linear-gradient(180deg, #4ecdc4, #3ba99c);
-        }
-
-        /* 标题样式 */
-        h2 {
-            color: #4ecdc4;
-            text-align: center;
-            margin-bottom: 30px;
-            font-size: 32px;
-            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
-        }
-
-        #gameTitle {
-            color: #fff;
-            font-size: 28px;
-            margin-bottom: 30px;
-            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.5);
-        }
-
-        /* 无群提示 */
-        .no-groups-hint {
-            background: rgba(255, 107, 107, 0.15);
-            border: 2px solid rgba(255, 107, 107, 0.6);
-            border-radius: 12px;
-            padding: 20px;
-            margin: 25px 0;
-            text-align: center;
-            color: #ff6b6b;
-            font-weight: 500;
-            backdrop-filter: blur(5px);
+            background: rgba(124, 154, 217, 0.3);
+            border-color: rgba(124, 154, 217, 0.6);
+            color: #7c9ad9;
         }
 
         /* 移动端输入框 */
@@ -826,10 +684,11 @@
             left: 0;
             width: 100%;
             height: 100%;
-            background: rgba(0, 0, 0, 0.8);
+            background: rgba(0, 0, 0, 0.7);
             z-index: 2000;
             justify-content: center;
             align-items: center;
+            backdrop-filter: blur(8px);
         }
 
         .mobile-input-overlay.active {
@@ -837,320 +696,221 @@
         }
 
         .mobile-input-dialog {
-            background: rgba(30, 30, 50, 0.95);
-            padding: 30px;
-            border-radius: 15px;
-            border: 2px solid #4ecdc4;
+            background: rgba(45, 45, 68, 0.95);
+            padding: 32px;
+            border: 1px solid rgba(124, 154, 217, 0.4);
+            border-radius: 16px;
             text-align: center;
-            backdrop-filter: blur(15px);
+            max-width: 90vw;
+            backdrop-filter: blur(20px);
         }
 
         .mobile-input-dialog h3 {
-            color: #4ecdc4;
+            color: #7c9ad9;
             margin-bottom: 20px;
+            font-size: 20px;
+            font-weight: 500;
         }
 
         .mobile-input-field {
             width: 120px;
-            padding: 15px;
+            padding: 16px;
             font-size: 24px;
             text-align: center;
-            background: rgba(50, 50, 70, 0.8);
-            color: #fff;
-            border: 2px solid #646464;
+            background: rgba(68, 88, 126, 0.8);
+            color: #e8e8f0;
+            border: 1px solid rgba(124, 154, 217, 0.4);
             border-radius: 8px;
+            font-family: inherit;
             margin: 20px 0;
+            font-weight: 600;
         }
 
         .mobile-input-buttons {
             display: flex;
-            gap: 15px;
+            gap: 16px;
             justify-content: center;
-            margin-top: 20px;
         }
 
         .mobile-input-btn {
-            padding: 12px 25px;
-            background: rgba(78, 205, 196, 0.3);
-            color: #fff;
-            border: 2px solid #4ecdc4;
+            padding: 12px 20px;
+            background: rgba(124, 154, 217, 0.2);
+            color: #e8e8f0;
+            border: 1px solid rgba(124, 154, 217, 0.4);
             border-radius: 8px;
+            font-family: inherit;
             cursor: pointer;
-            font-size: 16px;
+            font-weight: 500;
+            transition: all 0.3s ease;
+        }
+
+        .mobile-input-btn:hover {
+            background: rgba(124, 154, 217, 0.3);
+            color: #7c9ad9;
         }
 
         .mobile-input-btn.cancel {
-            background: rgba(255, 107, 107, 0.3);
-            border-color: #ff6b6b;
+            background: rgba(139, 69, 19, 0.3);
+            border-color: rgba(139, 69, 19, 0.6);
+            color: #deb887;
         }
 
-        /* 成功动画 */
-        @keyframes celebration {
-            0% { transform: scale(1) rotate(0deg); }
-            25% { transform: scale(1.1) rotate(90deg); }
-            50% { transform: scale(1.2) rotate(180deg); }
-            75% { transform: scale(1.1) rotate(270deg); }
-            100% { transform: scale(1) rotate(360deg); }
+        .mobile-input-btn.cancel:hover {
+            background: rgba(139, 69, 19, 0.4);
+            color: #f4a460;
+        }
+
+        /* 响应式设计 */
+        @media (max-width: 768px) {
+            .game-content {
+                flex-direction: column;
+            }
+
+            .control-panel {
+                width: 100%;
+                border-left: none;
+                border-top: 1px solid rgba(124, 154, 217, 0.2);
+                max-height: 45vh;
+            }
+
+            .table-area {
+                flex: 1;
+                min-height: 55vh;
+                padding: 20px;
+            }
+
+            .cell {
+                width: 35px;
+                height: 35px;
+                font-size: 14px;
+            }
+
+            .level-row {
+                flex-direction: column;
+                text-align: center;
+                padding: 20px;
+            }
+
+            .level-label {
+                min-width: auto;
+                width: 100%;
+            }
+
+            .level-content {
+                align-items: center;
+                width: 100%;
+            }
+
+            .level-buttons {
+                justify-content: center;
+                flex-wrap: wrap;
+            }
+
+            .level-button {
+                flex: 1;
+                min-width: 140px;
+            }
+
+            .menu-button {
+                width: 90vw;
+                font-size: 16px;
+            }
+
+            .game-title {
+                margin-bottom: 30px;
+                letter-spacing: 4px;
+            }
+
+            .gallery-grid {
+                grid-template-columns: 1fr;
+                gap: 20px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .cell {
+                width: 30px;
+                height: 30px;
+                font-size: 12px;
+            }
+
+            .control-panel {
+                padding: 16px;
+            }
+
+            .table-area {
+                padding: 16px;
+            }
+
+            .multiplication-table {
+                gap: 1px;
+                padding: 6px;
+            }
+
+            .back-button, .hint-icon {
+                top: 12px;
+                padding: 8px;
+                font-size: 12px;
+            }
+
+            .hint-icon {
+                width: 40px;
+                height: 40px;
+                font-size: 16px;
+            }
+
+            .game-header {
+                padding: 16px 20px;
+            }
+
+            .game-title-text {
+                font-size: 24px;
+            }
+
+            .tutorial, .settings, .gallery {
+                padding: 16px;
+            }
+
+            .game-menu {
+                padding: 16px;
+            }
+        }
+
+        /* 动画效果 */
+        @keyframes glow {
+            0%, 100% { 
+                text-shadow: 0 2px 20px rgba(124, 154, 217, 0.3); 
+            }
+            50% { 
+                text-shadow: 0 2px 30px rgba(124, 154, 217, 0.6), 0 4px 40px rgba(124, 154, 217, 0.3); 
+            }
+        }
+
+        .game-title {
+            animation: glow 3s infinite ease-in-out;
         }
 
         .celebrate {
             animation: celebration 0.6s ease-in-out;
         }
 
-        /* 响应式设计 */
-        @media (max-width: 1200px) {
-            .game-area {
-                flex-direction: column;
-                gap: 20px;
-                padding: 20px;
-                height: calc(100vh - 80px);
-                overflow-y: auto;
+        @keyframes celebration {
+            0%, 100% { 
+                background: rgba(124, 154, 217, 0.1); 
             }
-            
-            .control-panel {
-                width: 100%;
-                max-width: 500px;
-                margin: 0 auto;
-            }
-
-            .table-container {
-                max-height: 50vh;
-            }
-        }
-
-                    @media (max-width: 768px) {
-            .game-area {
-                padding: 10px;
-                gap: 15px;
-                height: calc(100vh - 60px);
-                justify-content: flex-start;
-            }
-
-            .table-container {
-                max-height: 45vh;
-                padding: 5px;
-                width: 100%;
-                display: flex;
-                justify-content: center;
-            }
-
-            .table-section {
-                width: 100%;
-                min-width: 0;
-            }
-
-            .cell {
-                width: 32px;
-                height: 32px;
-                font-size: 14px;
-                min-width: 32px;
-                flex-shrink: 0;
-            }
-
-            .multiplication-table {
-                gap: 2px;
-                padding: 6px;
-                margin: 0 auto;
-            }
-
-            .control-panel {
-                padding: 20px;
-                max-width: 100%;
-                width: 100%;
-                margin: 0;
-            }
-
-            .info-section {
-                padding: 15px;
-                font-size: 14px;
-            }
-
-            .control-button {
-                padding: 14px;
-                font-size: 15px;
-            }
-
-            #gameTitle {
-                font-size: 22px;
-                margin-bottom: 20px;
-            }
-
-            .gallery-grid {
-                grid-template-columns: 1fr;
-            }
-            
-            .level-row {
-                flex-direction: column;
-                gap: 15px;
-                text-align: center;
-                padding: 20px;
-            }
-            
-            .level-label {
-                width: 100%;
-                text-align: center;
-                font-size: 20px;
-            }
-            
-            .level-content {
-                width: 100%;
-                align-items: center;
-            }
-            
-            .level-buttons {
-                flex-direction: column;
-                width: 100%;
-                gap: 15px;
-            }
-            
-            .level-button {
-                width: 100%;
-                padding: 12px 20px;
-                font-size: 15px;
-                min-width: auto;
-            }
-            
-            .puzzle-hint {
-                text-align: center;
-                font-size: 13px;
-            }
-
-            .main-menu {
-                gap: 20px;
-                padding: 20px;
-            }
-
-            .menu-button {
-                width: 220px;
-                padding: 18px 30px;
-                font-size: 16px;
-            }
-
-            .game-title {
-                width: 300px;
-                height: 80px;
-            }
-
-            .back-button {
-                top: 15px;
-                left: 15px;
-                padding: 12px 20px;
-                font-size: 14px;
-            }
-
-            .hint-icon {
-                top: 15px;
-                right: 15px;
-                width: 50px;
-                height: 50px;
-                font-size: 24px;
-            }
-
-            .hint-tooltip {
-                top: 70px;
-                max-width: 280px;
-                font-size: 13px;
-            }
-
-            .tutorial {
-                padding: 20px;
-                width: 95%;
-            }
-
-            .tutorial h1 {
-                font-size: 28px;
-            }
-
-            .tutorial h2 {
-                font-size: 20px;
-            }
-
-            .tutorial p {
-                font-size: 15px;
-            }
-
-            .settings {
-                width: 95%;
-                padding: 20px;
-            }
-
-            .gallery {
-                width: 95%;
-                padding: 20px;
-            }
-
-            .game-menu {
-                width: 95%;
-                padding: 20px;
-            }
-        }
-
-        @media (max-width: 480px) {
-            .cell {
-                width: 28px;
-                height: 28px;
-                font-size: 12px;
-            }
-
-            .multiplication-table {
-                gap: 1px;
-                padding: 4px;
-            }
-
-            .table-container {
-                max-height: 40vh;
-                padding: 3px;
-            }
-
-            .game-area {
-                padding: 5px;
-                gap: 10px;
-            }
-
-            .control-panel {
-                padding: 15px;
-            }
-
-            .info-section {
-                padding: 12px;
-                font-size: 13px;
-            }
-
-            .menu-button {
-                width: 200px;
-                padding: 16px 25px;
-                font-size: 15px;
-            }
-
-            .game-title {
-                width: 250px;
-                height: 70px;
-            }
-
-            .level-button {
-                padding: 10px 15px;
-                font-size: 14px;
-            }
-
-            .mobile-input-dialog {
-                padding: 20px;
-                margin: 20px;
-            }
-
-            .mobile-input-field {
-                width: 100px;
-                padding: 12px;
-                font-size: 20px;
+            50% { 
+                background: rgba(124, 154, 217, 0.3); 
+                transform: scale(1.02);
             }
         }
     </style>
 </head>
 <body>
     <div class="container">
+        <!-- 主菜单 -->
         <div id="mainMenu" class="screen active">
             <div class="main-menu">
-                <div class="triangle-decoration"></div>
-                <div class="game-title"></div>
+                <div class="game-title">SYMMETRY</div>
                 <button class="menu-button" onclick="showTutorial()">Tutorial</button>
                 <button class="menu-button" onclick="showGameMenu()">Start Game</button>
                 <button class="menu-button" onclick="showGallery()">Gallery</button>
@@ -1159,14 +919,16 @@
             </div>
         </div>
 
+        <!-- 游戏菜单 -->
         <div id="gameMenu" class="screen">
             <button class="back-button" onclick="showMainMenu()">← Back</button>
             <div class="game-menu">
-                <h2 style="text-align: center; margin-bottom: 40px;">Select Level</h2>
-                <div id="levelList"></div>
+                <h2>Select Level</h2>
+                <div class="level-list" id="levelList"></div>
             </div>
         </div>
 
+        <!-- 游戏区域 -->
         <div id="gameArea" class="screen">
             <button class="back-button" onclick="backToGameMenu()">← Back</button>
             <div class="hint-icon" id="hintIcon" style="display: none;">
@@ -1174,27 +936,30 @@
                 <div class="hint-tooltip" id="hintTooltip"></div>
             </div>
             <div class="game-area">
-                <div class="table-section">
-                    <h2 id="gameTitle" style="margin-bottom: 30px;">Order 4 Group</h2>
-                    <div class="table-container">
+                <div class="game-header">
+                    <div class="game-title-text" id="gameTitle">Order 4 Group</div>
+                </div>
+                <div class="game-content">
+                    <div class="table-area">
                         <div id="multiplicationTable" class="multiplication-table"></div>
                     </div>
-                </div>
-                <div class="control-panel">
-                    <div class="info-section">
-                        <strong>Selected Element Info</strong>
-                        <div id="elementInfo">
-                            Order: -<br>
-                            Conjugates: -<br>
-                            Centralizer: -
+                    <div class="control-panel">
+                        <div class="info-section">
+                            <strong>Selected Element Info</strong>
+                            <div id="elementInfo">
+                                Order: -<br>
+                                Conjugates: -<br>
+                                Centralizer: -
+                            </div>
                         </div>
+                        <button class="control-button primary" onclick="submitTable()">Submit</button>
+                        <button class="control-button" onclick="clearTable()">Clear</button>
                     </div>
-                    <button class="control-button primary" onclick="submitTable()">Submit</button>
-                    <button class="control-button" onclick="clearTable()">Clear</button>
                 </div>
             </div>
         </div>
 
+        <!-- 画廊 -->
         <div id="gallery" class="screen">
             <button class="back-button" onclick="showMainMenu()">← Back</button>
             <div class="gallery">
@@ -1203,10 +968,11 @@
             </div>
         </div>
 
+        <!-- 教程 -->
         <div id="tutorial" class="screen">
             <button class="back-button" onclick="showMainMenu()">← Back</button>
             <div class="tutorial">
-                <h1 style="text-align: center; color: #4ecdc4;">Group Theory Explorer</h1>
+                <h1>Group Theory Explorer</h1>
                 
                 <h2>🎯 Objective</h2>
                 <p>Fill in multiplication tables to discover and understand finite groups. Master the art of abstract algebra through interactive exploration!</p>
@@ -1240,10 +1006,11 @@
             </div>
         </div>
 
+        <!-- 设置 -->
         <div id="settings" class="screen">
             <button class="back-button" onclick="showMainMenu()">← Back</button>
             <div class="settings">
-                <h2 style="margin-bottom: 40px;">Settings</h2>
+                <h2>Settings</h2>
                 <div class="setting-item">
                     <span>Enable Screenshots</span>
                     <div class="toggle" id="screenshotToggle" onclick="toggleScreenshot()">
@@ -1261,6 +1028,7 @@
         </div>
     </div>
 
+    <!-- 模态框 -->
     <div id="modal" class="modal">
         <div class="modal-content">
             <h3 id="modalTitle">Message</h3>
@@ -1297,55 +1065,6 @@
             mobileInputTarget: null
         };
 
-        // 检测是否为移动设备
-        function detectMobile() {
-            return (('ontouchstart' in window) || (navigator.maxTouchPoints > 0) || (navigator.msMaxTouchPoints > 0));
-        }
-
-        // 移动端输入处理
-        function showMobileInput(row, col) {
-            if (!state.isMobile) return false;
-            
-            state.mobileInputTarget = [row, col];
-            const overlay = document.getElementById('mobileInputOverlay');
-            const inputField = document.getElementById('mobileInputField');
-            
-            if (overlay && inputField) {
-                inputField.max = state.currentOrder - 1;
-                inputField.value = state.multiTable[row][col] === -1 ? '' : state.multiTable[row][col];
-                overlay.classList.add('active');
-                setTimeout(() => inputField.focus(), 100);
-                return true;
-            }
-            return false;
-        }
-
-        function closeMobileInput() {
-            const overlay = document.getElementById('mobileInputOverlay');
-            if (overlay) {
-                overlay.classList.remove('active');
-                state.mobileInputTarget = null;
-            }
-        }
-
-        function confirmMobileInput() {
-            if (!state.mobileInputTarget) return;
-            
-            const [row, col] = state.mobileInputTarget;
-            const inputField = document.getElementById('mobileInputField');
-            const value = parseInt(inputField.value);
-            
-            if (isNaN(value) || value < 0 || value >= state.currentOrder) {
-                state.multiTable[row][col] = -1;
-            } else {
-                state.multiTable[row][col] = value;
-            }
-            
-            renderTable();
-            updateElementInfo();
-            closeMobileInput();
-        }
-
         // 格子展示配置 - 默认为 order - 2 (可在代码中调整)
         function getCellDisplayCount(order) {
             // 你可以在这里修改公式来调整显示的格子数量
@@ -1353,23 +1072,9 @@
             return Math.max(2, order - 2);
         }
 
-        // 修复后的重新标记群元素函数
-        function relabelGroup(table) {
-            const order = table.length;
-            const permutation = generateRandomPermutation(order);
-            const newTable = Array(order).fill(null).map(() => Array(order).fill(0));
-            
-            // 正确的重新标记：newTable[π(i)][π(j)] = π(table[i][j])
-            for (let i = 0; i < order; i++) {
-                for (let j = 0; j < order; j++) {
-                    const newI = permutation[i];
-                    const newJ = permutation[j];
-                    const newValue = permutation[table[i][j]];
-                    newTable[newI][newJ] = newValue;
-                }
-            }
-            
-            return newTable;
+        // 检测是否为移动设备
+        function detectMobile() {
+            return (('ontouchstart' in window) || (navigator.maxTouchPoints > 0) || (navigator.msMaxTouchPoints > 0));
         }
 
         // Robust localStorage parsing function
@@ -1493,6 +1198,69 @@
                 {name: 'Fr20', description: 'Frobenius group'}
             ]
         };
+
+        // 移动端输入处理
+        function showMobileInput(row, col) {
+            if (!state.isMobile) return false;
+            
+            state.mobileInputTarget = [row, col];
+            const overlay = document.getElementById('mobileInputOverlay');
+            const inputField = document.getElementById('mobileInputField');
+            
+            if (overlay && inputField) {
+                inputField.max = state.currentOrder - 1;
+                inputField.value = state.multiTable[row][col] === -1 ? '' : state.multiTable[row][col];
+                overlay.classList.add('active');
+                setTimeout(() => inputField.focus(), 100);
+                return true;
+            }
+            return false;
+        }
+
+        function closeMobileInput() {
+            const overlay = document.getElementById('mobileInputOverlay');
+            if (overlay) {
+                overlay.classList.remove('active');
+                state.mobileInputTarget = null;
+            }
+        }
+
+        function confirmMobileInput() {
+            if (!state.mobileInputTarget) return;
+            
+            const [row, col] = state.mobileInputTarget;
+            const inputField = document.getElementById('mobileInputField');
+            const value = parseInt(inputField.value);
+            
+            if (isNaN(value) || value < 0 || value >= state.currentOrder) {
+                state.multiTable[row][col] = -1;
+            } else {
+                state.multiTable[row][col] = value;
+            }
+            
+            renderTable();
+            updateElementInfo();
+            closeMobileInput();
+        }
+
+        // 修复后的重新标记群元素函数
+        function relabelGroup(table) {
+            const order = table.length;
+            const permutation = generateRandomPermutation(order);
+            const newTable = Array(order).fill(null).map(() => Array(order).fill(0));
+            
+            // 正确的重新标记：newTable[π(i)][π(j)] = π(table[i][j])
+            for (let i = 0; i < order; i++) {
+                for (let j = 0; j < order; j++) {
+                    const newI = permutation[i];
+                    const newJ = permutation[j];
+                    const newValue = permutation[table[i][j]];
+                    newTable[newI][newJ] = newValue;
+                }
+            }
+            
+            return newTable;
+        }
 
         // 改进的puzzle生成函数，使用简化的格子数量计算
         function generatePuzzleFromDiscovered(order, puzzleIndex) {
@@ -1918,16 +1686,12 @@
             if (!container) return;
             container.innerHTML = '';
             
-            const cellSize = state.isMobile && window.innerWidth < 768 ? 32 : 45;
-            const gap = state.isMobile && window.innerWidth < 768 ? 2 : 3;
-            
+            const cellSize = state.isMobile && window.innerWidth <= 480 ? 30 : (window.innerWidth <= 768 ? 35 : 40);
             container.style.gridTemplateColumns = `repeat(${state.currentOrder + 1}, ${cellSize}px)`;
-            container.style.gap = `${gap}px`;
             
             // 空角落
             const corner = document.createElement('div');
             corner.className = 'cell header';
-            corner.style.background = 'rgba(40, 40, 60, 0.8)';
             container.appendChild(corner);
             
             // 列头
@@ -1936,7 +1700,6 @@
                 header.className = 'cell header';
                 if (state.selectedHeader === i) header.classList.add('selected');
                 header.textContent = i;
-                header.style.background = getElementColor(i, 180);
                 header.onclick = () => selectHeader(i);
                 container.appendChild(header);
             }
@@ -1948,7 +1711,6 @@
                 rowHeader.className = 'cell header';
                 if (state.selectedHeader === i) rowHeader.classList.add('selected');
                 rowHeader.textContent = i;
-                rowHeader.style.background = getElementColor(i, 180);
                 rowHeader.onclick = () => selectHeader(i);
                 container.appendChild(rowHeader);
                 
@@ -1961,10 +1723,9 @@
                     if (value >= 0 && value < state.currentOrder) {
                         cell.textContent = value;
                         cell.style.background = getElementColor(value);
-                        cell.style.color = '#fff';
                     } else {
                          cell.textContent = '';
-                         cell.style.background = 'rgba(40, 40, 60, 0.6)';
+                         cell.style.background = '#222';
                     }
                     
                     if (state.immutableCells.some(([r, c]) => r === i && c === j)) {
@@ -1985,19 +1746,18 @@
             }
         }
 
-        // 改进的颜色生成函数
-        function getElementColor(element, lightness = 200) {
-            if (element === -1 || element >= state.currentOrder) return 'rgba(40, 40, 60, 0.6)';
+        // 优雅的颜色生成函数
+        function getElementColor(element, maxOrder = null) {
+            // 使用传入的maxOrder，如果没有则使用当前游戏的order
+            const orderLimit = maxOrder !== null ? maxOrder : state.currentOrder;
             
-            const order = state.currentOrder;
-            if (order === 0) return 'rgba(40, 40, 60, 0.6)';
+            if (element === -1 || element >= orderLimit) return 'rgba(45, 45, 68, 0.8)';
             
-            // 使用更丰富的颜色调色板
             const colors = [
-                '#ff6b6b', '#4ecdc4', '#45b7d1', '#96ceb4', '#feca57',
-                '#ff9ff3', '#54a0ff', '#5f27cd', '#00d2d3', '#ff9f43',
-                '#10ac84', '#ee5253', '#0abde3', '#feca57', '#48dbfb',
-                '#ff3838', '#1dd1a1', '#ffd32a', '#ff3838', '#3742fa'
+                '#7c9ad9', '#f59e0b', '#10b981', '#ef4444', '#8b5cf6',
+                '#f97316', '#06b6d4', '#84cc16', '#ec4899', '#6366f1',
+                '#14b8a6', '#f59e0b', '#3b82f6', '#22c55e', '#a855f7',
+                '#e11d48', '#0ea5e9', '#65a30d', '#d946ef', '#2563eb'
             ];
             
             return colors[element % colors.length];
@@ -2281,7 +2041,7 @@
                 const tableElement = document.getElementById('multiplicationTable');
                 if (tableElement) {
                     tableElement.classList.add('celebrate');
-                    setTimeout(() => tableElement.classList.remove('celebrate'), 600);
+                    setTimeout(() => tableElement.classList.remove('celebrate'), 500);
                 }
                 
                 // 探索模式：记录发现的新群
@@ -2478,7 +2238,7 @@
                                 <div class="order">${t('order')} ${order}</div>
                                 <div class="description">${groupInfo.description || 'No description.'}</div>
                             </div>
-                            <div class="group-table-preview" style="grid-template-columns: repeat(${Math.min(order, 8)}, 1fr); grid-template-rows: repeat(${Math.min(order, 8)}, 1fr);">
+                            <div class="group-table-preview" style="grid-template-columns: repeat(${Math.min(order, 6)}, 1fr); grid-template-rows: repeat(${Math.min(order, 6)}, 1fr);">
                                 ${previewTable}
                             </div>
                         `;
@@ -2500,25 +2260,26 @@
         function generatePreviewTableFromData(tableData) {
             if (!tableData || !Array.isArray(tableData)) return generatePlaceholderPreviewTable(1);
             const order = tableData.length;
-            const maxShow = Math.min(order, 8);
+            const maxShow = Math.min(order, 6);
             let html = '';
             for (let i = 0; i < maxShow; i++) {
                 for (let j = 0; j < maxShow; j++) {
                     const val = tableData[i][j];
-                    const color = (val >= 0 && val < order) ? getElementColor(val, 120) : 'rgba(60, 60, 80, 0.8)';
-                    html += `<div class="preview-cell" style="background: ${color}; color: #fff;">${(val >= 0 && val < order && order <= 8) ? val : ''}</div>`;
+                    // 传入正确的order参数给getElementColor函数
+                    const color = (val >= 0 && val < order) ? getElementColor(val, order) : 'rgba(124, 154, 217, 0.3)';
+                    html += `<div class="preview-cell" style="background: ${color};">${(val >= 0 && val < order && order <= 6) ? val : ''}</div>`;
                 }
             }
             return html;
         }
 
         function generatePlaceholderPreviewTable(order) {
-            const maxShow = Math.min(order, 8);
+            const maxShow = Math.min(order, 6);
             let html = '';
             for (let i = 0; i < maxShow; i++) {
                 for (let j = 0; j < maxShow; j++) {
-                    const color = getElementColor((i * maxShow + j) % order, 80); 
-                    html += `<div class="preview-cell" style="background: ${color}; opacity: 0.3;"></div>`;
+                    const color = 'rgba(75, 85, 99, 0.3)'; 
+                    html += `<div class="preview-cell" style="background: ${color};"></div>`;
                 }
             }
             return html;
@@ -2635,7 +2396,7 @@
         // 窗口大小变化时重新渲染表格
         window.addEventListener('resize', () => {
             if (state.currentPage === 'gameArea') {
-                setTimeout(renderTable, 100); // 延迟渲染，确保CSS已应用
+                setTimeout(renderTable, 100);
             }
         });
     </script>

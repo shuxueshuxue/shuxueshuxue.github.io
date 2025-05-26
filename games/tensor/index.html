@@ -1,0 +1,1590 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tensor Transform Lab</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --bg-primary: #0f172a;
+            --bg-secondary: #1e293b;
+            --bg-tertiary: #334155;
+            --bg-surface: #475569;
+            
+            --text-primary: #f8fafc;
+            --text-secondary: #e2e8f0;
+            --text-muted: #94a3b8;
+            
+            --accent-blue: #3b82f6;
+            --accent-emerald: #10b981;
+            --accent-amber: #f59e0b;
+            --accent-rose: #f43f5e;
+            --accent-cyan: #06b6d4;
+            
+            --color-success: var(--accent-emerald);
+            --color-error: var(--accent-rose);
+            --color-warning: var(--accent-amber);
+            
+            --radius: 6px;
+            --shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1);
+            --transition: all 0.2s ease;
+        }
+
+        body {
+            font-family: 'SF Mono', Monaco, 'Cascadia Code', 'Roboto Mono', Consolas, 'Courier New', monospace;
+            background: var(--bg-primary);
+            color: var(--text-primary);
+            line-height: 1.5;
+            padding: 16px;
+            min-height: 100vh;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: var(--bg-secondary);
+            border-radius: var(--radius);
+            padding: 20px;
+            box-shadow: var(--shadow);
+            border: 1px solid var(--bg-tertiary);
+        }
+
+        /* Header */
+        .header {
+            text-align: center;
+            margin-bottom: 20px;
+            padding-bottom: 16px;
+            border-bottom: 1px solid var(--bg-tertiary);
+        }
+
+        .header h1 {
+            font-size: 1.75rem;
+            font-weight: 600;
+            margin-bottom: 4px;
+            background: linear-gradient(135deg, var(--accent-cyan), var(--accent-blue));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .header .subtitle {
+            color: var(--text-muted);
+            font-size: 0.9rem;
+        }
+
+        /* Status bar */
+        .status-bar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: var(--bg-tertiary);
+            border-radius: var(--radius);
+            padding: 12px 16px;
+            margin-bottom: 16px;
+            font-size: 0.9rem;
+        }
+
+        .level-info {
+            font-weight: 600;
+            color: var(--accent-cyan);
+        }
+
+        .progress-container {
+            flex: 1;
+            margin: 0 16px;
+        }
+
+        .progress-bar {
+            width: 100%;
+            height: 6px;
+            background: var(--bg-primary);
+            border-radius: 3px;
+            overflow: hidden;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, var(--accent-blue), var(--accent-emerald));
+            transition: width 0.3s ease;
+        }
+
+        .score {
+            font-weight: 600;
+            color: var(--accent-emerald);
+        }
+
+        /* Main layout */
+        .main-layout {
+            display: grid;
+            grid-template-columns: 1fr 320px;
+            gap: 20px;
+        }
+
+        .game-area {
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+        }
+
+        /* Tensor displays */
+        .tensor-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 16px;
+        }
+
+        .tensor-card {
+            background: var(--bg-tertiary);
+            border-radius: var(--radius);
+            padding: 14px;
+            border: 1px solid var(--bg-surface);
+        }
+
+        .tensor-title {
+            font-size: 0.85rem;
+            font-weight: 600;
+            color: var(--accent-cyan);
+            margin-bottom: 8px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .tensor-content {
+            background: var(--bg-primary);
+            border-radius: var(--radius);
+            padding: 12px;
+            border: 1px solid var(--bg-surface);
+            font-size: 0.8rem;
+        }
+
+        .tensor-code {
+            color: var(--accent-blue);
+            white-space: pre-wrap;
+            margin-bottom: 8px;
+            line-height: 1.3;
+            min-height: 60px;
+        }
+
+        .tensor-meta {
+            display: flex;
+            gap: 12px;
+            font-size: 0.75rem;
+            opacity: 0.8;
+        }
+
+        .tensor-shape { color: var(--accent-emerald); }
+        .tensor-size { color: var(--accent-amber); }
+
+        /* Result tensor - full width */
+        .result-card {
+            grid-column: 1 / -1;
+        }
+
+        /* Controls */
+        .controls {
+            background: var(--bg-tertiary);
+            border-radius: var(--radius);
+            padding: 16px;
+            border: 1px solid var(--bg-surface);
+        }
+
+        .input-group {
+            margin-bottom: 12px;
+        }
+
+        .input-label {
+            font-weight: 500;
+            color: var(--accent-cyan);
+            margin-bottom: 6px;
+            font-size: 0.85rem;
+        }
+
+        .operation-input {
+            width: 100%;
+            padding: 10px 12px;
+            background: var(--bg-primary);
+            border: 1px solid var(--bg-surface);
+            border-radius: var(--radius);
+            color: var(--text-primary);
+            font-family: inherit;
+            font-size: 0.9rem;
+            transition: var(--transition);
+        }
+
+        .operation-input:focus {
+            outline: none;
+            border-color: var(--accent-blue);
+            box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.1);
+        }
+
+        .operation-input::placeholder {
+            color: var(--text-muted);
+        }
+
+        .button-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 8px;
+            margin-bottom: 12px;
+        }
+
+        .btn {
+            padding: 8px 12px;
+            border: none;
+            border-radius: var(--radius);
+            font-family: inherit;
+            font-weight: 500;
+            font-size: 0.8rem;
+            cursor: pointer;
+            transition: var(--transition);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 4px;
+        }
+
+        .btn:hover {
+            transform: translateY(-1px);
+            box-shadow: var(--shadow);
+        }
+
+        .btn-primary { background: var(--accent-blue); color: white; }
+        .btn-secondary { background: var(--accent-rose); color: white; }
+        .btn-success { background: var(--accent-emerald); color: white; }
+        .btn-warning { background: var(--accent-amber); color: white; }
+
+        /* Navigation */
+        .navigation {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .nav-buttons {
+            display: flex;
+            gap: 8px;
+        }
+
+        .nav-btn {
+            padding: 6px 12px;
+            background: var(--bg-surface);
+            border: 1px solid var(--bg-primary);
+            border-radius: var(--radius);
+            color: var(--text-secondary);
+            font-size: 0.8rem;
+            cursor: pointer;
+            transition: var(--transition);
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+
+        .nav-btn:hover {
+            background: var(--bg-primary);
+            border-color: var(--accent-blue);
+        }
+
+        .level-select {
+            padding: 6px 10px;
+            background: var(--bg-primary);
+            border: 1px solid var(--bg-surface);
+            border-radius: var(--radius);
+            color: var(--text-primary);
+            font-family: inherit;
+            font-size: 0.8rem;
+        }
+
+        /* History - compact */
+        .history-card {
+            background: var(--bg-primary);
+            border-radius: var(--radius);
+            padding: 12px;
+            border: 1px solid var(--bg-surface);
+            max-height: 120px;
+            overflow-y: auto;
+        }
+
+        .history-title {
+            color: var(--accent-cyan);
+            font-weight: 500;
+            margin-bottom: 8px;
+            font-size: 0.85rem;
+        }
+
+        .history-item {
+            padding: 4px 0;
+            border-bottom: 1px solid var(--bg-tertiary);
+            font-size: 0.75rem;
+        }
+
+        .history-item:last-child { border-bottom: none; }
+
+        .history-operation { color: var(--accent-amber); }
+        .history-result {
+            color: var(--text-muted);
+            margin-top: 2px;
+            font-size: 0.7rem;
+        }
+
+        /* Help panel */
+        .help-panel {
+            background: var(--bg-tertiary);
+            border-radius: var(--radius);
+            padding: 16px;
+            border: 1px solid var(--bg-surface);
+            max-height: 70vh;
+            overflow-y: auto;
+        }
+
+        .help-title {
+            color: var(--accent-cyan);
+            font-size: 1rem;
+            font-weight: 600;
+            text-align: center;
+            margin-bottom: 16px;
+            padding-bottom: 8px;
+            border-bottom: 1px solid var(--bg-surface);
+        }
+
+        .operation-item {
+            background: var(--bg-primary);
+            border-radius: var(--radius);
+            padding: 10px;
+            margin-bottom: 8px;
+            border: 1px solid var(--bg-surface);
+            cursor: pointer;
+            transition: var(--transition);
+            border-left: 3px solid var(--accent-blue);
+        }
+
+        .operation-item:hover {
+            border-left-color: var(--accent-emerald);
+            background: var(--bg-secondary);
+        }
+
+        .operation-item.active {
+            border-left-color: var(--accent-rose);
+            background: var(--bg-secondary);
+        }
+
+        .op-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .op-name {
+            color: var(--accent-rose);
+            font-weight: 600;
+            font-size: 0.9rem;
+        }
+
+        .op-toggle {
+            color: var(--text-muted);
+            font-size: 0.8rem;
+            transition: var(--transition);
+        }
+
+        .op-content {
+            display: none;
+            margin-top: 8px;
+        }
+
+        .operation-item.active .op-content {
+            display: block;
+        }
+
+        .operation-item.active .op-toggle {
+            transform: rotate(180deg);
+        }
+
+        .op-syntax {
+            background: var(--bg-secondary);
+            padding: 6px;
+            border-radius: 4px;
+            color: var(--accent-amber);
+            font-size: 0.75rem;
+            margin: 6px 0;
+        }
+
+        .op-description {
+            color: var(--text-secondary);
+            font-size: 0.8rem;
+            margin: 6px 0;
+        }
+
+        .op-example {
+            background: var(--bg-secondary);
+            padding: 8px;
+            border-radius: 4px;
+            margin-top: 6px;
+            font-size: 0.7rem;
+        }
+
+        .example-input { color: var(--accent-emerald); }
+        .example-operation { color: var(--accent-amber); }
+        .example-output { color: var(--accent-blue); }
+
+        /* Feedback */
+        .feedback {
+            padding: 10px 14px;
+            border-radius: var(--radius);
+            margin-bottom: 16px;
+            text-align: center;
+            font-weight: 500;
+            font-size: 0.85rem;
+            border: 1px solid transparent;
+        }
+
+        .feedback.success {
+            background: rgba(16, 185, 129, 0.1);
+            border-color: var(--color-success);
+            color: var(--color-success);
+        }
+
+        .feedback.error {
+            background: rgba(244, 63, 94, 0.1);
+            border-color: var(--color-error);
+            color: var(--color-error);
+        }
+
+        .feedback.warning {
+            background: rgba(245, 158, 11, 0.1);
+            border-color: var(--color-warning);
+            color: var(--color-warning);
+        }
+
+        .hidden { display: none; }
+
+        /* Custom scrollbar */
+        ::-webkit-scrollbar { width: 6px; }
+        ::-webkit-scrollbar-track { background: var(--bg-primary); }
+        ::-webkit-scrollbar-thumb { background: var(--bg-surface); border-radius: 3px; }
+        ::-webkit-scrollbar-thumb:hover { background: var(--text-muted); }
+
+        /* Mobile responsive */
+        @media (max-width: 1024px) {
+            .main-layout {
+                grid-template-columns: 1fr;
+                gap: 16px;
+            }
+            
+            .help-panel {
+                max-height: 50vh;
+            }
+        }
+
+        @media (max-width: 768px) {
+            body { padding: 12px; }
+            .container { padding: 16px; }
+            
+            .tensor-row {
+                grid-template-columns: 1fr;
+                gap: 12px;
+            }
+            
+            .button-grid {
+                grid-template-columns: repeat(2, 1fr);
+                gap: 6px;
+            }
+            
+            .status-bar {
+                flex-direction: column;
+                gap: 8px;
+                text-align: center;
+            }
+            
+            .progress-container {
+                width: 100%;
+                margin: 0;
+            }
+            
+            .navigation {
+                flex-direction: column;
+                gap: 8px;
+            }
+            
+            .tensor-code {
+                font-size: 0.75rem;
+                min-height: 50px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .button-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .nav-buttons {
+                width: 100%;
+                justify-content: space-between;
+            }
+            
+            .nav-btn {
+                flex: 1;
+                justify-content: center;
+            }
+        }
+
+        /* Animations */
+        @keyframes slideIn {
+            from { opacity: 0; transform: translateY(-8px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .feedback { animation: slideIn 0.3s ease; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header class="header">
+            <h1>🎲 Tensor Transform Lab</h1>
+            <p class="subtitle">Master PyTorch tensor operations</p>
+        </header>
+
+        <div class="status-bar">
+            <div class="level-info">
+                Level <span id="current-level">1</span>/<span id="total-levels">32</span>
+            </div>
+            <div class="progress-container">
+                <div class="progress-bar">
+                    <div class="progress-fill" id="progress-fill"></div>
+                </div>
+            </div>
+            <div class="score">
+                Score: <span id="score">0</span>
+            </div>
+        </div>
+
+        <div id="feedback" class="feedback hidden"></div>
+
+        <div class="main-layout">
+            <div class="game-area">
+                <div class="tensor-row">
+                    <div class="tensor-card">
+                        <div class="tensor-title">📋 Initial</div>
+                        <div class="tensor-content">
+                            <div class="tensor-code" id="initial-code"></div>
+                            <div class="tensor-meta">
+                                <span class="tensor-shape" id="initial-shape"></span>
+                                <span class="tensor-size" id="initial-size"></span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="tensor-card">
+                        <div class="tensor-title">🎯 Target</div>
+                        <div class="tensor-content">
+                            <div class="tensor-code" id="target-code"></div>
+                            <div class="tensor-meta">
+                                <span class="tensor-shape" id="target-shape"></span>
+                                <span class="tensor-size" id="target-size"></span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="tensor-card result-card">
+                    <div class="tensor-title">⚡ Result</div>
+                    <div class="tensor-content">
+                        <div class="tensor-code" id="result-code">Ready to execute operations...</div>
+                        <div class="tensor-meta">
+                            <span class="tensor-shape" id="result-shape"></span>
+                            <span class="tensor-size" id="result-size"></span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="controls">
+                    <div class="input-group">
+                        <label class="input-label">Operations:</label>
+                        <input 
+                            type="text" 
+                            id="operation-input" 
+                            class="operation-input"
+                            placeholder="reshape 2 -1, transpose 0 1"
+                            autocomplete="off"
+                            spellcheck="false"
+                        >
+                    </div>
+                    
+                    <div class="button-grid">
+                        <button class="btn btn-primary" onclick="executeOperations()">▶️ Execute</button>
+                        <button class="btn btn-warning" onclick="previewOperations()">👁️ Preview</button>
+                        <button class="btn btn-success" onclick="showHint()">💡 Hint</button>
+                        <button class="btn btn-secondary" onclick="clearInput()">🗑️ Clear</button>
+                    </div>
+                </div>
+
+                <div class="history-card">
+                    <div class="history-title">📝 History</div>
+                    <div id="history-content">No operations executed yet.</div>
+                </div>
+
+                <div class="navigation">
+                    <select class="level-select" id="level-select" onchange="goToLevel(this.value)">
+                        <!-- Options populated by JavaScript -->
+                    </select>
+                    <div class="nav-buttons">
+                        <button class="nav-btn" onclick="previousLevel()">← Prev</button>
+                        <button class="nav-btn" onclick="nextLevel()">Next →</button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="help-panel">
+                <div class="help-title">📚 Operations</div>
+                <div id="operations-list">
+                    <!-- Operations populated by JavaScript -->
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Enhanced Tensor class with robust operations
+        class Tensor {
+            constructor(data, shape = null) {
+                if (Array.isArray(data)) {
+                    this.data = this._flattenArray(data);
+                    this.shape = shape || this._inferShape(data);
+                } else if (data instanceof Tensor) {
+                    this.data = [...data.data];
+                    this.shape = [...data.shape];
+                } else {
+                    throw new Error('Invalid tensor data');
+                }
+                
+                this._validateTensor();
+            }
+
+            _flattenArray(arr) {
+                if (!Array.isArray(arr)) return [arr];
+                return arr.reduce((flat, item) => flat.concat(this._flattenArray(item)), []);
+            }
+
+            _inferShape(arr) {
+                if (!Array.isArray(arr)) return [];
+                const shape = [arr.length];
+                if (arr.length > 0 && Array.isArray(arr[0])) {
+                    shape.push(...this._inferShape(arr[0]));
+                }
+                return shape;
+            }
+
+            _validateTensor() {
+                const expectedSize = this.shape.reduce((a, b) => a * b, 1);
+                if (this.data.length !== expectedSize) {
+                    throw new Error(`Tensor data length ${this.data.length} doesn't match shape ${this.shape}`);
+                }
+            }
+
+            copy() {
+                return new Tensor([...this.data], [...this.shape]);
+            }
+
+            equals(other) {
+                if (!(other instanceof Tensor)) return false;
+                if (this.shape.length !== other.shape.length) return false;
+                
+                for (let i = 0; i < this.shape.length; i++) {
+                    if (this.shape[i] !== other.shape[i]) return false;
+                }
+                
+                for (let i = 0; i < this.data.length; i++) {
+                    if (this.data[i] !== other.data[i]) return false;
+                }
+                
+                return true;
+            }
+
+            toArray() {
+                if (this.shape.length === 0) return this.data[0];
+                if (this.shape.length === 1) return [...this.data];
+                
+                const buildArray = (data, shape, offset = 0) => {
+                    if (shape.length === 1) {
+                        return data.slice(offset, offset + shape[0]);
+                    }
+                    const result = [];
+                    const size = shape.slice(1).reduce((a, b) => a * b, 1);
+                    for (let i = 0; i < shape[0]; i++) {
+                        result.push(buildArray(data, shape.slice(1), offset + i * size));
+                    }
+                    return result;
+                };
+                
+                return buildArray(this.data, this.shape);
+            }
+
+            toString() {
+                return this._formatTensor(this.toArray(), 0);
+            }
+
+            _formatTensor(arr, depth = 0) {
+                if (!Array.isArray(arr)) return arr.toString();
+                
+                if (this.shape.length === 1) {
+                    return `tensor([${arr.join(', ')}])`;
+                }
+                
+                if (depth === 0) {
+                    const inner = arr.map(item => 
+                        Array.isArray(item) ? 
+                        `  ${this._formatTensor(item, depth + 1)}` : 
+                        item
+                    ).join(',\n');
+                    return `tensor([\n${inner}\n])`;
+                } else {
+                    const inner = arr.map(item => 
+                        Array.isArray(item) ? 
+                        this._formatTensor(item, depth + 1) : 
+                        item
+                    ).join(', ');
+                    return `[${inner}]`;
+                }
+            }
+
+            // Tensor operations with enhanced error handling
+            reshape(...newShape) {
+                if (newShape.length === 0) {
+                    throw new Error('Reshape requires at least one dimension');
+                }
+
+                const totalElements = this.data.length;
+                const processedShape = [...newShape];
+                
+                // Handle -1 inference
+                const inferIndex = processedShape.indexOf(-1);
+                if (inferIndex !== -1) {
+                    const knownElements = processedShape
+                        .filter(s => s !== -1)
+                        .reduce((a, b) => a * b, 1);
+                    
+                    if (knownElements === 0) {
+                        throw new Error('Cannot infer dimension when other dimensions are 0');
+                    }
+                    
+                    if (totalElements % knownElements !== 0) {
+                        throw new Error(`Cannot infer dimension: ${totalElements} is not divisible by ${knownElements}`);
+                    }
+                    
+                    processedShape[inferIndex] = totalElements / knownElements;
+                }
+                
+                const newTotalElements = processedShape.reduce((a, b) => a * b, 1);
+                if (newTotalElements !== totalElements) {
+                    throw new Error(`Cannot reshape tensor of size ${totalElements} into shape [${processedShape.join(', ')}]`);
+                }
+                
+                return new Tensor([...this.data], processedShape);
+            }
+
+            view(...newShape) {
+                return this.reshape(...newShape);
+            }
+
+            transpose(dim0, dim1) {
+                if (this.shape.length < 2) {
+                    throw new Error('Transpose requires at least 2 dimensions');
+                }
+                
+                if (dim0 < 0) dim0 += this.shape.length;
+                if (dim1 < 0) dim1 += this.shape.length;
+                
+                if (dim0 < 0 || dim0 >= this.shape.length || dim1 < 0 || dim1 >= this.shape.length) {
+                    throw new Error(`Invalid dimensions for transpose: ${dim0}, ${dim1}`);
+                }
+                
+                const newShape = [...this.shape];
+                [newShape[dim0], newShape[dim1]] = [newShape[dim1], newShape[dim0]];
+                
+                const newData = new Array(this.data.length);
+                const indices = new Array(this.shape.length).fill(0);
+                
+                const generateIndices = (pos) => {
+                    if (pos === this.shape.length) {
+                        const newIndices = [...indices];
+                        [newIndices[dim0], newIndices[dim1]] = [newIndices[dim1], newIndices[dim0]];
+                        
+                        const oldIdx = this._getLinearIndex(indices);
+                        const newIdx = this._getLinearIndex(newIndices, newShape);
+                        
+                        newData[newIdx] = this.data[oldIdx];
+                        return;
+                    }
+                    
+                    for (let i = 0; i < this.shape[pos]; i++) {
+                        indices[pos] = i;
+                        generateIndices(pos + 1);
+                    }
+                };
+                
+                generateIndices(0);
+                return new Tensor(newData, newShape);
+            }
+
+            permute(...dims) {
+                if (dims.length !== this.shape.length) {
+                    throw new Error(`Permute expects ${this.shape.length} dimensions, got ${dims.length}`);
+                }
+                
+                // Validate dimensions
+                const sortedDims = [...dims].sort();
+                for (let i = 0; i < sortedDims.length; i++) {
+                    if (sortedDims[i] !== i) {
+                        throw new Error(`Invalid permutation dimensions: ${dims}`);
+                    }
+                }
+                
+                const newShape = dims.map(d => this.shape[d]);
+                const newData = new Array(this.data.length);
+                const indices = new Array(this.shape.length).fill(0);
+                
+                const generateIndices = (pos) => {
+                    if (pos === this.shape.length) {
+                        const newIndices = dims.map(d => indices[d]);
+                        
+                        const oldIdx = this._getLinearIndex(indices);
+                        const newIdx = this._getLinearIndex(newIndices, newShape);
+                        
+                        newData[newIdx] = this.data[oldIdx];
+                        return;
+                    }
+                    
+                    for (let i = 0; i < this.shape[pos]; i++) {
+                        indices[pos] = i;
+                        generateIndices(pos + 1);
+                    }
+                };
+                
+                generateIndices(0);
+                return new Tensor(newData, newShape);
+            }
+
+            unsqueeze(dim) {
+                if (dim < 0) dim += this.shape.length + 1;
+                if (dim < 0 || dim > this.shape.length) {
+                    throw new Error(`Invalid dimension for unsqueeze: ${dim}`);
+                }
+                
+                const newShape = [...this.shape];
+                newShape.splice(dim, 0, 1);
+                return new Tensor([...this.data], newShape);
+            }
+
+            squeeze(dim = null) {
+                if (dim === null) {
+                    const newShape = this.shape.filter(s => s !== 1);
+                    return new Tensor([...this.data], newShape);
+                }
+                
+                if (dim < 0) dim += this.shape.length;
+                if (dim < 0 || dim >= this.shape.length) {
+                    throw new Error(`Invalid dimension for squeeze: ${dim}`);
+                }
+                
+                if (this.shape[dim] !== 1) {
+                    throw new Error(`Cannot squeeze dimension ${dim} with size ${this.shape[dim]}`);
+                }
+                
+                const newShape = [...this.shape];
+                newShape.splice(dim, 1);
+                return new Tensor([...this.data], newShape);
+            }
+
+            flatten() {
+                return new Tensor([...this.data], [this.data.length]);
+            }
+
+            flip(dim) {
+                if (dim < 0) dim += this.shape.length;
+                if (dim < 0 || dim >= this.shape.length) {
+                    throw new Error(`Invalid dimension for flip: ${dim}`);
+                }
+                
+                const newData = new Array(this.data.length);
+                const indices = new Array(this.shape.length).fill(0);
+                
+                const generateIndices = (pos) => {
+                    if (pos === this.shape.length) {
+                        const flippedIndices = [...indices];
+                        flippedIndices[dim] = this.shape[dim] - 1 - indices[dim];
+                        
+                        const oldIdx = this._getLinearIndex(indices);
+                        const newIdx = this._getLinearIndex(flippedIndices);
+                        
+                        newData[newIdx] = this.data[oldIdx];
+                        return;
+                    }
+                    
+                    for (let i = 0; i < this.shape[pos]; i++) {
+                        indices[pos] = i;
+                        generateIndices(pos + 1);
+                    }
+                };
+                
+                generateIndices(0);
+                return new Tensor(newData, [...this.shape]);
+            }
+
+            roll(shifts, dim) {
+                if (dim < 0) dim += this.shape.length;
+                if (dim < 0 || dim >= this.shape.length) {
+                    throw new Error(`Invalid dimension for roll: ${dim}`);
+                }
+                
+                const newData = new Array(this.data.length);
+                const indices = new Array(this.shape.length).fill(0);
+                
+                const generateIndices = (pos) => {
+                    if (pos === this.shape.length) {
+                        const rolledIndices = [...indices];
+                        rolledIndices[dim] = (indices[dim] + shifts) % this.shape[dim];
+                        if (rolledIndices[dim] < 0) rolledIndices[dim] += this.shape[dim];
+                        
+                        const oldIdx = this._getLinearIndex(indices);
+                        const newIdx = this._getLinearIndex(rolledIndices);
+                        
+                        newData[newIdx] = this.data[oldIdx];
+                        return;
+                    }
+                    
+                    for (let i = 0; i < this.shape[pos]; i++) {
+                        indices[pos] = i;
+                        generateIndices(pos + 1);
+                    }
+                };
+                
+                generateIndices(0);
+                return new Tensor(newData, [...this.shape]);
+            }
+
+            expand(...newShape) {
+                return this.copy();
+            }
+
+            repeat(...repeats) {
+                if (repeats.length === 1 && this.shape.length === 1) {
+                    const newData = [];
+                    for (let i = 0; i < repeats[0]; i++) {
+                        newData.push(...this.data);
+                    }
+                    return new Tensor(newData, [this.data.length * repeats[0]]);
+                }
+                return this.copy();
+            }
+
+            diag() {
+                if (this.shape.length === 1) {
+                    const size = this.data.length;
+                    const newData = new Array(size * size).fill(0);
+                    for (let i = 0; i < size; i++) {
+                        newData[i * size + i] = this.data[i];
+                    }
+                    return new Tensor(newData, [size, size]);
+                } else if (this.shape.length === 2 && this.shape[0] === this.shape[1]) {
+                    const size = this.shape[0];
+                    const newData = [];
+                    for (let i = 0; i < size; i++) {
+                        newData.push(this.data[i * size + i]);
+                    }
+                    return new Tensor(newData, [size]);
+                } else {
+                    throw new Error('diag() only supports 1D tensors or square 2D tensors');
+                }
+            }
+
+            _getLinearIndex(indices, shape = null) {
+                const s = shape || this.shape;
+                let index = 0;
+                let multiplier = 1;
+                
+                for (let i = s.length - 1; i >= 0; i--) {
+                    index += indices[i] * multiplier;
+                    multiplier *= s[i];
+                }
+                
+                return index;
+            }
+        }
+
+        // Enhanced operation parser
+        class OperationParser {
+            static parse(input) {
+                if (!input || typeof input !== 'string') {
+                    throw new Error('Invalid input: expected non-empty string');
+                }
+
+                const normalized = input.trim().replace(/\s+/g, ' ');
+                const operations = normalized.split(',').map(op => op.trim()).filter(op => op);
+                
+                if (operations.length === 0) {
+                    throw new Error('No operations found');
+                }
+
+                return operations.map((op, index) => {
+                    try {
+                        return this._parseOperation(op);
+                    } catch (error) {
+                        throw new Error(`Error parsing operation ${index + 1} "${op}": ${error.message}`);
+                    }
+                });
+            }
+
+            static _parseOperation(opStr) {
+                // Function call style: operation(arg1, arg2, ...)
+                const funcMatch = opStr.match(/^(\w+)\s*\(([^)]*)\)\s*$/);
+                if (funcMatch) {
+                    const name = funcMatch[1].toLowerCase();
+                    const argsStr = funcMatch[2].trim();
+                    const args = argsStr ? this._parseArguments(argsStr) : [];
+                    return { name, args };
+                }
+
+                // Space-separated style: operation arg1 arg2 ...
+                const parts = opStr.split(/\s+/);
+                if (parts.length === 0) {
+                    throw new Error('Empty operation');
+                }
+
+                const name = parts[0].toLowerCase();
+                const args = parts.slice(1).map(arg => this._parseArgument(arg));
+                return { name, args };
+            }
+
+            static _parseArguments(argsStr) {
+                const args = [];
+                let current = '';
+                let depth = 0;
+                
+                for (let i = 0; i < argsStr.length; i++) {
+                    const char = argsStr[i];
+                    
+                    if (char === '(') {
+                        depth++;
+                        current += char;
+                    } else if (char === ')') {
+                        depth--;
+                        current += char;
+                    } else if (char === ',' && depth === 0) {
+                        if (current.trim()) {
+                            args.push(this._parseArgument(current.trim()));
+                        }
+                        current = '';
+                    } else {
+                        current += char;
+                    }
+                }
+                
+                if (current.trim()) {
+                    args.push(this._parseArgument(current.trim()));
+                }
+                
+                return args;
+            }
+
+            static _parseArgument(arg) {
+                const trimmed = arg.trim();
+                
+                if (trimmed === '-1') return -1;
+                
+                const num = parseFloat(trimmed);
+                if (!isNaN(num) && isFinite(num)) {
+                    return Number.isInteger(num) ? parseInt(trimmed) : num;
+                }
+                
+                return trimmed;
+            }
+        }
+
+        // Operation executor
+        class OperationExecutor {
+            static execute(tensor, operation) {
+                const { name, args } = operation;
+                
+                if (!tensor || !(tensor instanceof Tensor)) {
+                    throw new Error('Invalid tensor input');
+                }
+
+                switch (name) {
+                    case 'reshape':
+                    case 'view':
+                        return tensor.reshape(...args);
+                    case 'transpose':
+                        if (args.length !== 2) throw new Error('transpose requires exactly 2 arguments');
+                        return tensor.transpose(args[0], args[1]);
+                    case 'permute':
+                        return tensor.permute(...args);
+                    case 'unsqueeze':
+                        if (args.length !== 1) throw new Error('unsqueeze requires exactly 1 argument');
+                        return tensor.unsqueeze(args[0]);
+                    case 'squeeze':
+                        return tensor.squeeze(args[0]);
+                    case 'flatten':
+                        return tensor.flatten();
+                    case 'flip':
+                        if (args.length !== 1) throw new Error('flip requires exactly 1 argument');
+                        return tensor.flip(args[0]);
+                    case 'roll':
+                        if (args.length !== 2) throw new Error('roll requires exactly 2 arguments');
+                        return tensor.roll(args[0], args[1]);
+                    case 'expand':
+                        return tensor.expand(...args);
+                    case 'repeat':
+                        return tensor.repeat(...args);
+                    case 'diag':
+                        return tensor.diag();
+                    default:
+                        throw new Error(`Unknown operation: ${name}`);
+                }
+            }
+        }
+
+        // Game state management
+        class GameState {
+            constructor() {
+                this.currentLevel = 0;
+                this.score = 0;
+                this.history = [];
+                this.levels = this._initializeLevels();
+            }
+
+            _initializeLevels() {
+                return [
+                    { initial: [[1, 2], [3, 4]], target: [1, 2, 3, 4], solution: ['view -1'] },
+                    { initial: [1, 2, 3, 4], target: [[1, 2], [3, 4]], solution: ['view 2 2'] },
+                    { initial: [[1, 2, 3], [4, 5, 6]], target: [[1, 4], [2, 5], [3, 6]], solution: ['transpose 0 1'] },
+                    { initial: [1, 2, 3, 4], target: [[1, 2, 3, 4]], solution: ['unsqueeze 0'] },
+                    { initial: [[1, 2, 3, 4]], target: [1, 2, 3, 4], solution: ['squeeze 0'] },
+                    { initial: [[1, 2], [3, 4], [5, 6]], target: [1, 3, 5, 2, 4, 6], solution: ['permute 1 0', 'view -1'] },
+                    { initial: [1, 2, 3, 4, 5, 6], target: [[1, 2, 3], [4, 5, 6]], solution: ['view 2 3'] },
+                    { initial: [1, 2, 3, 4, 5, 6], target: [[1], [2], [3], [4], [5], [6]], solution: ['view -1 1'] },
+                    { initial: [1, 2, 3, 4, 5, 6], target: [[1, 4], [2, 5], [3, 6]], solution: ['view 2 3', 'transpose 0 1'] },
+                    { initial: [1, 2, 3, 4, 5, 6, 7, 8], target: [[1, 5], [2, 6], [3, 7], [4, 8]], solution: ['view 2 4', 'transpose 0 1'] },
+                    { initial: [[1, 2], [3, 4], [5, 6], [7, 8]], target: [1, 3, 5, 7, 2, 4, 6, 8], solution: ['permute 1 0', 'view -1'] },
+                    { initial: [[1, 2, 3, 4], [5, 6, 7, 8]], target: [1, 5, 2, 6, 3, 7, 4, 8], solution: ['transpose 0 1', 'view -1'] },
+                    { initial: [1, 2, 3, 4, 5, 6, 7, 8], target: [[1, 2, 3, 4], [5, 6, 7, 8]], solution: ['view 2 4'] },
+                    { initial: [[1], [2], [3], [4]], target: [1, 2, 3, 4], solution: ['squeeze 1'] },
+                    { initial: [[[1, 2], [3, 4]], [[5, 6], [7, 8]]], target: [[1, 5], [2, 6], [3, 7], [4, 8]], solution: ['permute 1 0 2', 'view -1 2'] },
+                    { initial: [1, 2, 3, 4, 5, 6, 7, 8], target: [[[1, 2], [3, 4]], [[5, 6], [7, 8]]], solution: ['view 2 2 2'] },
+                    { initial: [[[1, 2], [3, 4]], [[5, 6], [7, 8]]], target: [1, 2, 3, 4, 5, 6, 7, 8], solution: ['view -1'] },
+                    { initial: [1, 2, 3, 4, 5, 6, 7, 8], target: [[1], [2], [3], [4], [5], [6], [7], [8]], solution: ['view 8 1'] },
+                    { initial: [[1, 2], [3, 4], [5, 6], [7, 8]], target: [1, 3, 5, 7, 2, 4, 6, 8], solution: ['transpose 0 1', 'view -1'] },
+                    { initial: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12], target: [[1, 7], [2, 8], [3, 9], [4, 10], [5, 11], [6, 12]], solution: ['view 2 6', 'transpose 0 1'] },
+                    { initial: [[1, 2, 3], [4, 5, 6]], target: [1, 4, 2, 5, 3, 6], solution: ['transpose 0 1', 'view -1'] },
+                    { initial: [[1, 2, 3, 4], [5, 6, 7, 8], [9, 10, 11, 12]], target: [1, 5, 9, 2, 6, 10, 3, 7, 11, 4, 8, 12], solution: ['permute 1 0', 'view -1'] },
+                    { initial: [1, 2, 3, 4], target: [4, 3, 2, 1], solution: ['flip 0'] },
+                    { initial: [[1, 2, 3], [4, 5, 6]], target: [[3, 2, 1], [6, 5, 4]], solution: ['flip 1'] },
+                    { initial: [1, 2, 3, 4, 5], target: [3, 4, 5, 1, 2], solution: ['roll 2 0'] },
+                    { initial: [1, 2, 3, 4], target: [[1, 0, 0, 0], [0, 2, 0, 0], [0, 0, 3, 0], [0, 0, 0, 4]], solution: ['diag'] },
+                    { initial: [[1, 0, 0], [0, 2, 0], [0, 0, 3]], target: [1, 2, 3], solution: ['diag'] },
+                    { initial: [1, 2, 3], target: [1, 2, 3, 1, 2, 3], solution: ['repeat 2'] },
+                    { initial: [[1, 2], [3, 4]], target: [[[1, 2], [3, 4]]], solution: ['unsqueeze 0'] },
+                    { initial: [1, 2, 3, 4, 5, 6, 7, 8, 9], target: [[[1, 2, 3], [4, 5, 6], [7, 8, 9]]], solution: ['view 1 3 3'] },
+                    { initial: [1, 2, 3, 4, 5, 6], target: [6, 5, 4, 3, 2, 1], solution: ['flip 0'] },
+                    { initial: [1, 2, 3, 4], target: [2, 3, 4, 1], solution: ['roll 1 0'] }
+                ];
+            }
+
+            getCurrentLevel() { return this.levels[this.currentLevel]; }
+            getTotalLevels() { return this.levels.length; }
+
+            nextLevel() {
+                if (this.currentLevel < this.levels.length - 1) {
+                    this.currentLevel++;
+                    return true;
+                }
+                return false;
+            }
+
+            previousLevel() {
+                if (this.currentLevel > 0) {
+                    this.currentLevel--;
+                    return true;
+                }
+                return false;
+            }
+
+            setLevel(level) {
+                if (level >= 0 && level < this.levels.length) {
+                    this.currentLevel = level;
+                    return true;
+                }
+                return false;
+            }
+
+            addScore(points) { this.score += points; }
+            addHistory(operation, tensor) { this.history.push({ operation, tensor: tensor.copy() }); }
+            clearHistory() { this.history = []; }
+        }
+
+        // UI Controller
+        class UIController {
+            constructor() {
+                this.gameState = new GameState();
+                this.operationDocs = this._initializeOperationDocs();
+                this._initializeUI();
+            }
+
+            _initializeOperationDocs() {
+                return {
+                    reshape: {
+                        name: "reshape",
+                        syntax: "reshape(d1, d2, ..., dn)",
+                        description: "Returns a tensor with the same data but different shape. Use -1 for automatic dimension inference.",
+                        example: { input: "tensor([1, 2, 3, 4, 5, 6])", operation: "reshape 2 3", output: "tensor([[1, 2, 3], [4, 5, 6]])" }
+                    },
+                    view: {
+                        name: "view",
+                        syntax: "view(d1, d2, ..., dn)",
+                        description: "Alias for reshape. Returns a tensor with the same data but different shape.",
+                        example: { input: "tensor([[1, 2], [3, 4]])", operation: "view -1", output: "tensor([1, 2, 3, 4])" }
+                    },
+                    transpose: {
+                        name: "transpose",
+                        syntax: "transpose(dim0, dim1)",
+                        description: "Swaps two dimensions of the tensor.",
+                        example: { input: "tensor([[1, 2, 3], [4, 5, 6]])", operation: "transpose 0 1", output: "tensor([[1, 4], [2, 5], [3, 6]])" }
+                    },
+                    permute: {
+                        name: "permute",
+                        syntax: "permute(d0, d1, ..., dn)",
+                        description: "Reorders the dimensions of the tensor according to the given order.",
+                        example: { input: "tensor([[[1, 2], [3, 4]], [[5, 6], [7, 8]]])", operation: "permute 1 0 2", output: "tensor([[[1, 2], [5, 6]], [[3, 4], [7, 8]]])" }
+                    },
+                    unsqueeze: {
+                        name: "unsqueeze",
+                        syntax: "unsqueeze(dim)",
+                        description: "Adds a singleton dimension at the specified position.",
+                        example: { input: "tensor([1, 2, 3, 4])", operation: "unsqueeze 0", output: "tensor([[1, 2, 3, 4]])" }
+                    },
+                    squeeze: {
+                        name: "squeeze",
+                        syntax: "squeeze(dim)",
+                        description: "Removes a singleton dimension at the specified position.",
+                        example: { input: "tensor([[1, 2, 3, 4]])", operation: "squeeze 0", output: "tensor([1, 2, 3, 4])" }
+                    },
+                    flatten: {
+                        name: "flatten",
+                        syntax: "flatten()",
+                        description: "Flattens the tensor into a 1D tensor.",
+                        example: { input: "tensor([[1, 2], [3, 4]])", operation: "flatten", output: "tensor([1, 2, 3, 4])" }
+                    },
+                    flip: {
+                        name: "flip",
+                        syntax: "flip(dim)",
+                        description: "Reverses the order of elements along the specified dimension.",
+                        example: { input: "tensor([1, 2, 3, 4])", operation: "flip 0", output: "tensor([4, 3, 2, 1])" }
+                    },
+                    roll: {
+                        name: "roll",
+                        syntax: "roll(shifts, dim)",
+                        description: "Shifts elements along the specified dimension.",
+                        example: { input: "tensor([1, 2, 3, 4, 5])", operation: "roll 2 0", output: "tensor([4, 5, 1, 2, 3])" }
+                    },
+                    expand: {
+                        name: "expand",
+                        syntax: "expand(d1, d2, ..., dn)",
+                        description: "Expands the tensor to a larger size by broadcasting.",
+                        example: { input: "tensor([[1], [2]])", operation: "expand 2 3", output: "tensor([[1, 1, 1], [2, 2, 2]])" }
+                    },
+                    repeat: {
+                        name: "repeat",
+                        syntax: "repeat(r1, r2, ..., rn)",
+                        description: "Repeats the tensor along each dimension.",
+                        example: { input: "tensor([1, 2, 3])", operation: "repeat 2", output: "tensor([1, 2, 3, 1, 2, 3])" }
+                    },
+                    diag: {
+                        name: "diag",
+                        syntax: "diag()",
+                        description: "Extracts diagonal from 2D tensor or creates diagonal matrix from 1D tensor.",
+                        example: { input: "tensor([1, 2, 3])", operation: "diag", output: "tensor([[1, 0, 0], [0, 2, 0], [0, 0, 3]])" }
+                    }
+                };
+            }
+
+            _initializeUI() {
+                this._setupEventListeners();
+                this._createOperationDocs();
+                this._populateLevelSelect();
+                this.loadLevel();
+                this._updateProgress();
+            }
+
+            _setupEventListeners() {
+                const input = document.getElementById('operation-input');
+                input.addEventListener('keypress', (e) => {
+                    if (e.key === 'Enter') this.executeOperations();
+                });
+
+                document.addEventListener('keydown', (e) => {
+                    if (e.ctrlKey || e.metaKey) {
+                        switch (e.key) {
+                            case 'Enter': e.preventDefault(); this.executeOperations(); break;
+                            case 'h': e.preventDefault(); this.showHint(); break;
+                            case 'r': e.preventDefault(); this.clearInput(); break;
+                        }
+                    }
+                });
+            }
+
+            _createOperationDocs() {
+                const container = document.getElementById('operations-list');
+                container.innerHTML = '';
+
+                Object.values(this.operationDocs).forEach(doc => {
+                    const item = document.createElement('div');
+                    item.className = 'operation-item';
+                    item.onclick = () => this._toggleOperationDoc(item);
+
+                    item.innerHTML = `
+                        <div class="op-header">
+                            <div class="op-name">${doc.name}</div>
+                            <div class="op-toggle">▼</div>
+                        </div>
+                        <div class="op-content">
+                            <div class="op-syntax">${doc.syntax}</div>
+                            <div class="op-description">${doc.description}</div>
+                            <div class="op-example">
+                                <div class="example-input">Input: ${doc.example.input}</div>
+                                <div class="example-operation">Operation: ${doc.example.operation}</div>
+                                <div class="example-output">Output: ${doc.example.output}</div>
+                            </div>
+                        </div>
+                    `;
+
+                    container.appendChild(item);
+                });
+            }
+
+            _toggleOperationDoc(element) {
+                element.classList.toggle('active');
+            }
+
+            _populateLevelSelect() {
+                const select = document.getElementById('level-select');
+                select.innerHTML = '';
+                
+                for (let i = 0; i < this.gameState.getTotalLevels(); i++) {
+                    const option = document.createElement('option');
+                    option.value = i;
+                    option.textContent = `Level ${i + 1}`;
+                    select.appendChild(option);
+                }
+            }
+
+            loadLevel() {
+                const level = this.gameState.getCurrentLevel();
+                this._displayTensor(new Tensor(level.initial), 'initial');
+                this._displayTensor(new Tensor(level.target), 'target');
+                this._clearResult();
+                this._updateLevelInfo();
+                this._clearHistory();
+                this._hideFeedback();
+                this._clearInput();
+            }
+
+            _displayTensor(tensor, prefix) {
+                document.getElementById(`${prefix}-code`).textContent = tensor.toString();
+                document.getElementById(`${prefix}-shape`).textContent = `Shape: [${tensor.shape.join(', ')}]`;
+                document.getElementById(`${prefix}-size`).textContent = `Size: ${tensor.data.length}`;
+            }
+
+            _clearResult() {
+                document.getElementById('result-code').textContent = 'Ready to execute operations...';
+                document.getElementById('result-shape').textContent = '';
+                document.getElementById('result-size').textContent = '';
+            }
+
+            _updateLevelInfo() {
+                document.getElementById('current-level').textContent = this.gameState.currentLevel + 1;
+                document.getElementById('total-levels').textContent = this.gameState.getTotalLevels();
+                document.getElementById('level-select').value = this.gameState.currentLevel;
+                document.getElementById('score').textContent = this.gameState.score;
+            }
+
+            _updateProgress() {
+                const progress = ((this.gameState.currentLevel + 1) / this.gameState.getTotalLevels()) * 100;
+                document.getElementById('progress-fill').style.width = `${progress}%`;
+            }
+
+            _clearHistory() {
+                this.gameState.clearHistory();
+                this._updateHistoryDisplay();
+            }
+
+            _updateHistoryDisplay() {
+                const container = document.getElementById('history-content');
+                
+                if (this.gameState.history.length === 0) {
+                    container.textContent = 'No operations executed yet.';
+                    return;
+                }
+
+                container.innerHTML = '';
+                this.gameState.history.forEach((item, index) => {
+                    const div = document.createElement('div');
+                    div.className = 'history-item';
+                    div.innerHTML = `
+                        <div class="history-operation">${index === 0 ? '📍' : '⚡'} ${item.operation}</div>
+                        <div class="history-result">Shape: [${item.tensor.shape.join(', ')}] | Size: ${item.tensor.data.length}</div>
+                    `;
+                    container.appendChild(div);
+                });
+            }
+
+            _showFeedback(message, type = 'info') {
+                const feedback = document.getElementById('feedback');
+                feedback.textContent = message;
+                feedback.className = `feedback ${type}`;
+                feedback.classList.remove('hidden');
+            }
+
+            _hideFeedback() {
+                document.getElementById('feedback').classList.add('hidden');
+            }
+
+            _clearInput() {
+                document.getElementById('operation-input').value = '';
+            }
+
+            executeOperations() {
+                const input = document.getElementById('operation-input').value.trim();
+                
+                if (!input) {
+                    this._showFeedback('Please enter operations!', 'error');
+                    return;
+                }
+
+                try {
+                    const operations = OperationParser.parse(input);
+                    const level = this.gameState.getCurrentLevel();
+                    let tensor = new Tensor(level.initial);
+                    
+                    this.gameState.clearHistory();
+                    this.gameState.addHistory('Initial', tensor);
+
+                    for (const operation of operations) {
+                        tensor = OperationExecutor.execute(tensor, operation);
+                        this.gameState.addHistory(`${operation.name}(${operation.args.join(', ')})`, tensor);
+                    }
+
+                    this._displayTensor(tensor, 'result');
+                    this._updateHistoryDisplay();
+
+                    const target = new Tensor(level.target);
+                    if (tensor.equals(target)) {
+                        this.gameState.addScore(10);
+                        this._updateLevelInfo();
+                        this._showFeedback('🎉 Perfect! Solution correct!', 'success');
+                        
+                        setTimeout(() => {
+                            if (this.gameState.nextLevel()) {
+                                this.loadLevel();
+                                this._updateProgress();
+                            } else {
+                                this._showFeedback('🏆 All levels completed!', 'success');
+                            }
+                        }, 2000);
+                    } else {
+                        this._showFeedback('❌ Result doesn\'t match target. Try again!', 'error');
+                    }
+
+                } catch (error) {
+                    this._showFeedback(`Error: ${error.message}`, 'error');
+                }
+            }
+
+            previewOperations() {
+                const input = document.getElementById('operation-input').value.trim();
+                
+                if (!input) {
+                    this._showFeedback('Enter operations to preview!', 'error');
+                    return;
+                }
+
+                try {
+                    const operations = OperationParser.parse(input);
+                    const level = this.gameState.getCurrentLevel();
+                    let tensor = new Tensor(level.initial);
+                    
+                    this.gameState.clearHistory();
+                    this.gameState.addHistory('Initial', tensor);
+
+                    for (const operation of operations) {
+                        tensor = OperationExecutor.execute(tensor, operation);
+                        this.gameState.addHistory(`${operation.name}(${operation.args.join(', ')})`, tensor);
+                    }
+
+                    this._displayTensor(tensor, 'result');
+                    this._updateHistoryDisplay();
+                    this._showFeedback('Preview completed!', 'warning');
+
+                } catch (error) {
+                    this._showFeedback(`Preview Error: ${error.message}`, 'error');
+                }
+            }
+
+            showHint() {
+                const level = this.gameState.getCurrentLevel();
+                const hint = level.solution[0];
+                document.getElementById('operation-input').value = hint;
+                this._showFeedback(`💡 Hint: Try "${hint}"`, 'warning');
+            }
+
+            clearInput() {
+                this._clearInput();
+                this._clearResult();
+                this._clearHistory();
+                this._hideFeedback();
+            }
+
+            nextLevel() {
+                if (this.gameState.nextLevel()) {
+                    this.loadLevel();
+                    this._updateProgress();
+                }
+            }
+
+            previousLevel() {
+                if (this.gameState.previousLevel()) {
+                    this.loadLevel();
+                    this._updateProgress();
+                }
+            }
+
+            goToLevel(level) {
+                if (this.gameState.setLevel(parseInt(level))) {
+                    this.loadLevel();
+                    this._updateProgress();
+                }
+            }
+        }
+
+        // Global functions
+        let uiController;
+
+        function executeOperations() { uiController.executeOperations(); }
+        function previewOperations() { uiController.previewOperations(); }
+        function showHint() { uiController.showHint(); }
+        function clearInput() { uiController.clearInput(); }
+        function nextLevel() { uiController.nextLevel(); }
+        function previousLevel() { uiController.previousLevel(); }
+        function goToLevel(level) { uiController.goToLevel(level); }
+
+        // Initialize
+        document.addEventListener('DOMContentLoaded', () => {
+            uiController = new UIController();
+        });
+    </script>
+</body>
+</html>
