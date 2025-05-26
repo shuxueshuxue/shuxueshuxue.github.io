@@ -220,6 +220,31 @@
             margin: 4px 0;
         }
 
+        .equation-category {
+            font-size: 7px;
+            color: #ffc107;
+            text-align: center;
+            margin-bottom: 8px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .difficulty-indicator {
+            display: flex;
+            justify-content: center;
+            gap: 3px;
+            margin-bottom: 8px;
+        }
+
+        .difficulty-star {
+            color: #ffc107;
+            font-size: 10px;
+        }
+
+        .difficulty-star.empty {
+            color: #444;
+        }
+
         .computing-animation {
             display: none;
             text-align: center;
@@ -549,6 +574,14 @@
             <div class="control-section">
                 <div class="mission-panel">
                     <div class="equation-display">
+                        <div class="equation-category" id="equationCategory">Basic Growth Systems</div>
+                        <div class="difficulty-indicator" id="difficultyDisplay">
+                            <span class="difficulty-star">★</span>
+                            <span class="difficulty-star empty">☆</span>
+                            <span class="difficulty-star empty">☆</span>
+                            <span class="difficulty-star empty">☆</span>
+                            <span class="difficulty-star empty">☆</span>
+                        </div>
                         <div class="equation-text" id="equationDisplay">dy/dt = y</div>
                         <div class="equation-desc" id="equationDescription">Exponential Growth Protocol</div>
                         <div class="mission-params">
@@ -716,97 +749,340 @@
             }
         }
 
-        // ============ PROBLEM GENERATOR ============
+        // ============ ENHANCED PROBLEM GENERATOR ============
         class ProblemGenerator {
-            static EQUATIONS = [
-                {
-                    name: 'Exponential Growth',
-                    equation: (t, y) => y,
-                    hasAnalytical: true,
-                    solution: (t, y0, t0) => y0 * Math.exp(t - t0),
-                    display: 'dy/dt = y',
-                    description: 'Population explosion protocol'
+            static EQUATION_CATEGORIES = {
+                'Basic Growth': {
+                    color: '#4caf50',
+                    difficulty: 1,
+                    equations: [
+                        {
+                            name: 'Exponential Growth',
+                            baseEquation: (t, y) => y,
+                            variants: [
+                                { coeff: 1, display: 'dy/dt = y', desc: 'Natural population growth' },
+                                { coeff: 2, display: 'dy/dt = 2y', desc: 'Rapid population expansion' },
+                                { coeff: 0.5, display: 'dy/dt = 0.5y', desc: 'Moderate growth rate' },
+                                { coeff: 1.5, display: 'dy/dt = 1.5y', desc: 'Accelerated breeding cycle' }
+                            ],
+                            hasAnalytical: true,
+                            solution: (t, y0, t0, coeff) => y0 * Math.exp(coeff * (t - t0))
+                        },
+                        {
+                            name: 'Exponential Decay',
+                            baseEquation: (t, y) => -y,
+                            variants: [
+                                { coeff: 1, display: 'dy/dt = -y', desc: 'Standard radioactive decay' },
+                                { coeff: 2, display: 'dy/dt = -2y', desc: 'Fast disintegration' },
+                                { coeff: 0.3, display: 'dy/dt = -0.3y', desc: 'Slow degradation process' },
+                                { coeff: 1.8, display: 'dy/dt = -1.8y', desc: 'Rapid extinction dynamics' }
+                            ],
+                            hasAnalytical: true,
+                            solution: (t, y0, t0, coeff) => y0 * Math.exp(-coeff * (t - t0))
+                        }
+                    ]
                 },
-                {
-                    name: 'Exponential Decay',
-                    equation: (t, y) => -y,
-                    hasAnalytical: true,
-                    solution: (t, y0, t0) => y0 * Math.exp(-(t - t0)),
-                    display: 'dy/dt = -y',
-                    description: 'Radioactive decay simulation'
+                'Physics Systems': {
+                    color: '#2196f3',
+                    difficulty: 2,
+                    equations: [
+                        {
+                            name: 'Harmonic Motion',
+                            baseEquation: (t, y) => Math.sin(t),
+                            variants: [
+                                { freq: 1, amp: 1, display: 'dy/dt = sin(t)', desc: 'Simple harmonic oscillator' },
+                                { freq: 2, amp: 1, display: 'dy/dt = sin(2t)', desc: 'High frequency vibration' },
+                                { freq: 0.5, amp: 2, display: 'dy/dt = 2sin(0.5t)', desc: 'Low freq, high amplitude' },
+                                { freq: 3, amp: 0.5, display: 'dy/dt = 0.5sin(3t)', desc: 'Rapid micro-oscillation' }
+                            ],
+                            hasAnalytical: true,
+                            solution: (t, y0, t0, freq, amp) => y0 - amp/freq * Math.cos(freq * t) + amp/freq * Math.cos(freq * t0)
+                        },
+                        {
+                            name: 'Damped Motion',
+                            baseEquation: (t, y) => -0.5 * y + Math.cos(t),
+                            variants: [
+                                { damping: 0.5, force: 1, display: 'dy/dt = -0.5y + cos(t)', desc: 'Light damping with drive' },
+                                { damping: 1.2, force: 1, display: 'dy/dt = -1.2y + cos(t)', desc: 'Heavy damping system' },
+                                { damping: 0.2, force: 2, display: 'dy/dt = -0.2y + 2cos(t)', desc: 'Weak damping, strong force' },
+                                { damping: 0.8, force: 0.5, display: 'dy/dt = -0.8y + 0.5cos(t)', desc: 'Medium damping, weak drive' }
+                            ],
+                            hasAnalytical: false
+                        },
+                        {
+                            name: 'Thermal Dynamics',
+                            baseEquation: (t, y) => -2 * t * y,
+                            variants: [
+                                { coeff: 2, display: 'dy/dt = -2ty', desc: 'Gaussian heat distribution' },
+                                { coeff: 1, display: 'dy/dt = -ty', desc: 'Slow thermal diffusion' },
+                                { coeff: 3, display: 'dy/dt = -3ty', desc: 'Rapid heat dissipation' },
+                                { coeff: 0.5, display: 'dy/dt = -0.5ty', desc: 'Insulated cooling process' }
+                            ],
+                            hasAnalytical: true,
+                            solution: (t, y0, t0, coeff) => y0 * Math.exp(-coeff * (t*t - t0*t0))
+                        }
+                    ]
                 },
-                {
-                    name: 'Gaussian Kernel',
-                    equation: (t, y) => -2 * t * y,
-                    hasAnalytical: true,
-                    solution: (t, y0, t0) => y0 * Math.exp(-(t*t - t0*t0)),
-                    display: 'dy/dt = -2ty',
-                    description: 'Heat distribution analysis'
+                'Biological Models': {
+                    color: '#4caf50',
+                    difficulty: 3,
+                    equations: [
+                        {
+                            name: 'Logistic Growth',
+                            baseEquation: (t, y) => y * (1 - y),
+                            variants: [
+                                { rate: 1, capacity: 1, display: 'dy/dt = y(1-y)', desc: 'Standard population limit' },
+                                { rate: 2, capacity: 1, display: 'dy/dt = 2y(1-y)', desc: 'Fast reproduction rate' },
+                                { rate: 1, capacity: 2, display: 'dy/dt = y(2-y)', desc: 'Higher carrying capacity' },
+                                { rate: 0.5, capacity: 1.5, display: 'dy/dt = 0.5y(1.5-y)', desc: 'Conservative growth model' }
+                            ],
+                            hasAnalytical: false
+                        },
+                        {
+                            name: 'Predator-Prey Base',
+                            baseEquation: (t, y) => y * (2 - Math.sin(t) - y),
+                            variants: [
+                                { prey: 2, pred: 1, display: 'dy/dt = y(2-sin(t)-y)', desc: 'Predator cycles affect prey' },
+                                { prey: 3, pred: 1.5, display: 'dy/dt = y(3-1.5sin(t)-y)', desc: 'Strong predator influence' },
+                                { prey: 1.5, pred: 0.5, display: 'dy/dt = y(1.5-0.5sin(t)-y)', desc: 'Weak predation pressure' },
+                                { prey: 2.5, pred: 2, display: 'dy/dt = y(2.5-2sin(t)-y)', desc: 'Intense competition' }
+                            ],
+                            hasAnalytical: false
+                        },
+                        {
+                            name: 'Epidemic Spread',
+                            baseEquation: (t, y) => 0.5 * y * Math.exp(-t) * (10 - y),
+                            variants: [
+                                { infection: 0.5, recovery: 1, display: 'dy/dt = 0.5y·e^(-t)·(10-y)', desc: 'Disease outbreak model' },
+                                { infection: 1, recovery: 1.5, display: 'dy/dt = y·e^(-1.5t)·(10-y)', desc: 'Fast immunity buildup' },
+                                { infection: 0.3, recovery: 0.5, display: 'dy/dt = 0.3y·e^(-0.5t)·(10-y)', desc: 'Chronic disease spread' },
+                                { infection: 0.8, recovery: 2, display: 'dy/dt = 0.8y·e^(-2t)·(10-y)', desc: 'Rapid intervention' }
+                            ],
+                            hasAnalytical: false
+                        }
+                    ]
                 },
-                {
-                    name: 'Harmonic Oscillator',
-                    equation: (t, y) => Math.cos(t),
-                    hasAnalytical: true,
-                    solution: (t, y0, t0) => y0 + Math.sin(t) - Math.sin(t0),
-                    display: 'dy/dt = cos(t)',
-                    description: 'Vibrational force field'
+                'Chemical Kinetics': {
+                    color: '#ff9800',
+                    difficulty: 3,
+                    equations: [
+                        {
+                            name: 'First Order Reaction',
+                            baseEquation: (t, y) => -1.5 * y + 0.5,
+                            variants: [
+                                { rate: 1.5, input: 0.5, display: 'dy/dt = -1.5y + 0.5', desc: 'Standard catalytic reaction' },
+                                { rate: 2.5, input: 1, display: 'dy/dt = -2.5y + 1', desc: 'High temperature reaction' },
+                                { rate: 0.8, input: 0.2, display: 'dy/dt = -0.8y + 0.2', desc: 'Low energy process' },
+                                { rate: 3, input: 1.5, display: 'dy/dt = -3y + 1.5', desc: 'Enzyme-catalyzed reaction' }
+                            ],
+                            hasAnalytical: true,
+                            solution: (t, y0, t0, rate, input) => (input/rate) + (y0 - input/rate) * Math.exp(-rate * (t - t0))
+                        },
+                        {
+                            name: 'Autocatalytic Process',
+                            baseEquation: (t, y) => y * y * (3 - y),
+                            variants: [
+                                { efficiency: 1, capacity: 3, display: 'dy/dt = y²(3-y)', desc: 'Self-amplifying reaction' },
+                                { efficiency: 0.5, capacity: 4, display: 'dy/dt = 0.5y²(4-y)', desc: 'Slow autocatalysis' },
+                                { efficiency: 2, capacity: 2, display: 'dy/dt = 2y²(2-y)', desc: 'Fast self-assembly' },
+                                { efficiency: 1.5, capacity: 5, display: 'dy/dt = 1.5y²(5-y)', desc: 'Chain reaction process' }
+                            ],
+                            hasAnalytical: false
+                        }
+                    ]
                 },
-                {
-                    name: 'Logistic Growth',
-                    equation: (t, y) => y * (1 - y),
-                    hasAnalytical: false,
-                    display: 'dy/dt = y(1-y)',
-                    description: 'Population limit dynamics'
+                'Economic Models': {
+                    color: '#9c27b0',
+                    difficulty: 4,
+                    equations: [
+                        {
+                            name: 'Market Dynamics',
+                            baseEquation: (t, y) => 0.1 * y * (5 - y) - 0.3 * Math.sin(2*t),
+                            variants: [
+                                { growth: 0.1, volatility: 0.3, display: 'dy/dt = 0.1y(5-y) - 0.3sin(2t)', desc: 'Market with seasonal cycles' },
+                                { growth: 0.2, volatility: 0.5, display: 'dy/dt = 0.2y(5-y) - 0.5sin(2t)', desc: 'High volatility market' },
+                                { growth: 0.05, volatility: 0.1, display: 'dy/dt = 0.05y(5-y) - 0.1sin(2t)', desc: 'Stable conservative market' },
+                                { growth: 0.15, volatility: 0.8, display: 'dy/dt = 0.15y(5-y) - 0.8sin(2t)', desc: 'Speculative bubble dynamics' }
+                            ],
+                            hasAnalytical: false
+                        },
+                        {
+                            name: 'Investment Growth',
+                            baseEquation: (t, y) => 0.08 * y + 0.02 * t * y - 0.001 * y * y,
+                            variants: [
+                                { interest: 0.08, reinvest: 0.02, friction: 0.001, display: 'dy/dt = 0.08y + 0.02ty - 0.001y²', desc: 'Compound interest with fees' },
+                                { interest: 0.12, reinvest: 0.05, friction: 0.002, display: 'dy/dt = 0.12y + 0.05ty - 0.002y²', desc: 'High-yield investment' },
+                                { interest: 0.05, reinvest: 0.01, friction: 0.0005, display: 'dy/dt = 0.05y + 0.01ty - 0.0005y²', desc: 'Conservative portfolio' },
+                                { interest: 0.15, reinvest: 0.08, friction: 0.005, display: 'dy/dt = 0.15y + 0.08ty - 0.005y²', desc: 'Aggressive growth strategy' }
+                            ],
+                            hasAnalytical: false
+                        }
+                    ]
                 },
-                {
-                    name: 'Sine Wave Driver',
-                    equation: (t, y) => Math.sin(t),
-                    hasAnalytical: true,
-                    solution: (t, y0, t0) => y0 - Math.cos(t) + Math.cos(t0),
-                    display: 'dy/dt = sin(t)',
-                    description: 'Oscillatory input system'
+                'Engineering Control': {
+                    color: '#795548',
+                    difficulty: 4,
+                    equations: [
+                        {
+                            name: 'PID Controller',
+                            baseEquation: (t, y) => -2*y - 0.5*Math.sin(t) + Math.cos(2*t),
+                            variants: [
+                                { p: 2, i: 0.5, d: 1, display: 'dy/dt = -2y - 0.5sin(t) + cos(2t)', desc: 'Proportional-Integral control' },
+                                { p: 3, i: 1, d: 1.5, display: 'dy/dt = -3y - sin(t) + 1.5cos(2t)', desc: 'Aggressive control response' },
+                                { p: 1, i: 0.2, d: 0.5, display: 'dy/dt = -y - 0.2sin(t) + 0.5cos(2t)', desc: 'Gentle control action' },
+                                { p: 2.5, i: 0.8, d: 2, display: 'dy/dt = -2.5y - 0.8sin(t) + 2cos(2t)', desc: 'High-gain feedback system' }
+                            ],
+                            hasAnalytical: false
+                        },
+                        {
+                            name: 'Servo Tracking',
+                            baseEquation: (t, y) => 5*Math.sin(t) - 1.5*y - 0.1*y*Math.abs(y),
+                            variants: [
+                                { target: 5, damping: 1.5, friction: 0.1, display: 'dy/dt = 5sin(t) - 1.5y - 0.1y|y|', desc: 'Servo motor with friction' },
+                                { target: 3, damping: 2, friction: 0.2, display: 'dy/dt = 3sin(t) - 2y - 0.2y|y|', desc: 'High damping servo' },
+                                { target: 8, damping: 1, friction: 0.05, display: 'dy/dt = 8sin(t) - y - 0.05y|y|', desc: 'Low friction, high torque' },
+                                { target: 4, damping: 3, friction: 0.3, display: 'dy/dt = 4sin(t) - 3y - 0.3y|y|', desc: 'Overdamped positioning' }
+                            ],
+                            hasAnalytical: false
+                        }
+                    ]
+                },
+                'Chaos & Nonlinear': {
+                    color: '#e91e63',
+                    difficulty: 5,
+                    equations: [
+                        {
+                            name: 'Strange Attractor',
+                            baseEquation: (t, y) => Math.sin(y) + 0.5*Math.cos(3*t) - 0.1*y,
+                            variants: [
+                                { chaos: 1, drive: 0.5, damping: 0.1, display: 'dy/dt = sin(y) + 0.5cos(3t) - 0.1y', desc: 'Driven nonlinear oscillator' },
+                                { chaos: 1.5, drive: 1, damping: 0.2, display: 'dy/dt = 1.5sin(y) + cos(3t) - 0.2y', desc: 'Enhanced chaotic behavior' },
+                                { chaos: 0.8, drive: 0.3, damping: 0.05, display: 'dy/dt = 0.8sin(y) + 0.3cos(3t) - 0.05y', desc: 'Weak nonlinearity' },
+                                { chaos: 2, drive: 1.5, damping: 0.3, display: 'dy/dt = 2sin(y) + 1.5cos(3t) - 0.3y', desc: 'Strongly driven chaos' }
+                            ],
+                            hasAnalytical: false
+                        },
+                        {
+                            name: 'Bistable System',
+                            baseEquation: (t, y) => y - y*y*y + 0.1*Math.sin(t),
+                            variants: [
+                                { barrier: 1, drive: 0.1, display: 'dy/dt = y - y³ + 0.1sin(t)', desc: 'Double-well potential with noise' },
+                                { barrier: 2, drive: 0.2, display: 'dy/dt = 2y - y³ + 0.2sin(t)', desc: 'High barrier bistability' },
+                                { barrier: 0.5, drive: 0.05, display: 'dy/dt = 0.5y - y³ + 0.05sin(t)', desc: 'Shallow wells, weak drive' },
+                                { barrier: 1.5, drive: 0.3, display: 'dy/dt = 1.5y - y³ + 0.3sin(t)', desc: 'Moderate barrier, strong noise' }
+                            ],
+                            hasAnalytical: false
+                        }
+                    ]
                 }
-            ];
+            };
 
             static generate(level) {
-                const eqIndex = Math.floor(Math.random() * this.EQUATIONS.length);
-                const baseEq = this.EQUATIONS[eqIndex];
+                // All categories available from the start, but complexity increases with level
+                const categories = Object.keys(this.EQUATION_CATEGORIES);
+                const categoryIndex = Math.floor(Math.random() * categories.length);
+                const categoryName = categories[categoryIndex];
+                const category = this.EQUATION_CATEGORIES[categoryName];
                 
-                const t0 = Math.random() * 0.3;
-                let tEnd = t0 + 0.8 + level * 0.1 + Math.random() * 0.2;
+                // Select random equation from category
+                const equationIndex = Math.floor(Math.random() * category.equations.length);
+                const equation = category.equations[equationIndex];
                 
-                if (baseEq.display.includes('sin') || baseEq.display.includes('cos')) {
-                    tEnd = t0 + Math.PI * (1 + level * 0.15);
+                // Select random variant, with higher levels allowing more extreme parameters
+                let variantIndex = Math.floor(Math.random() * equation.variants.length);
+                
+                // For higher levels, bias towards more complex variants
+                if (level > 5 && Math.random() < 0.3) {
+                    variantIndex = Math.floor(Math.random() * equation.variants.length);
                 }
                 
-                const y0 = 0.3 + Math.random() * 1.4;
+                const baseVariant = equation.variants[variantIndex];
                 
-                // Exponentially increasing precision requirements
+                // Create level-modified variant with parameter scaling
+                const variant = { ...baseVariant };
+                
+                // Scale parameters based on level for increased complexity
+                if (level > 3) {
+                    const scaleFactor = 1 + (level - 3) * 0.15;
+                    Object.keys(variant).forEach(key => {
+                        if (typeof variant[key] === 'number' && key !== 'display') {
+                            // Randomly increase or decrease parameters for variety
+                            const direction = Math.random() < 0.5 ? 1 : -1;
+                            const variation = (Math.random() * 0.4 + 0.8) * scaleFactor;
+                            variant[key] = variant[key] * variation;
+                            
+                            // Update display string if parameters changed significantly
+                            if (Math.abs(variation - 1) > 0.3) {
+                                variant.display = this.updateDisplayString(variant.display, baseVariant, variant);
+                            }
+                        }
+                    });
+                }
+                
+                // Generate time domain with level-based complexity
+                const t0 = Math.random() * 0.5; // Allow more varied starting times
+                let tEnd = t0 + 0.6 + level * 0.08 + Math.random() * 0.4;
+                
+                // For higher levels, sometimes use longer or more complex time domains
+                if (level > 5) {
+                    tEnd = t0 + (0.8 + level * 0.1) * (0.8 + Math.random() * 0.4);
+                }
+                
+                // Adjust for oscillatory systems with level complexity
+                if (variant.display.includes('sin') || variant.display.includes('cos')) {
+                    const periods = Math.max(1, level * 0.3);
+                    tEnd = t0 + Math.PI * periods * (1 + Math.random() * 0.5);
+                }
+                
+                // Generate initial value with level-based variation
+                let y0 = 0.3 + Math.random() * 1.4;
+                
+                // Higher levels can have more extreme initial conditions
+                if (level > 8) {
+                    const extremeFactor = 1 + (level - 8) * 0.2;
+                    y0 *= (Math.random() < 0.3) ? extremeFactor : (1 / extremeFactor);
+                }
+                
+                // For very high levels, occasionally use negative or very small initial values
+                if (level > 12 && Math.random() < 0.2) {
+                    y0 = (Math.random() < 0.5) ? -Math.abs(y0) : Math.abs(y0) * 0.1;
+                }
+                
+                // Calculate complexity-based precision and rewards
+                const parameterComplexity = this.calculateParameterComplexity(variant, level);
+                const combinedDifficulty = category.difficulty + parameterComplexity + (level - 1) * 0.15;
                 const basePrecision = 0.1;
-                const targetAccuracy = basePrecision / Math.pow(5, level - 1);
+                const targetAccuracy = basePrecision / Math.pow(2.5, combinedDifficulty - 1);
                 
-                // Exponentially increasing rewards
-                let baseReward;
-                if (level === 1) {
-                    baseReward = 30 + Math.floor(Math.random() * 20);
-                } else {
-                    baseReward = Math.floor(30 * Math.pow(2, level - 1)) + Math.floor(Math.random() * Math.floor(20 * Math.pow(2, level - 1)));
-                }
+                // Dynamic rewards based on actual complexity, not just level
+                let baseReward = 25 + category.difficulty * 15;
+                baseReward *= (1 + parameterComplexity * 0.5);
+                baseReward *= Math.pow(1.4, level - 1);
+                baseReward += Math.floor(Math.random() * (10 + level * 5));
+                baseReward = Math.floor(baseReward);
 
+                // Create the mission object
                 const mission = {
-                    name: baseEq.name,
-                    equation: baseEq.equation,
-                    display: baseEq.display,
-                    description: baseEq.description,
+                    name: equation.name,
+                    category: categoryName,
+                    difficulty: category.difficulty,
+                    equation: this.createEquationFunction(equation, variant),
+                    display: variant.display,
+                    description: variant.desc,
                     timeSpan: [t0, tEnd],
                     initialValue: y0,
                     targetAccuracy: targetAccuracy,
                     baseReward: baseReward,
-                    hasAnalytical: baseEq.hasAnalytical
+                    hasAnalytical: equation.hasAnalytical,
+                    variant: variant
                 };
 
-                if (baseEq.hasAnalytical) {
-                    mission.getReference = (t) => baseEq.solution(t, y0, t0);
+                // Set up reference solution
+                if (equation.hasAnalytical && equation.solution) {
+                    mission.getReference = (t) => {
+                        const params = Object.values(variant).filter(v => typeof v === 'number');
+                        return equation.solution(t, y0, t0, ...params);
+                    };
                 } else {
                     // Use high-precision reference
                     const refSolution = NumericalSolver.rk4(mission, 0.00001);
@@ -824,6 +1100,121 @@
                 }
 
                 return mission;
+            }
+
+            static updateDisplayString(originalDisplay, baseVariant, newVariant) {
+                // Simple display string update for modified parameters
+                let display = originalDisplay;
+                
+                // Update common numerical coefficients in display strings
+                Object.keys(baseVariant).forEach(key => {
+                    if (typeof baseVariant[key] === 'number' && typeof newVariant[key] === 'number') {
+                        const oldVal = baseVariant[key];
+                        const newVal = newVariant[key];
+                        
+                        if (Math.abs(newVal - oldVal) > 0.01) {
+                            const newValStr = newVal.toFixed(1);
+                            // Replace old coefficient with new one in display
+                            if (display.includes(oldVal.toString())) {
+                                display = display.replace(oldVal.toString(), newValStr);
+                            } else if (oldVal === 1 && !display.includes('1')) {
+                                // Handle implicit coefficient of 1
+                                display = display.replace(/([+-]?\s*)([a-z])/g, `$1${newValStr}$2`);
+                            }
+                        }
+                    }
+                });
+                
+                return display;
+            }
+
+            static calculateParameterComplexity(variant, level) {
+                let complexity = 0;
+                
+                // Count extreme parameter values
+                Object.values(variant).forEach(value => {
+                    if (typeof value === 'number') {
+                        if (Math.abs(value) > 3) complexity += 0.5;
+                        if (Math.abs(value) < 0.1) complexity += 0.3;
+                        if (Math.abs(value) > 5) complexity += 0.5;
+                    }
+                });
+                
+                // Add complexity for higher levels with multiple effects
+                if (level > 10) {
+                    complexity += (level - 10) * 0.1;
+                }
+                
+                return Math.min(complexity, 2); // Cap complexity bonus
+            }
+
+            static createEquationFunction(equation, variant) {
+                // Create a function that incorporates the variant parameters (with dynamic scaling)
+                return (t, y) => {
+                    // Use actual variant values (which may be scaled from base values)
+                    const coeff = variant.coeff || 1;
+                    const freq = variant.freq || 1;
+                    const amp = variant.amp || 1;
+                    const damping = variant.damping || 1;
+                    const force = variant.force || 1;
+                    const rate = variant.rate || 1;
+                    const capacity = variant.capacity || 1;
+                    const input = variant.input || 0;
+                    const efficiency = variant.efficiency || 1;
+                    const growth = variant.growth || 1;
+                    const volatility = variant.volatility || 1;
+                    const interest = variant.interest || 1;
+                    const reinvest = variant.reinvest || 1;
+                    const friction = variant.friction || 1;
+                    const p = variant.p || 1;
+                    const i = variant.i || 1;
+                    const d = variant.d || 1;
+                    const target = variant.target || 1;
+                    const chaos = variant.chaos || 1;
+                    const drive = variant.drive || 1;
+                    const barrier = variant.barrier || 1;
+                    
+                    if (equation.name === 'Exponential Growth') {
+                        return coeff * y;
+                    } else if (equation.name === 'Exponential Decay') {
+                        return -coeff * y;
+                    } else if (equation.name === 'Harmonic Motion') {
+                        return amp * Math.sin(freq * t);
+                    } else if (equation.name === 'Damped Motion') {
+                        return -damping * y + force * Math.cos(t);
+                    } else if (equation.name === 'Thermal Dynamics') {
+                        return -coeff * t * y;
+                    } else if (equation.name === 'Logistic Growth') {
+                        return rate * y * (capacity - y);
+                    } else if (equation.name === 'Predator-Prey Base') {
+                        const prey = variant.prey || 2;
+                        const pred = variant.pred || 1;
+                        return y * (prey - pred * Math.sin(t) - y);
+                    } else if (equation.name === 'Epidemic Spread') {
+                        const infection = variant.infection || 1;
+                        const recovery = variant.recovery || 1;
+                        return infection * y * Math.exp(-recovery * t) * (10 - y);
+                    } else if (equation.name === 'First Order Reaction') {
+                        return -rate * y + input;
+                    } else if (equation.name === 'Autocatalytic Process') {
+                        return efficiency * y * y * (capacity - y);
+                    } else if (equation.name === 'Market Dynamics') {
+                        return growth * y * (5 - y) - volatility * Math.sin(2*t);
+                    } else if (equation.name === 'Investment Growth') {
+                        return interest * y + reinvest * t * y - friction * y * y;
+                    } else if (equation.name === 'PID Controller') {
+                        return -p * y - i * Math.sin(t) + d * Math.cos(2*t);
+                    } else if (equation.name === 'Servo Tracking') {
+                        return target * Math.sin(t) - damping * y - friction * y * Math.abs(y);
+                    } else if (equation.name === 'Strange Attractor') {
+                        return chaos * Math.sin(y) + drive * Math.cos(3*t) - damping * y;
+                    } else if (equation.name === 'Bistable System') {
+                        return barrier * y - y*y*y + drive * Math.sin(t);
+                    } else {
+                        // Fallback to base equation
+                        return equation.baseEquation(t, y);
+                    }
+                };
             }
         }
 
@@ -1491,7 +1882,7 @@
             }
 
             generateNewMission() {
-                if (this.gameState.level > 15) {
+                if (this.gameState.level > 25) {
                     this.endGame(true);
                     return;
                 }
@@ -1503,6 +1894,7 @@
             }
 
             displayMission(mission) {
+                document.getElementById('equationCategory').textContent = mission.category;
                 document.getElementById('equationDisplay').textContent = mission.display;
                 document.getElementById('equationDescription').textContent = mission.description;
                 document.getElementById('initialCondition').textContent = 
@@ -1513,6 +1905,19 @@
                     `< ${mission.targetAccuracy.toFixed(5)}`;
                 document.getElementById('missionReward').textContent = 
                     `$${mission.baseReward}`;
+
+                // Update difficulty display
+                const difficultyStars = document.querySelectorAll('.difficulty-star');
+                const difficulty = mission.difficulty;
+                difficultyStars.forEach((star, index) => {
+                    if (index < difficulty) {
+                        star.textContent = '★';
+                        star.classList.remove('empty');
+                    } else {
+                        star.textContent = '☆';
+                        star.classList.add('empty');
+                    }
+                });
             }
 
             async executeMission() {
@@ -1559,18 +1964,6 @@
                         referencePoints.push({ x: t, y: refY });
                         numericalPoints.push({ x: t, y: y });
                     }
-                    
-                    // Verify data consistency
-                    console.log('Data consistency check:', {
-                        timePoints: result.t.length,
-                        referencePoints: referencePoints.length,
-                        numericalPoints: numericalPoints.length,
-                        firstTimePoint: result.t[0],
-                        lastTimePoint: result.t[result.t.length - 1],
-                        firstRefValue: referencePoints[0].y,
-                        firstNumValue: numericalPoints[0].y,
-                        firstError: Math.abs(referencePoints[0].y - numericalPoints[0].y)
-                    });
                     
                     // Animate the chart drawing
                     if (this.chartRenderer) {
@@ -1629,30 +2022,12 @@
 
             calculateError(numericalSolution, timePoints) {
                 let maxError = 0;
-                let maxErrorIndex = -1;
-                let maxErrorTime = 0;
                 
                 for (let i = 0; i < timePoints.length; i++) {
                     const reference = this.gameState.currentMission.getReference(timePoints[i]);
                     const error = Math.abs(numericalSolution[i] - reference);
-                    
-                    if (error > maxError) {
-                        maxError = error;
-                        maxErrorIndex = i;
-                        maxErrorTime = timePoints[i];
-                    }
+                    maxError = Math.max(maxError, error);
                 }
-                
-                // Debug logging
-                console.log('Max Error Analysis:', {
-                    maxError: maxError,
-                    atTime: maxErrorTime,
-                    atIndex: maxErrorIndex,
-                    referenceValue: this.gameState.currentMission.getReference(maxErrorTime),
-                    numericalValue: numericalSolution[maxErrorIndex],
-                    targetAccuracy: this.gameState.currentMission.targetAccuracy,
-                    totalPoints: timePoints.length
-                });
                 
                 return maxError;
             }
@@ -1799,7 +2174,7 @@
                     <h3 style="color: ${victory ? '#4caf50' : '#f44336'}; margin-bottom: 15px; font-size: 14px;">${title}</h3>
                     <p style="margin-bottom: 15px; font-size: 8px;">${message}</p>
                     <div style="text-align: left; font-size: 8px;">
-                        <div>💰 Final Credits: $${this.gameState.money}</div>
+                        <div>💰 Final Credits: ${this.gameState.money}</div>
                         <div>🏆 Total Score: ${this.gameState.score}</div>
                         <div>🎯 Max Level: ${this.gameState.level}</div>
                         <div>📊 Best Accuracy: ${(this.gameState.accuracy * 100).toFixed(1)}%</div>
