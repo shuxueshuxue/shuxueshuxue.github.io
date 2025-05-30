@@ -29,7 +29,7 @@
         
         body {
             font-family: 'Segoe UI', Arial, sans-serif;
-            background: linear-gradient(135deg, #0a0a0a 0%, #1a1a2e 50%, #16213e 100%);
+            background: linear-gradient(135deg, #050510 0%, #1a1a3e 50%, #0f1b3c 100%);
             color: #e0e0e0;
             overflow: hidden;
             position: relative;
@@ -47,8 +47,9 @@
             right: 0;
             bottom: 0;
             background: 
-                radial-gradient(circle at 20% 30%, rgba(74, 144, 226, 0.1) 0%, transparent 50%),
-                radial-gradient(circle at 80% 70%, rgba(226, 74, 74, 0.1) 0%, transparent 50%);
+                radial-gradient(circle at 20% 30%, rgba(138, 43, 226, 0.15) 0%, transparent 50%),
+                radial-gradient(circle at 80% 70%, rgba(74, 144, 226, 0.1) 0%, transparent 50%),
+                radial-gradient(circle at 50% 50%, rgba(255, 255, 255, 0.03) 0%, transparent 70%);
             pointer-events: none;
             z-index: -1;
         }
@@ -60,11 +61,12 @@
         
         #mapContainer {
             flex: 1;
-            background: rgba(26, 26, 26, 0.8);
+            background: rgba(15, 15, 35, 0.9);
             position: relative;
             min-width: 0;
-            border: 2px solid #333;
+            border: 2px solid #2a2a5e;
             border-radius: 12px 0 0 12px;
+            box-shadow: inset 0 0 50px rgba(138, 43, 226, 0.1);
         }
         
         #mapSvg {
@@ -76,24 +78,25 @@
         
         #sidePanel {
             width: 350px;
-            background: linear-gradient(180deg, #1a1a2e 0%, #16213e 100%);
-            border: 2px solid #333;
+            background: linear-gradient(180deg, #1a1a3e 0%, #0f1b3c 100%);
+            border: 2px solid #2a2a5e;
             border-left: none;
             border-radius: 0 12px 12px 0;
             display: flex;
             flex-direction: column;
             overflow: hidden;
+            box-shadow: 0 0 30px rgba(138, 43, 226, 0.2);
         }
         
         .panel-header {
-            background: linear-gradient(90deg, #4a90e2 0%, #357abd 100%);
+            background: linear-gradient(90deg, #5d3fd3 0%, #4a2db1 100%);
             padding: 15px;
             text-align: center;
             color: white;
             font-weight: bold;
             font-size: 18px;
-            text-shadow: 0 2px 4px rgba(0,0,0,0.5);
-            border-bottom: 2px solid #333;
+            text-shadow: 0 2px 8px rgba(138, 43, 226, 0.5);
+            border-bottom: 2px solid #2a2a5e;
         }
         
         .panel-content {
@@ -114,12 +117,13 @@
         }
         
         .section-title {
-            color: #4a90e2;
+            color: #9d78ff;
             margin-bottom: 10px;
             font-size: 14px;
             font-weight: bold;
             text-transform: uppercase;
             letter-spacing: 1px;
+            text-shadow: 0 0 10px rgba(157, 120, 255, 0.5);
         }
         
         .status-grid {
@@ -184,7 +188,7 @@
         }
         
         .game-button {
-            background: linear-gradient(135deg, #4a90e2 0%, #357abd 100%);
+            background: linear-gradient(135deg, #5d3fd3 0%, #4a2db1 100%);
             color: white;
             border: none;
             padding: 10px 16px;
@@ -192,18 +196,16 @@
             cursor: pointer;
             font-size: 12px;
             font-weight: bold;
-            transition: all 0.3s ease;
             text-transform: uppercase;
             letter-spacing: 0.5px;
-            box-shadow: 0 4px 8px rgba(0,0,0,0.3);
+            box-shadow: 0 4px 12px rgba(138, 43, 226, 0.3);
             width: 100%;
             margin: 3px 0;
         }
         
         .game-button:hover {
-            background: linear-gradient(135deg, #5aa0f2 0%, #4080cd 100%);
-            transform: translateY(-2px);
-            box-shadow: 0 6px 12px rgba(0,0,0,0.4);
+            background: linear-gradient(135deg, #7050e3 0%, #5a3dc1 100%);
+            box-shadow: 0 6px 20px rgba(138, 43, 226, 0.4);
         }
         
         .game-button:disabled {
@@ -213,21 +215,7 @@
             box-shadow: none;
         }
         
-        .stealth-button {
-            background: linear-gradient(135deg, #6a4c93 0%, #553a73 100%);
-        }
         
-        .stealth-button:hover {
-            background: linear-gradient(135deg, #7a5ca3 0%, #654a83 100%);
-        }
-        
-        .settings-button {
-            background: linear-gradient(135deg, #666 0%, #555 100%);
-        }
-        
-        .settings-button:hover {
-            background: linear-gradient(135deg, #777 0%, #666 100%);
-        }
         
         /* 弹窗基础样式 */
         .modal-overlay {
@@ -245,8 +233,8 @@
         }
         
         .modal-content {
-            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
-            border: 3px solid #4a90e2;
+            background: linear-gradient(135deg, #1a1a3e 0%, #0f1b3c 100%);
+            border: 3px solid #5d3fd3;
             border-radius: 15px;
             position: relative;
             overflow: hidden;
@@ -254,10 +242,11 @@
             max-height: 95vh;
             display: flex;
             flex-direction: column;
+            box-shadow: 0 0 50px rgba(138, 43, 226, 0.3);
         }
         
         .modal-header {
-            background: linear-gradient(90deg, #4a90e2 0%, #357abd 100%);
+            background: linear-gradient(90deg, #5d3fd3 0%, #4a2db1 100%);
             padding: 15px 20px;
             color: white;
             font-weight: bold;
@@ -266,6 +255,7 @@
             justify-content: space-between;
             align-items: center;
             flex-shrink: 0;
+            text-shadow: 0 2px 8px rgba(138, 43, 226, 0.5);
         }
         
         .modal-close {
@@ -307,12 +297,13 @@
             flex-direction: column;
             height: 100%;
             gap: 20px;
+            overflow: visible;
         }
         
         .soul-zones {
             display: flex;
             gap: 20px;
-            height: 180px;
+            height: 305px;
         }
         
         .soul-zone {
@@ -321,6 +312,8 @@
             border-radius: 12px;
             padding: 15px;
             border: 2px solid #444;
+            overflow: visible;
+            padding-top: 20px;
         }
         
         .soul-zone h3 {
@@ -349,13 +342,19 @@
             display: flex;
             flex-wrap: wrap;
             gap: 10px;
-            min-height: 120px;
+            min-height: 230px;
             align-content: flex-start;
+            overflow-y: auto;
+            overflow-x: visible;
+            max-height: 230px;
+            position: relative;
+            padding-top: 8px;
+            margin-top: -8px;
         }
         
         .soul-card {
-            width: 60px;
-            height: 80px;
+            width: 50px;
+            height: 65px;
             background: linear-gradient(135deg, #2a2a3a 0%, #1a1a2a 100%);
             border: 2px solid #555;
             border-radius: 8px;
@@ -365,6 +364,8 @@
             justify-content: center;
             cursor: grab;
             transition: all 0.3s ease;
+            position: relative;
+            z-index: 10;
             position: relative;
             user-select: none;
         }
@@ -380,6 +381,13 @@
             transform: rotate(5deg) scale(1.1);
             z-index: 1000;
             opacity: 0.8;
+            visibility: visible !important;
+        }
+        
+        .soul-card.drag-source-hidden {
+            opacity: 0;
+            visibility: hidden;
+            transition: opacity 0.1s ease;
         }
         
         .soul-card.in-release {
@@ -393,10 +401,10 @@
         }
         
         .soul-number {
-            font-size: 18px;
+            font-size: 16px;
             font-weight: bold;
             color: #fff;
-            margin-bottom: 5px;
+            margin-bottom: 3px;
         }
         
         .soul-mode-indicator {
@@ -405,23 +413,38 @@
             text-transform: uppercase;
         }
         
+        .soul-mage-divider {
+            text-align: center;
+            margin: 30px 0;
+            font-size: 48px;
+            font-weight: bold;
+            letter-spacing: 8px;
+            background: linear-gradient(45deg, #4a90e2, #e2a855, #55e285, #e24a4a, #4a90e2);
+            background-size: 200% 200%;
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            text-fill-color: transparent;
+            animation: gradientShift 3s ease infinite;
+            text-shadow: 0 0 30px rgba(74, 144, 226, 0.5);
+            position: relative;
+        }
+        
+        @keyframes gradientShift {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+        
         .timeline-container {
-            flex: 1;
             background: rgba(0,0,0,0.3);
             border-radius: 12px;
             padding: 15px;
             border: 2px solid #444;
             display: flex;
             flex-direction: column;
-        }
-        
-        .timeline-container h3 {
-            color: #55e285;
-            margin: 0 0 15px 0;
-            font-size: 16px;
-            text-align: center;
-            text-transform: uppercase;
-            letter-spacing: 1px;
+            height: 200px;
+            overflow: visible;
         }
         
         .timeline-scroll {
@@ -509,14 +532,16 @@
         }
         
         .timeline-soul-slot {
-            width: 45px;
-            height: 45px;
+            width: 55px;
+            height: 70px;
             border: 2px dashed #555;
             border-radius: 6px;
             display: flex;
             align-items: center;
             justify-content: center;
             transition: all 0.3s ease;
+            padding: 3px;
+            box-sizing: border-box;
         }
         
         .timeline-soul-slot.occupied {
@@ -526,18 +551,19 @@
         }
         
         .timeline-soul-card {
-            width: 40px;
-            height: 40px;
-            background: linear-gradient(135deg, #55e285 0%, #45c275 100%);
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, #3a5a42 0%, #2a4a32 100%);
             border-radius: 4px;
             display: flex;
             align-items: center;
             justify-content: center;
-            color: white;
+            color: #cccccc;
             font-size: 10px;
             font-weight: bold;
             cursor: pointer;
             transition: all 0.3s ease;
+            padding: 2px;
         }
         
         .timeline-soul-card:hover {
@@ -623,19 +649,140 @@
             opacity: 0.5;
         }
         
-        .campaign-mode-indicator {
+        .campaign-panel {
             position: absolute;
-            top: 15px;
-            right: 15px;
-            background: linear-gradient(135deg, #e2a855 0%, #c49545 100%);
+            top: 10px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: linear-gradient(135deg, rgba(20, 20, 30, 0.95) 0%, rgba(10, 10, 20, 0.95) 100%);
+            border: 1px solid #5d3fd3;
+            border-radius: 8px;
             color: white;
-            padding: 12px 20px;
-            border-radius: 25px;
-            font-weight: bold;
-            font-size: 14px;
-            box-shadow: 0 4px 15px rgba(226, 168, 85, 0.4);
-            animation: campaignPulse 2s ease-in-out infinite;
             z-index: 100;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.6);
+            backdrop-filter: blur(10px);
+            display: flex;
+            align-items: center;
+            padding: 10px 20px;
+            gap: 20px;
+            font-size: 14px;
+        }
+        
+        .campaign-stat {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .campaign-stat span:first-child {
+            color: #aaa;
+        }
+        
+        .campaign-stat span:last-child {
+            color: #e2a855;
+            font-weight: bold;
+        }
+        
+        .campaign-actions {
+            display: flex;
+            gap: 10px;
+        }
+        
+        .campaign-button {
+            background: linear-gradient(135deg, #5d3fd3 0%, #4a2db1 100%);
+            border: 1px solid #5d3fd3;
+            color: white;
+            padding: 6px 16px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: bold;
+            transition: all 0.3s ease;
+        }
+        
+        .campaign-button:hover:not(:disabled) {
+            transform: translateY(-1px);
+            box-shadow: 0 2px 10px rgba(93, 63, 211, 0.4);
+        }
+        
+        .campaign-button:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+        
+        .campaign-button.launch {
+            background: linear-gradient(135deg, rgba(85, 226, 133, 0.3) 0%, rgba(75, 216, 123, 0.3) 100%);
+            border-color: #55e285;
+        }
+        
+        .campaign-button.launch:hover:not(:disabled) {
+            background: linear-gradient(135deg, rgba(85, 226, 133, 0.5) 0%, rgba(75, 216, 123, 0.5) 100%);
+            box-shadow: 0 2px 10px rgba(85, 226, 133, 0.4);
+        }
+        
+        .campaign-button.cancel {
+            background: linear-gradient(135deg, rgba(226, 74, 74, 0.3) 0%, rgba(206, 54, 54, 0.3) 100%);
+            border-color: #e24a4a;
+        }
+        
+        .campaign-button.cancel:hover {
+            background: linear-gradient(135deg, rgba(226, 74, 74, 0.5) 0%, rgba(206, 54, 54, 0.5) 100%);
+            box-shadow: 0 2px 10px rgba(226, 74, 74, 0.4);
+        }
+        
+        /* 节点上下文菜单 */
+        .node-context-menu {
+            position: fixed;
+            background: linear-gradient(135deg, rgba(20, 20, 30, 0.98) 0%, rgba(10, 10, 20, 0.98) 100%);
+            border: 1px solid #4a90e2;
+            border-radius: 12px;
+            padding: 8px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.8), 0 0 20px rgba(74, 144, 226, 0.3);
+            z-index: 1000;
+            display: none;
+            backdrop-filter: blur(10px);
+        }
+        
+        .context-menu-item {
+            padding: 10px 20px;
+            color: white;
+            cursor: pointer;
+            border-radius: 8px;
+            transition: all 0.2s ease;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 14px;
+            white-space: nowrap;
+        }
+        
+        .context-menu-item:hover {
+            background: rgba(74, 144, 226, 0.3);
+            transform: translateX(3px);
+        }
+        
+        .context-menu-item.battle {
+            color: #e24a4a;
+        }
+        
+        .context-menu-item.battle:hover {
+            background: rgba(226, 74, 74, 0.3);
+        }
+        
+        .context-menu-item.move {
+            color: #55e285;
+        }
+        
+        .context-menu-item.move:hover {
+            background: rgba(85, 226, 133, 0.3);
+        }
+        
+        .context-menu-item.campaign {
+            color: #e2a855;
+        }
+        
+        .context-menu-item.campaign:hover {
+            background: rgba(226, 168, 85, 0.3);
         }
         
         @keyframes campaignPulse {
@@ -919,6 +1066,14 @@
             height: 400px;
         }
         
+        /* 帮助界面 */
+        .help-modal {
+            width: 800px;
+            max-width: 90vw;
+            height: 600px;
+            max-height: 80vh;
+        }
+        
         .setting-item {
             display: flex;
             justify-content: space-between;
@@ -938,85 +1093,61 @@
             left: 0;
             right: 0;
             bottom: 0;
-            background: linear-gradient(135deg, rgba(0,0,0,0.98) 0%, rgba(26,26,46,0.98) 100%);
+            background: linear-gradient(135deg, rgba(0,0,0,0.95) 0%, rgba(0,0,0,0.98) 100%);
             display: flex;
             align-items: center;
             justify-content: center;
             z-index: 1000;
-            backdrop-filter: blur(10px);
-            overflow: hidden;
+            overflow: auto;
+            padding: 20px;
         }
         
         .game-modal {
-            background: linear-gradient(135deg, #202040 0%, #16213e 100%);
-            padding: 30px;
+            background: 
+                linear-gradient(135deg, #202040 0%, #16213e 100%);
+            padding: 20px 40px;
             border-radius: 15px;
-            border: 3px solid #4a90e2;
             text-align: center;
-            max-width: 600px;
-            max-height: 85vh;
-            overflow-y: auto;
-            box-shadow: 0 20px 40px rgba(0,0,0,0.5);
-            position: relative;
-        }
-        
-        .game-modal::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: -100%;
             width: 100%;
-            height: 100%;
-            background: linear-gradient(90deg, transparent, rgba(74, 144, 226, 0.1), transparent);
-            animation: shimmer 3s infinite;
+            max-width: 1100px;
+            height: 80vh;
+            overflow-y: visible;
+            box-shadow: none;
+            position: relative;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            mask: 
+                linear-gradient(to right, transparent 0%, white 8%, white 92%, transparent 100%),
+                linear-gradient(to bottom, transparent 0%, white 8%, white 92%, transparent 100%);
+            mask-composite: intersect;
+            -webkit-mask: 
+                linear-gradient(to right, transparent 0%, white 8%, white 92%, transparent 100%),
+                linear-gradient(to bottom, transparent 0%, white 8%, white 92%, transparent 100%);
+            -webkit-mask-composite: source-in;
         }
         
-        @keyframes shimmer {
-            0% { left: -100%; }
-            100% { left: 100%; }
-        }
         
         .modal-title {
-            font-size: 32px;
+            font-size: 28px;
             font-weight: bold;
-            margin-bottom: 15px;
-            background: linear-gradient(90deg, #4a90e2, #e24a4a, #55e285);
-            background-size: 200% 100%;
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
-            animation: gradientShift 3s ease-in-out infinite;
+            margin-bottom: 10px;
+            color: #4a90e2;
         }
         
-        @keyframes gradientShift {
-            0%, 100% { background-position: 0% 50%; }
-            50% { background-position: 100% 50%; }
-        }
         
         .story-text {
             background: rgba(0,0,0,0.4);
-            padding: 20px;
+            padding: 15px;
             border-radius: 12px;
-            margin: 20px 0;
-            line-height: 1.6;
+            margin: 15px 0;
+            line-height: 1.5;
             color: #ddd;
             border-left: 4px solid #4a90e2;
             position: relative;
-            opacity: 0;
-            animation: fadeInUp 1s ease 0.5s forwards;
             font-size: 14px;
         }
         
-        @keyframes fadeInUp {
-            from {
-                opacity: 0;
-                transform: translateY(20px);
-            }
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
-        }
         
         .opening-animation {
             position: fixed;
@@ -1269,6 +1400,245 @@
         .campaign-debug.show {
             display: block;
         }
+        
+        .soul-capacity-select {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-wrap: wrap;
+            gap: 5px;
+        }
+        
+        .soul-capacity-select label {
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .soul-capacity-select input[type="radio"] {
+            width: 16px;
+            height: 16px;
+            accent-color: #4a90e2;
+            cursor: pointer;
+        }
+        
+        .soul-capacity-select label:hover {
+            transform: scale(1.05);
+        }
+        
+        /* 新的剧本选择UI */
+        .scenario-selection-modal {
+            max-width: 900px;
+            width: 90vw;
+        }
+        
+        .scenario-container {
+            display: flex;
+            gap: 30px;
+            margin-top: 10px;
+        }
+        
+        .scenario-list {
+            width: 280px;
+            background: rgba(0,0,0,0.3);
+            border-radius: 12px;
+            padding: 20px;
+        }
+        
+        .scenario-list .section-title {
+            color: #e2a855;
+            margin: 0 0 20px 0;
+            font-size: 16px;
+            text-align: center;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+        
+        .scenario-item {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            padding: 15px;
+            margin-bottom: 10px;
+            background: rgba(255,255,255,0.05);
+            border: 2px solid transparent;
+            border-radius: 10px;
+            cursor: pointer;
+            user-select: none;
+        }
+        
+        .scenario-item:hover {
+            background: rgba(74, 144, 226, 0.1);
+            border-color: #4a90e2;
+        }
+        
+        .scenario-item.active {
+            background: rgba(74, 144, 226, 0.2);
+            border-color: #4a90e2;
+            box-shadow: 0 0 20px rgba(74, 144, 226, 0.3);
+        }
+        
+        .scenario-icon {
+            font-size: 24px;
+        }
+        
+        .scenario-name {
+            font-size: 14px;
+            font-weight: bold;
+            color: #e0e0e0;
+        }
+        
+        .scenario-details {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .scenario-panel {
+            display: none;
+            flex: 1;
+        }
+        
+        .scenario-panel.active {
+            display: block;
+        }
+        
+        .panel-title {
+            background: linear-gradient(135deg, #4a90e2, #6c5ce7);
+            background-clip: text;
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin: 0 0 20px 0;
+            font-size: 20px;
+            font-weight: bold;
+            text-align: center;
+        }
+        
+        .panel-description {
+            background: linear-gradient(135deg, rgba(0,0,0,0.4), rgba(74, 144, 226, 0.08));
+            border-radius: 12px;
+            padding: 20px;
+            border: 1px solid rgba(74, 144, 226, 0.2);
+            backdrop-filter: blur(5px);
+        }
+        
+        .panel-description p {
+            line-height: 1.8;
+            margin-bottom: 20px;
+            color: #ddd;
+        }
+        
+        .scenario-stats {
+            display: flex;
+            gap: 30px;
+            justify-content: center;
+        }
+        
+        .stat-item {
+            font-size: 16px;
+            color: #aaa;
+        }
+        
+        .stat-value {
+            color: #e2a855;
+            font-weight: bold;
+            font-size: 20px;
+            margin-left: 10px;
+        }
+        
+        .difficulty-section {
+            margin-top: 30px;
+            padding-top: 20px;
+            border-top: 1px solid #333;
+        }
+        
+        .section-subtitle {
+            color: #55e285;
+            margin: 0 0 15px 0;
+            font-size: 16px;
+            text-align: center;
+        }
+        
+        .difficulty-options {
+            display: flex;
+            gap: 15px;
+            justify-content: center;
+        }
+        
+        .difficulty-option {
+            cursor: pointer;
+        }
+        
+        .difficulty-option input {
+            display: none;
+        }
+        
+        .difficulty-card {
+            background: rgba(0,0,0,0.4);
+            border: 2px solid #333;
+            border-radius: 10px;
+            padding: 15px 25px;
+            text-align: center;
+        }
+        
+        .difficulty-option input:checked + .difficulty-card {
+            border-color: #4a90e2;
+            background: rgba(74, 144, 226, 0.2);
+        }
+        
+        .difficulty-card:hover {
+            background: rgba(74, 144, 226, 0.1);
+        }
+        
+        .difficulty-card.challenge {
+            border-color: #e24a4a;
+        }
+        
+        .difficulty-option input:checked + .difficulty-card.challenge {
+            border-color: #e24a4a;
+            background: rgba(226, 74, 74, 0.2);
+        }
+        
+        .difficulty-card.master {
+            border-color: #e2a855;
+        }
+        
+        .difficulty-option input:checked + .difficulty-card.master {
+            border-color: #e2a855;
+            background: rgba(226, 168, 85, 0.2);
+        }
+        
+        .difficulty-name {
+            font-size: 14px;
+            font-weight: bold;
+            margin-bottom: 5px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+        
+        .difficulty-souls {
+            font-size: 12px;
+            color: #aaa;
+        }
+        
+        .start-button {
+            margin-top: 30px;
+            padding: 15px 40px;
+            font-size: 16px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            width: auto;
+            margin-left: auto;
+            margin-right: auto;
+        }
+        
+        .button-icon {
+            font-size: 20px;
+        }
     </style>
 </head>
 <body>
@@ -1324,9 +1694,9 @@
                             <span>目标BOSS</span>
                             <span class="status-value" id="bossTarget">-</span>
                         </div>
-                        <div class="status-item">
-                            <span>潜行机会</span>
-                            <span class="status-value" id="stealthCount">3</span>
+                        <div class="status-item" id="missionStatus" style="display: none;">
+                            <span>使命状态</span>
+                            <span class="status-value" style="color: #55e285;">✅ 已完成</span>
                         </div>
                         <div class="status-item">
                             <span>战斗次数</span>
@@ -1342,14 +1712,16 @@
                 <div class="panel-section">
                     <div class="section-title">💎 魂库</div>
                     <div class="soul-simple-list" id="soulSimpleList"></div>
-                    <button class="game-button" id="configureSoulsBtn">⚙️ 配置魂策略</button>
+                    <button class="game-button" id="configureSoulsBtn">⚙️ 布置魂阵</button>
                 </div>
                 
                 <div class="panel-section">
                     <div class="section-title">🎮 操作</div>
-                    <button class="settings-button game-button" id="settingsBtn">⚙️ 游戏设置</button>
+                    <button class="game-button" id="settingsBtn">⚙️ 游戏设置</button>
                     <button class="game-button" id="helpBtn">❓ 游戏说明</button>
-                    <button class="game-button" id="campaignModeBtn">🏛️ 战役模式</button>
+                    <button class="game-button" id="saveGameBtn">💾 保存进度</button>
+                    <button class="game-button" id="loadGameBtn">📁 读取进度</button>
+                    <input type="file" id="loadGameInput" accept=".json" style="display: none;">
                 </div>
             </div>
         </div>
@@ -1359,55 +1731,49 @@
     <div class="modal-overlay" id="soulConfigModal">
         <div class="modal-content soul-config-container">
             <div class="modal-header">
-                <span>💎 魂战略配置</span>
+                <span>💎 魂阵布局</span>
                 <button class="modal-close" id="closeSoulConfigBtn">&times;</button>
             </div>
             <div class="modal-body">
                 <div class="soul-management">
                     <div class="soul-zones">
                         <div class="soul-zone waiting-zone">
-                            <h3>💤 等待区</h3>
+                            <h3>💤 魂库</h3>
                             <div class="soul-cards" id="waitingSouls"></div>
                         </div>
                         <div class="soul-zone release-zone">
-                            <h3>⚔️ 释放区</h3>
+                            <h3>⚔️ 出战位</h3>
                             <div class="soul-cards" id="releaseSouls"></div>
                         </div>
                     </div>
+                    <div class="soul-mage-divider">SOUL MAGE</div>
                     <div class="timeline-container">
-                        <h3>⏰ 增益时间线</h3>
                         <div class="timeline-scroll" id="timelineScroll">
                             <div class="timeline-track" id="timelineTrack">
                                 <div class="timeline-label">主角<br><span id="heroTimeline">23</span></div>
                                 <div class="timeline-turns" id="timelineTurns"></div>
                             </div>
                         </div>
-                        <div class="scroll-hint">← 向左滑动查看更多回合 →</div>
+                        <div class="scroll-hint">← 向右滑动查看更多回合 →</div>
                     </div>
                 </div>
             </div>
         </div>
     </div>
     
-    <!-- 行动选择弹窗 -->
-    <div class="modal-overlay" id="actionModal">
-        <div class="modal-content action-modal">
-            <div class="modal-header">
-                <span>🎯 选择行动</span>
-                <button class="modal-close" id="closeActionModalBtn">&times;</button>
-            </div>
-            <div class="modal-body">
-                <div class="action-content">
-                    <div>目标节点</div>
-                    <div class="target-display" id="actionTarget">-</div>
-                    <div class="action-buttons">
-                        <button class="action-button battle" id="battleActionBtn">⚔️ 发起战斗</button>
-                        <button class="action-button move" id="moveActionBtn">🚶 移动过去</button>
-                        <button class="action-button stealth" id="stealthActionBtn">🥷 潜行移动</button>
-                        <button class="action-button campaign" id="campaignActionBtn">🏛️ 开始战役</button>
-                    </div>
-                </div>
-            </div>
+    <!-- 节点上下文菜单 -->
+    <div class="node-context-menu" id="nodeContextMenu">
+        <div class="context-menu-item battle" id="contextBattle">
+            <span>⚔️</span>
+            <span>发起战斗</span>
+        </div>
+        <div class="context-menu-item campaign" id="contextCampaign">
+            <span>🏛️</span>
+            <span>开始战役</span>
+        </div>
+        <div class="context-menu-item move" id="contextMove">
+            <span>🚶</span>
+            <span>移动过去</span>
         </div>
     </div>
     
@@ -1441,7 +1807,7 @@
     
     <!-- 游戏帮助弹窗 -->
     <div class="modal-overlay" id="helpModal">
-        <div class="modal-content settings-modal">
+        <div class="modal-content help-modal">
             <div class="modal-header">
                 <span>❓ 游戏说明</span>
                 <button class="modal-close" id="closeHelpBtn">&times;</button>
@@ -1458,7 +1824,7 @@
                     • <span style="color: #4a90e2;">蓝色边框</span>：当前位置</p>
                     
                     <h3 style="color: #4a90e2; margin: 20px 0 10px 0;">💎 魂的机制</h3>
-                    <p>• <span style="color: #e2a855;">释放模式</span>：魂作为战斗单位参战，胜利后成为友方节点<br>
+                    <p>• <span style="color: #e2a855;">释放模式</span>：魂作为战斗单位参战，战斗后会消耗掉<br>
                     • <span style="color: #55e285;">增益模式</span>：在指定回合为主角提供额外攻击力<br>
                     • <span style="color: #666;">等待模式</span>：暂不使用，保留备用</p>
                     
@@ -1469,36 +1835,28 @@
                     • 所有单位被消灭的一方失败</p>
                     
                     <h3 style="color: #4a90e2; margin: 20px 0 10px 0;">🏛️ 战役系统</h3>
-                    <p>• <span style="color: #e2a855;">大型战役</span>：可同时宣战多个连续节点（最多7个）<br>
+                    <p>• <span style="color: #e2a855;">大型战役</span>：可同时宣战多个连续节点（最多10个）<br>
+                    • 点击节点选择"开始战役"进入战役模式<br>
+                    • 点击选择战役路径上的多个目标节点<br>
                     • 所有战役目标的敌人和额外单位全部参战<br>
                     • 胜利后同时收获所有目标节点的魂<br>
                     • 直接跳到战役路径的末端位置</p>
                     
                     <h3 style="color: #4a90e2; margin: 20px 0 10px 0;">🎮 行动选项</h3>
-                    <p>• <span style="color: #e24a4a;">发起战斗</span>：与目标节点及其盟友战斗<br>
-                    • <span style="color: #4a90e2;">普通移动</span>：直接移动并征服敌方节点<br>
-                    • <span style="color: #6a4c93;">潜行移动</span>：消耗潜行次数，静默征服节点<br>
-                    • <span style="color: #e2a855;">开始战役</span>：进入战役模式选择多个目标</p>
+                    <p>• <span style="color: #e24a4a;">发起战斗</span>：点击节点选择"发起战斗"<br>
+                    • <span style="color: #4a90e2;">普通移动</span>：点击节点选择"移动至此"<br>
+                    • <span style="color: #e2a855;">开始战役</span>：点击节点选择"开始战役"<br>
+                    • <span style="color: #55e285;">魂传送</span>：点击魂卡片传送到该魂所在节点</p>
                     
-                    <h3 style="color: #4a90e2; margin: 20px 0 10px 0;">🥷 潜行系统</h3>
-                    <p>• 初始有3次潜行机会<br>
-                    • 每赢得10场战斗可获得1次额外潜行机会<br>
-                    • 潜行可避免战斗直接征服节点</p>
+                    <h3 style="color: #4a90e2; margin: 20px 0 10px 0;">✨ 魂传送规则</h3>
+                    <p>• <span style="color: #55e285;">触发方式</span>：点击界面中的魂卡片<br>
+                    • <span style="color: #55e285;">传送条件</span>：目标魂节点必须通过友方节点网络可达<br>
+                    • <span style="color: #55e285;">路径要求</span>：只能通过已征服的友方节点移动<br>
+                    • <span style="color: #55e285;">友方网络</span>：包括英雄位置和所有已收集的魂节点<br>
+                    • <span style="color: #55e285;">限制条件</span>：不能传送到当前所在位置</p>
                     
                     <h3 style="color: #4a90e2; margin: 20px 0 10px 0;">🗺️ 地图连接</h3>
                     <p>两个数字节点之间存在连接的条件：它们的差值是两数的公共质因数。</p>
-                    
-                    <h3 style="color: #4a90e2; margin: 20px 0 10px 0;">⚙️ 可配置项</h3>
-                    <p>• 战斗速度：0.5x - 2x<br>
-                    • 视野范围：1-4步<br>
-                    • 魂的战略配置：拖拽管理，支持到回合100</p>
-                    
-                    <h3 style="color: #4a90e2; margin: 20px 0 10px 0;">🎮 操作技巧</h3>
-                    <p>• 点击节点选择行动方式<br>
-                    • 拖拽魂卡片到不同区域来设置策略<br>
-                    • 时间线可横向滚动查看更多回合<br>
-                    • 战役模式：选择连续节点构建战役路径<br>
-                    • 合理安排魂的释放和增益时机</p>
                 </div>
             </div>
         </div>
@@ -1516,8 +1874,8 @@
                     <span>战斗速度</span>
                     <select class="setting-slider" id="battleSpeedSelect">
                         <option value="0.5">慢速 (0.5x)</option>
-                        <option value="1" selected>正常 (1x)</option>
-                        <option value="1.5">快速 (1.5x)</option>
+                        <option value="1">正常 (1x)</option>
+                        <option value="1.5" selected>快速 (1.5x)</option>
                         <option value="2">极快 (2x)</option>
                     </select>
                 </div>
@@ -1539,41 +1897,296 @@
     
     <!-- 游戏开始界面 -->
     <div id="gameOverlay">
-        <div class="game-modal">
+        <div class="game-modal scenario-selection-modal">
             <h1 class="modal-title">🔮 SOUL MAGE</h1>
             <div class="story-text" id="storyText">
                 <strong>数字魂域传说</strong><br><br>
-                在数字宇宙中，每个数字都蕴含着强大的力量。作为年轻的魂法师学徒，你将通过征服数字节点，收集并释放数字之魂来掌握魂法的奥秘。<br><br>
-                <em>现在，选择你的命运...</em>
+                在数字宇宙的深处，每个数字都蕴含着远古的魂力。作为被选中的魂法师，你将踏上征服数字之魂的传奇之路。<br><br>
+                <em>择一传说，启程...</em>
             </div>
             
-            <div class="scenario-select">
-                <div class="scenario-option" data-hero="23" data-boss="419">
-                    <div class="scenario-title">💫 数字传奇：23与419的宿命对决</div>
-                    <div class="scenario-desc">
-                        神秘质数23对决数字域霸主419，只有真正的魂法师才能驾驭这股力量！
+            <div class="scenario-container">
+                <div class="scenario-list">
+                    <h3 class="section-title">📜 选择剧本</h3>
+                    <div class="scenario-item active" data-scenario="classic">
+                        <div class="scenario-icon">💫</div>
+                        <div class="scenario-name">旅程</div>
+                    </div>
+                    <div class="scenario-item" data-scenario="siege">
+                        <div class="scenario-icon">⚔️</div>
+                        <div class="scenario-name">兵临城下</div>
+                    </div>
+                    <div class="scenario-item" data-scenario="napoleon">
+                        <div class="scenario-icon">👑</div>
+                        <div class="scenario-name">拿破仑</div>
+                    </div>
+                    <div class="scenario-item" data-scenario="custom">
+                        <div class="scenario-icon">🎨</div>
+                        <div class="scenario-name">自定义</div>
                     </div>
                 </div>
                 
-                <div class="scenario-option custom-scenario">
-                    <div class="scenario-title">🎨 自定义传奇</div>
-                    <div class="scenario-desc">选择你的英雄和终极挑战</div>
-                    <div class="custom-inputs">
-                        <input type="number" class="custom-input" id="customHero" placeholder="英雄" min="2" max="999">
-                        <span style="color: #e2a855; font-size: 20px;">⚔️</span>
-                        <input type="number" class="custom-input" id="customBoss" placeholder="BOSS" min="2" max="999">
-                        <button class="game-button" id="startCustomBtn" style="width: auto; margin: 0; padding: 10px 20px;">开始传奇</button>
+                <div class="scenario-details">
+                    <div class="scenario-panel active" id="classic-panel">
+                        <h3 class="panel-title">💫 经典剧本：旅程</h3>
+                        <div class="panel-description">
+                            <p>年轻的魂法师23踏上了挑战数字域暴君419的漫漫征途。</p>
+                            <div class="scenario-stats">
+                                <div class="stat-item">英雄：<span class="stat-value">23</span></div>
+                                <div class="stat-item">魔王：<span class="stat-value">419</span></div>
+                            </div>
+                        </div>
                     </div>
+                    
+                    <div class="scenario-panel" id="siege-panel">
+                        <h3 class="panel-title">⚔️ 兵临城下：古老传说的回响</h3>
+                        <div class="panel-description">
+                            <p>古籍记载，守城者13携带着神秘的古老力量-1，面对强大的攻城军团203。传说这场战斗用了两个回合。</p>
+                            <div class="scenario-stats">
+                                <div class="stat-item">英雄：<span class="stat-value">13</span></div>
+                                <div class="stat-item">魔王：<span class="stat-value">203</span></div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="scenario-panel" id="napoleon-panel">
+                        <h3 class="panel-title">👑 拿破仑：征服者的野心</h3>
+                        <div class="panel-description">
+                            <p>从科西嘉岛的小贵族3开始，踏上征服欧洲大陆的传奇之路，直至面对命运的终极考验300。</p>
+                            <div class="scenario-stats">
+                                <div class="stat-item">英雄：<span class="stat-value">3</span></div>
+                                <div class="stat-item">魔王：<span class="stat-value">300</span></div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="scenario-panel" id="custom-panel">
+                        <h3 class="panel-title">🎨 自创传奇：书写你的数字史诗</h3>
+                        <div class="panel-description">
+                            <p>选择任意数字作为起点和终点，创造属于你自己的魂法传奇。</p>
+                            <div class="custom-inputs">
+                                <input type="number" class="custom-input" id="customHero" placeholder="英雄" min="2" max="999">
+                                <span style="color: #e2a855; font-size: 20px;">⚔️</span>
+                                <input type="number" class="custom-input" id="customBoss" placeholder="魔王" min="2" max="999">
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="difficulty-section">
+                        <h4 class="section-subtitle">⚖️ 选择难度</h4>
+                        <div class="difficulty-options">
+                            <label class="difficulty-option">
+                                <input type="radio" name="soulCapacity" value="24" checked>
+                                <div class="difficulty-card">
+                                    <div class="difficulty-name">标准</div>
+                                    <div class="difficulty-souls">24 魂</div>
+                                </div>
+                            </label>
+                            <label class="difficulty-option">
+                                <input type="radio" name="soulCapacity" value="16">
+                                <div class="difficulty-card challenge">
+                                    <div class="difficulty-name">挑战</div>
+                                    <div class="difficulty-souls">16 魂</div>
+                                </div>
+                            </label>
+                            <label class="difficulty-option">
+                                <input type="radio" name="soulCapacity" value="9">
+                                <div class="difficulty-card master">
+                                    <div class="difficulty-name">大师</div>
+                                    <div class="difficulty-souls">9 魂</div>
+                                </div>
+                            </label>
+                        </div>
+                    </div>
+                    
+                    <button class="game-button start-button" id="startGameBtn">
+                        <span class="button-icon">🌟</span>
+                        <span class="button-text">开始征途</span>
+                    </button>
                 </div>
             </div>
         </div>
     </div>
     
     <script>
+        // Safe HTML sanitization utility
+        const sanitizeHTML = (str) => {
+            const div = document.createElement('div');
+            div.textContent = String(str);
+            return div.innerHTML;
+        };
+
+        // Utility classes for modularization
+        class DOMUtils {
+            static createElement(tag, className = '', attributes = {}, styles = {}) {
+                const element = document.createElement(tag);
+                if (className) element.className = className;
+                
+                Object.entries(attributes).forEach(([key, value]) => {
+                    element.setAttribute(key, value);
+                });
+                
+                Object.entries(styles).forEach(([key, value]) => {
+                    element.style[key] = value;
+                });
+                
+                return element;
+            }
+
+            static createSVGElement(tag, attributes = {}) {
+                const element = document.createElementNS('http://www.w3.org/2000/svg', tag);
+                Object.entries(attributes).forEach(([key, value]) => {
+                    element.setAttribute(key, value);
+                });
+                return element;
+            }
+        }
+
+        class ModalManager {
+            static createModal(title, content, options = {}) {
+                const modal = DOMUtils.createElement('div', 'modal-overlay', {}, {
+                    display: 'flex',
+                    zIndex: options.zIndex || '3000'
+                });
+
+                const modalContent = DOMUtils.createElement('div', 'modal-content', {}, {
+                    width: options.width || 'auto',
+                    height: options.height || 'auto'
+                });
+
+                const header = DOMUtils.createElement('div', 'modal-header');
+                const titleSpan = DOMUtils.createElement('span');
+                titleSpan.textContent = title;
+                
+                const closeBtn = DOMUtils.createElement('button', 'modal-close');
+                closeBtn.innerHTML = '&times;';
+                closeBtn.onclick = () => {
+                    modal.remove();
+                    if (options.onClose) options.onClose();
+                };
+
+                header.appendChild(titleSpan);
+                header.appendChild(closeBtn);
+
+                const body = DOMUtils.createElement('div', 'modal-body');
+                if (typeof content === 'string') {
+                    body.innerHTML = content;
+                } else {
+                    body.appendChild(content);
+                }
+
+                modalContent.appendChild(header);
+                modalContent.appendChild(body);
+                modal.appendChild(modalContent);
+
+                // Click outside to close
+                modal.onclick = (e) => {
+                    if (e.target === modal) {
+                        modal.remove();
+                        if (options.onClose) options.onClose();
+                    }
+                };
+
+                return modal;
+            }
+        }
+
+        class MathUtils {
+            static modularValue(value, modulus) {
+                return ((value % modulus) + modulus) % modulus;
+            }
+
+            static distance(point1, point2) {
+                const dx = point2.x - point1.x;
+                const dy = point2.y - point1.y;
+                return Math.sqrt(dx * dx + dy * dy);
+            }
+
+            static randomInRange(min, max) {
+                return Math.random() * (max - min) + min;
+            }
+        }
+
+        class EnemySelector {
+            static selectEnemiesFromNode(targetNode, adjacencyList, maxCount, excludeNodes = [], friendlyNodes = new Set()) {
+                const enemies = [targetNode];
+                const visited = new Set([targetNode, ...excludeNodes]);
+                const layers = [];
+                let currentLayer = [targetNode];
+
+                while (currentLayer.length > 0 && enemies.length < maxCount) {
+                    const nextLayer = [];
+                    const validNodesInLayer = [];
+
+                    for (const node of currentLayer) {
+                        for (const neighbor of adjacencyList[node] || []) {
+                            if (!visited.has(neighbor) && !friendlyNodes.has(neighbor)) {
+                                visited.add(neighbor);
+                                nextLayer.push(neighbor);
+                                validNodesInLayer.push(neighbor);
+                            }
+                        }
+                    }
+
+                    if (validNodesInLayer.length > 0) {
+                        layers.push(validNodesInLayer);
+                        const additionalCount = Math.min(3, maxCount - enemies.length);
+                        const selectedFromLayer = validNodesInLayer
+                            .sort(() => Math.random() - 0.5)
+                            .slice(0, additionalCount);
+                        enemies.push(...selectedFromLayer);
+                    }
+
+                    currentLayer = nextLayer;
+                }
+
+                return enemies.slice(0, maxCount);
+            }
+        }
+
+        class ArrayUtils {
+            static removeElementsByIndices(arrays, indices) {
+                const sortedIndices = [...indices].sort((a, b) => b - a);
+                sortedIndices.forEach(index => {
+                    arrays.forEach(array => {
+                        if (index < array.length) {
+                            array.splice(index, 1);
+                        }
+                    });
+                });
+            }
+
+            static shuffleArray(array) {
+                const shuffled = [...array];
+                for (let i = shuffled.length - 1; i > 0; i--) {
+                    const j = Math.floor(Math.random() * (i + 1));
+                    [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
+                }
+                return shuffled;
+            }
+        }
+        
         class SoulMageGame {
+            // Game constants
+            static CONSTANTS = {
+                MAX_EDGES: 20000,
+                ENEMY_SCALING_FACTOR: 50,
+                MAX_TIMELINE_TURNS: 200,
+                MAX_CAMPAIGN_LENGTH: 10,
+                MIN_DISTANCE: 60,
+                MAP_SIZE: 1999,
+                DEFAULT_BOSS: 419,
+                DEFAULT_HERO: 23,
+                MAX_LAYER_ENEMIES: 3,
+                PARTICLE_COUNT: 50,
+                ANIMATION_CLEANUP_DELAY: 1000
+            };
+
             constructor() {
-                this.mapSize = 500;
-                this.bossNode = 419;
+                // Event listener management to prevent memory leaks
+                this.eventListeners = new Set();
+                this.mapSize = SoulMageGame.CONSTANTS.MAP_SIZE;
+                this.bossNode = SoulMageGame.CONSTANTS.DEFAULT_BOSS;
                 this.nodes = [];
                 this.edges = [];
                 this.adjacencyList = {};
@@ -1584,7 +2197,6 @@
                 this.conqueredNodes = new Set();
                 this.friendlyNodes = new Set();
                 this.battleInProgress = false;
-                this.stealthCount = 3;
                 this.battleCount = 0;
                 this.viewRange = 2;
                 this.zoom = 1;
@@ -1596,14 +2208,16 @@
                 // 战役模式相关
                 this.campaignMode = false;
                 this.campaignTargets = [];
-                this.maxCampaignLength = 7;
+                this.maxCampaignLength = 10;
                 
                 this.soulModes = [];
                 this.soulBuffTurns = [];
+                this.releaseOrder = []; // 记录出战区魂卡的放置顺序
                 
-                this.battleSpeed = 1;
+                this.battleSpeed = 1.5;
                 this.soundEnabled = true;
                 this.debugMode = false;
+                this.missionCompleted = false;
                 
                 this.initializeGame();
             }
@@ -1616,6 +2230,15 @@
                 this.updateSoulCount();
                 this.updateFriendlyNodes();
             }
+
+            // Centralized UI update method to replace repeated calls
+            updateGameUI() {
+                this.updateSoulDisplay();
+                this.updateSoulCount();
+                this.updateFriendlyNodes();
+                this.updateUI();
+                this.renderMap();
+            }
             
             showOpeningAnimation() {
                 try {
@@ -1625,6 +2248,7 @@
                         return;
                     }
                     
+                    const particles = [];
                     for (let i = 0; i < 50; i++) {
                         setTimeout(() => {
                             const particle = document.createElement('div');
@@ -1637,6 +2261,15 @@
                             particle.style.background = colors[Math.floor(Math.random() * colors.length)];
                             
                             particlesContainer.appendChild(particle);
+                            particles.push(particle);
+                            
+                            // Auto-remove particle after animation completes
+                            const duration = parseFloat(particle.style.animationDuration) * 1000;
+                            setTimeout(() => {
+                                if (particle.parentNode) {
+                                    particle.parentNode.removeChild(particle);
+                                }
+                            }, duration + 1000);
                         }, i * 100);
                     }
                     
@@ -1664,7 +2297,7 @@
                 }
                 
                 let edgeCount = 0;
-                const maxEdges = 5000;
+                const maxEdges = 20000;
                 
                 for (let i = 0; i < this.nodes.length && edgeCount < maxEdges; i++) {
                     for (let j = i + 1; j < this.nodes.length && edgeCount < maxEdges; j++) {
@@ -1725,10 +2358,18 @@
             }
             
             getVisibleNodes() {
-                if (!this.currentPos) return [];
+                // During initialization, return empty array to prevent errors
+                if (!this.currentPos && !this.heroUnit) {
+                    console.log('No currentPos or heroUnit set yet');
+                    return [];
+                }
+                
+                // If currentPos is not set but heroUnit is, use heroUnit
+                const startPos = this.currentPos || this.heroUnit;
+                if (!startPos) return [];
                 
                 const visited = new Set();
-                const queue = [{node: this.currentPos, distance: 0}];
+                const queue = [{node: startPos, distance: 0}];
                 const visibleNodes = [];
                 
                 if (this.campaignMode && this.campaignTargets.length > 0) {
@@ -1759,29 +2400,39 @@
             }
             
             renderMap() {
-                const svg = document.getElementById('mapSvg');
+                try {
+                    // Don't render map if game hasn't started yet
+                    if (!this.currentPos && !this.heroUnit) {
+                        console.log('Game not started yet, skipping map render');
+                        return;
+                    }
+                    
+                    const svg = document.getElementById('mapSvg');
+                    if (!svg) {
+                        console.error('Map SVG element not found');
+                    return;
+                }
+                
                 const rect = svg.getBoundingClientRect();
                 const width = rect.width;
                 const height = rect.height;
                 
                 if (width <= 0 || height <= 0) {
-                    setTimeout(() => this.renderMap(), 100);
+                    requestAnimationFrame(() => this.renderMap());
                     return;
                 }
                 
-                this.manageCampaignModeIndicator();
                 this.updateDebugInfo();
                 
-                if (!this.campaignMode) {
-                    const infoDiv = document.getElementById('campaignInfo');
-                    if (infoDiv) {
-                        infoDiv.remove();
-                    }
+                if (this.campaignMode) {
+                    this.updateCampaignUI();
                 }
                 
                 const visibleNodes = this.getVisibleNodes();
                 if (visibleNodes.length === 0) {
                     console.warn('没有可见节点。当前位置:', this.currentPos);
+                    // Don't render anything if no nodes are visible
+                    svg.innerHTML = '';
                     return;
                 }
                 
@@ -1841,7 +2492,7 @@
                     g.appendChild(circle);
                     g.appendChild(text);
                     
-                    g.addEventListener('click', () => this.onNodeClick(node));
+                    g.addEventListener('click', (event) => this.onNodeClick(node, event));
                     
                     mainGroup.appendChild(g);
                 });
@@ -1857,6 +2508,17 @@
                 } else {
                     this.highlightReachableNodes();
                 }
+                } catch (error) {
+                    console.error('Error rendering map:', error);
+                    // Show user-friendly error message
+                    const gameContainer = document.getElementById('gameContainer');
+                    if (gameContainer) {
+                        const errorMsg = document.createElement('div');
+                        errorMsg.style.cssText = 'color: red; text-align: center; padding: 20px; background: rgba(255,0,0,0.1); border-radius: 10px; margin: 20px;';
+                        errorMsg.textContent = '地图渲染错误，请刷新页面重试';
+                        gameContainer.appendChild(errorMsg);
+                    }
+                }
             }
             
             updateDebugInfo() {
@@ -1871,27 +2533,19 @@
                 }
             }
             
-            manageCampaignModeIndicator() {
-                let indicator = document.getElementById('campaignModeIndicator');
-                
-                if (this.campaignMode) {
-                    if (!indicator) {
-                        indicator = document.createElement('div');
-                        indicator.id = 'campaignModeIndicator';
-                        indicator.className = 'campaign-mode-indicator';
-                        document.getElementById('mapContainer').appendChild(indicator);
-                    }
-                    
-                    if (this.campaignTargets.length === 0) {
-                        indicator.textContent = '🏛️ 战役模式：选择第一个目标';
-                    } else {
-                        indicator.textContent = `🏛️ 战役模式：选择下一个目标 (${this.campaignTargets.length}/${this.maxCampaignLength})`;
-                    }
-                } else {
-                    if (indicator) {
-                        indicator.remove();
-                    }
+            launchCampaign() {
+                if (this.campaignTargets.length === 0) {
+                    console.log('没有选择战役目标');
+                    return;
                 }
+                
+                console.log('发起战役，目标:', this.campaignTargets);
+                // Save targets before exiting campaign mode
+                const targets = [...this.campaignTargets];
+                this.exitCampaignMode();
+                // Restore targets for the battle
+                this.campaignTargets = targets;
+                this.startCampaignBattle();
             }
             
             highlightCampaignSelectableNodes() {
@@ -1914,13 +2568,18 @@
             
             getCampaignSelectableNodes() {
                 if (this.campaignTargets.length === 0) {
-                    const reachable = this.adjacencyList[this.currentPos] || [];
-                    console.log('第一个目标可选择:', reachable);
-                    return reachable;
+                    // 第一个目标：只能选择当前位置的邻居中的敌方节点
+                    const selectable = (this.adjacencyList[this.currentPos] || []).filter(node => 
+                        !this.friendlyNodes.has(node)
+                    );
+                    console.log('第一个目标可选择 (从当前位置', this.currentPos, '):', selectable);
+                    return selectable;
                 } else {
+                    // 后续目标：必须与最后一个目标相连
                     const lastTarget = this.campaignTargets[this.campaignTargets.length - 1];
                     const selectable = this.adjacencyList[lastTarget].filter(node => 
                         !this.campaignTargets.includes(node) && 
+                        !this.friendlyNodes.has(node) &&
                         node !== this.currentPos
                     );
                     console.log('后续目标可选择 (从', lastTarget, '):', selectable);
@@ -2039,7 +2698,7 @@
                 return positions;
             }
             
-            onNodeClick(node) {
+            onNodeClick(node, event) {
                 console.log('节点点击:', node, '战役模式:', this.campaignMode, '战斗中:', this.battleInProgress);
                 
                 if (this.battleInProgress) {
@@ -2051,8 +2710,9 @@
                     console.log('处理战役模式节点点击');
                     this.handleCampaignNodeClick(node);
                 } else if (this.canReach(node)) {
-                    console.log('显示行动选择模态框');
-                    this.showActionModal(node);
+                    console.log('显示节点上下文菜单');
+                    event.stopPropagation();
+                    this.showNodeContextMenu(node, event);
                 } else {
                     console.log('节点不可达:', node);
                 }
@@ -2077,7 +2737,8 @@
                     console.log('战役达到最大长度');
                 }
                 
-                this.renderCampaignMode();
+                this.renderMap();
+                this.updateCampaignUI();
             }
             
             showMessage(message) {
@@ -2119,8 +2780,9 @@
             startCampaignMode() {
                 console.log('开始战役模式');
                 this.campaignMode = true;
-                this.campaignTargets = [];
-                this.renderCampaignMode();
+                // 不清空campaignTargets，保留已选择的目标
+                this.renderMap();
+                this.updateCampaignUI();
             }
             
             exitCampaignMode() {
@@ -2128,23 +2790,50 @@
                 this.campaignMode = false;
                 this.campaignTargets = [];
                 
-                const infoDiv = document.getElementById('campaignInfo');
-                if (infoDiv) {
-                    infoDiv.remove();
-                }
-                
-                const indicator = document.getElementById('campaignModeIndicator');
-                if (indicator) {
-                    indicator.remove();
+                const campaignPanel = document.getElementById('campaignPanel');
+                if (campaignPanel) {
+                    campaignPanel.remove();
                 }
                 
                 this.renderMap();
             }
             
-            renderCampaignMode() {
-                console.log('渲染战役模式，目标:', this.campaignTargets);
-                this.renderMap();
-                this.showCampaignInfo();
+            updateCampaignUI() {
+                let panel = document.getElementById('campaignPanel');
+                
+                if (!panel && this.campaignMode) {
+                    panel = document.createElement('div');
+                    panel.id = 'campaignPanel';
+                    panel.className = 'campaign-panel';
+                    panel.innerHTML = `
+                        <div class="campaign-stat">
+                            <span>目标数量:</span>
+                            <span id="targetCount">0/10</span>
+                        </div>
+                        <div class="campaign-stat">
+                            <span>预计敌军:</span>
+                            <span id="enemyCount">0</span>
+                        </div>
+                        <div class="campaign-actions">
+                            <button class="campaign-button launch" onclick="gameInstance.launchCampaign()" disabled id="launchBtn">发起战役</button>
+                            <button class="campaign-button cancel" onclick="gameInstance.exitCampaignMode()">取消</button>
+                        </div>
+                    `;
+                    // Append to mapContainer instead of body
+                    const mapContainer = document.getElementById('mapContainer');
+                    mapContainer.appendChild(panel);
+                }
+                
+                if (panel && this.campaignMode) {
+                    // Update counts
+                    document.getElementById('targetCount').textContent = `${this.campaignTargets.length}/10`;
+                    const enemyCount = this.calculateCampaignEnemies();
+                    document.getElementById('enemyCount').textContent = enemyCount;
+                    
+                    // Enable/disable launch button
+                    const launchBtn = document.getElementById('launchBtn');
+                    launchBtn.disabled = this.campaignTargets.length === 0;
+                }
             }
             
             highlightCampaignPath() {
@@ -2189,41 +2878,7 @@
             }
             
             showCampaignInfo() {
-                let infoDiv = document.getElementById('campaignInfo');
-                if (!infoDiv) {
-                    infoDiv = document.createElement('div');
-                    infoDiv.id = 'campaignInfo';
-                    infoDiv.className = 'campaign-info';
-                    document.getElementById('mapContainer').appendChild(infoDiv);
-                }
-                
-                const totalEnemies = this.calculateCampaignEnemies();
-                const targetsText = this.campaignTargets.length > 0 ? this.campaignTargets.join(' → ') : '无';
-                
-                infoDiv.innerHTML = `
-                    <div class="campaign-counter">战役路径: ${this.campaignTargets.length}/${this.maxCampaignLength}</div>
-                    <div class="campaign-list">
-                        目标: ${targetsText}<br>
-                        预计敌军: ${totalEnemies} 个单位
-                    </div>
-                    <div class="campaign-controls">
-                        ${this.campaignTargets.length > 0 ? 
-                            '<button class="campaign-btn confirm" id="confirmCampaignBtn">发起战役</button>' : 
-                            '<button class="campaign-btn confirm" disabled>选择目标</button>'
-                        }
-                        <button class="campaign-btn cancel" id="cancelCampaignBtn">取消</button>
-                    </div>
-                `;
-                
-                const confirmBtn = document.getElementById('confirmCampaignBtn');
-                const cancelBtn = document.getElementById('cancelCampaignBtn');
-                
-                if (confirmBtn) {
-                    confirmBtn.onclick = () => this.confirmCampaign();
-                }
-                if (cancelBtn) {
-                    cancelBtn.onclick = () => this.exitCampaignMode();
-                }
+                // Deprecated - using updateCampaignUI instead
             }
             
             calculateCampaignEnemies() {
@@ -2300,9 +2955,10 @@
                 const playerUnits = [this.heroUnit];
                 const releasedSoulIndices = [];
                 
-                this.souls.forEach((soul, index) => {
+                // 按玩家设置的顺序添加魂
+                this.releaseOrder.forEach(index => {
                     if (this.soulModes[index] === 'release') {
-                        playerUnits.push(soul);
+                        playerUnits.push(this.souls[index]);
                         releasedSoulIndices.push(index);
                     }
                 });
@@ -2348,39 +3004,48 @@
                     const additionalCount = this.getAdditionalEnemyCount(target);
                     console.log('目标', target, '需要额外敌人:', additionalCount);
                     
-                    let availableNeighbors = this.adjacencyList[target].filter(n => 
-                        n !== this.currentPos && 
-                        !this.friendlyNodes.has(n) && 
-                        !usedEnemies.has(n) &&
-                        !this.campaignTargets.includes(n)
-                    );
+                    // 使用BFS按距离逐层搜索援军
+                    const visited = new Set([target, this.currentPos, ...usedEnemies, ...this.campaignTargets]);
+                    const layers = [];
+                    let currentLayer = [target];
                     
-                    console.log('目标', target, '的可用邻居:', availableNeighbors);
-                    
-                    if (availableNeighbors.length < additionalCount) {
-                        const distance2Neighbors = new Set();
-                        availableNeighbors.forEach(neighbor => {
-                            this.adjacencyList[neighbor].forEach(n => {
-                                if (n !== target && 
-                                    n !== this.currentPos && 
-                                    !this.friendlyNodes.has(n) && 
-                                    !usedEnemies.has(n) &&
-                                    !this.campaignTargets.includes(n)) {
-                                    distance2Neighbors.add(n);
+                    // 收集不同距离层的敌人节点
+                    while (currentLayer.length > 0 && layers.flat().length < additionalCount) {
+                        const nextLayer = [];
+                        const validNodesInLayer = [];
+                        
+                        for (const node of currentLayer) {
+                            for (const neighbor of this.adjacencyList[node]) {
+                                if (!visited.has(neighbor) && !this.friendlyNodes.has(neighbor)) {
+                                    visited.add(neighbor);
+                                    nextLayer.push(neighbor);
+                                    validNodesInLayer.push(neighbor);
                                 }
-                            });
-                        });
-                        availableNeighbors = [...availableNeighbors, ...Array.from(distance2Neighbors)];
-                        console.log('扩展可用邻居:', availableNeighbors);
+                            }
+                        }
+                        
+                        if (validNodesInLayer.length > 0) {
+                            layers.push(validNodesInLayer);
+                        }
+                        currentLayer = nextLayer;
                     }
                     
-                    for (let i = 0; i < additionalCount && availableNeighbors.length > 0; i++) {
-                        const randomIndex = Math.floor(Math.random() * availableNeighbors.length);
-                        const enemy = availableNeighbors.splice(randomIndex, 1)[0];
-                        if (!usedEnemies.has(enemy)) {
-                            enemies.push(enemy);
-                            usedEnemies.add(enemy);
-                            console.log('添加额外敌人:', enemy);
+                    // 从每层随机选择敌人，优先选择近的
+                    let remainingCount = additionalCount;
+                    for (const layer of layers) {
+                        if (remainingCount <= 0) break;
+                        
+                        // 从当前层随机选择
+                        const availableInLayer = [...layer];
+                        while (availableInLayer.length > 0 && remainingCount > 0) {
+                            const randomIndex = Math.floor(Math.random() * availableInLayer.length);
+                            const enemy = availableInLayer.splice(randomIndex, 1)[0];
+                            if (!usedEnemies.has(enemy)) {
+                                enemies.push(enemy);
+                                usedEnemies.add(enemy);
+                                console.log('添加额外敌人:', enemy);
+                                remainingCount--;
+                            }
                         }
                     }
                 });
@@ -2393,15 +3058,11 @@
                 console.log('战役胜利！目标:', this.campaignTargets);
                 this.battleCount++;
                 
-                if (this.battleCount % 10 === 0 && this.stealthCount < 3) {
-                    this.stealthCount++;
-                }
                 
-                releasedSoulIndices.sort((a, b) => b - a).forEach(index => {
-                    this.souls.splice(index, 1);
-                    this.soulModes.splice(index, 1);
-                    this.soulBuffTurns.splice(index, 1);
-                });
+                ArrayUtils.removeElementsByIndices(
+                    [this.souls, this.soulModes, this.soulBuffTurns],
+                    releasedSoulIndices
+                );
                 
                 const campaignTargetsCopy = [...this.campaignTargets];
                 campaignTargetsCopy.forEach(target => {
@@ -2415,11 +3076,7 @@
                 
                 this.campaignTargets = [];
                 
-                this.updateSoulDisplay();
-                this.updateSoulCount();
-                this.updateFriendlyNodes();
-                this.updateUI();
-                this.renderMap();
+                this.updateGameUI();
                 
                 if (this.conqueredNodes.has(this.bossNode)) {
                     this.onGameWin();
@@ -2454,63 +3111,60 @@
                 });
             }
             
-            showActionModal(node) {
+            showNodeContextMenu(node, event) {
                 this.selectedTarget = node;
-                document.getElementById('actionTarget').textContent = node;
                 
-                const battleBtn = document.getElementById('battleActionBtn');
-                const moveBtn = document.getElementById('moveActionBtn');
-                const stealthBtn = document.getElementById('stealthActionBtn');
-                const campaignBtn = document.getElementById('campaignActionBtn');
+                const menu = document.getElementById('nodeContextMenu');
+                const battleItem = document.getElementById('contextBattle');
+                const campaignItem = document.getElementById('contextCampaign');
+                const moveItem = document.getElementById('contextMove');
                 
-                // 重置所有按钮显示
-                battleBtn.style.display = 'block';
-                moveBtn.style.display = 'block';
-                stealthBtn.style.display = 'block';
-                campaignBtn.style.display = 'block';
+                // Reset visibility
+                battleItem.style.display = 'flex';
+                campaignItem.style.display = 'flex';
+                moveItem.style.display = 'flex';
                 
                 if (this.friendlyNodes.has(node)) {
-                    // 友方节点只能移动，隐藏其他操作
-                    battleBtn.style.display = 'none';
-                    stealthBtn.style.display = 'none';
-                    campaignBtn.style.display = 'none';
-                    moveBtn.textContent = '🚶 移动到友方节点';
+                    // 友方节点只能移动
+                    battleItem.style.display = 'none';
+                    campaignItem.style.display = 'none';
+                    moveItem.querySelector('span:last-child').textContent = '移动到友方节点';
                 } else {
-                    // 敌方节点不能普通移动，隐藏普通移动按钮
-                    moveBtn.style.display = 'none';
-                    
-                    // 检查潜行次数
-                    if (this.stealthCount <= 0) {
-                        stealthBtn.disabled = true;
-                        stealthBtn.textContent = `🥷 潜行移动 (${this.stealthCount})`;
-                    } else {
-                        stealthBtn.disabled = false;
-                        stealthBtn.textContent = `🥷 潜行移动 (${this.stealthCount})`;
-                    }
+                    // 敌方节点可以战斗和战役
+                    moveItem.style.display = 'none';
+                    moveItem.querySelector('span:last-child').textContent = '移动过去';
                 }
                 
-                document.getElementById('actionModal').style.display = 'flex';
+                // Position menu near click
+                const rect = event.target.getBoundingClientRect();
+                const menuWidth = 150; // Approximate width
+                const menuHeight = 100; // Approximate height
+                
+                let left = rect.right + 10;
+                let top = rect.top;
+                
+                // Adjust if menu goes off screen
+                if (left + menuWidth > window.innerWidth) {
+                    left = rect.left - menuWidth - 10;
+                }
+                if (top + menuHeight > window.innerHeight) {
+                    top = window.innerHeight - menuHeight - 10;
+                }
+                
+                menu.style.left = left + 'px';
+                menu.style.top = top + 'px';
+                
+                menu.style.display = 'block';
+                
+                // Close menu when clicking elsewhere - remove setTimeout to prevent interference
+                document.addEventListener('click', this.closeContextMenu, { once: true });
             }
             
-            closeActionModal() {
-                document.getElementById('actionModal').style.display = 'none';
+            closeContextMenu = () => {
+                document.getElementById('nodeContextMenu').style.display = 'none';
                 this.selectedTarget = null;
             }
             
-            stealthMove(targetNode) {
-                if (this.stealthCount <= 0 || !this.canReach(targetNode)) {
-                    return false;
-                }
-                
-                this.stealthCount--;
-                this.currentPos = targetNode;
-                this.conqueredNodes.add(targetNode);
-                
-                this.updateUI();
-                this.renderMap();
-                
-                return true;
-            }
             
             moveToNode(targetNode) {
                 if (this.friendlyNodes.has(targetNode)) {
@@ -2532,7 +3186,8 @@
                     conqueredNodes: new Set(this.conqueredNodes),
                     friendlyNodes: new Set(this.friendlyNodes),
                     soulModes: [...this.soulModes],
-                    soulBuffTurns: [...this.soulBuffTurns]
+                    soulBuffTurns: [...this.soulBuffTurns],
+                    releaseOrder: [...this.releaseOrder]
                 };
             }
             
@@ -2544,6 +3199,7 @@
                     this.friendlyNodes = new Set(this.beforeBattleState.friendlyNodes);
                     this.soulModes = [...this.beforeBattleState.soulModes];
                     this.soulBuffTurns = [...this.beforeBattleState.soulBuffTurns];
+                    this.releaseOrder = [...this.beforeBattleState.releaseOrder];
                     
                     this.updateSoulDisplay();
                     this.updateSoulCount();
@@ -2566,9 +3222,10 @@
                 const playerUnits = [this.heroUnit];
                 const releasedSoulIndices = [];
                 
-                this.souls.forEach((soul, index) => {
+                // 按玩家设置的顺序添加魂
+                this.releaseOrder.forEach(index => {
                     if (this.soulModes[index] === 'release') {
-                        playerUnits.push(soul);
+                        playerUnits.push(this.souls[index]);
                         releasedSoulIndices.push(index);
                     }
                 });
@@ -2596,36 +3253,53 @@
                 const enemies = [targetNode];
                 const additionalCount = this.getAdditionalEnemyCount(targetNode);
                 
-                let availableNeighbors = this.adjacencyList[targetNode].filter(n => 
-                    n !== this.currentPos && !this.friendlyNodes.has(n)
-                );
+                // 使用BFS按距离逐层搜索敌人
+                const visited = new Set([targetNode, this.currentPos]);
+                const layers = [];
+                let currentLayer = [targetNode];
                 
-                if (availableNeighbors.length < additionalCount) {
-                    const distance2Neighbors = new Set();
-                    availableNeighbors.forEach(neighbor => {
-                        this.adjacencyList[neighbor].forEach(n => {
-                            if (n !== targetNode && n !== this.currentPos && !this.friendlyNodes.has(n)) {
-                                distance2Neighbors.add(n);
+                // 收集不同距离层的敌人节点
+                while (currentLayer.length > 0 && layers.flat().length < additionalCount) {
+                    const nextLayer = [];
+                    const validNodesInLayer = [];
+                    
+                    for (const node of currentLayer) {
+                        for (const neighbor of this.adjacencyList[node]) {
+                            if (!visited.has(neighbor) && !this.friendlyNodes.has(neighbor)) {
+                                visited.add(neighbor);
+                                nextLayer.push(neighbor);
+                                validNodesInLayer.push(neighbor);
                             }
-                        });
-                    });
-                    availableNeighbors = [...availableNeighbors, ...distance2Neighbors];
+                        }
+                    }
+                    
+                    if (validNodesInLayer.length > 0) {
+                        layers.push(validNodesInLayer);
+                    }
+                    currentLayer = nextLayer;
                 }
                 
-                for (let i = 0; i < additionalCount && i < availableNeighbors.length; i++) {
-                    const randomIndex = Math.floor(Math.random() * availableNeighbors.length);
-                    const enemy = availableNeighbors.splice(randomIndex, 1)[0];
-                    enemies.push(enemy);
+                // 从每层随机选择敌人，优先选择近的
+                let remainingCount = additionalCount;
+                for (const layer of layers) {
+                    if (remainingCount <= 0) break;
+                    
+                    // 从当前层随机选择
+                    const availableInLayer = [...layer];
+                    while (availableInLayer.length > 0 && remainingCount > 0) {
+                        const randomIndex = Math.floor(Math.random() * availableInLayer.length);
+                        const enemy = availableInLayer.splice(randomIndex, 1)[0];
+                        enemies.push(enemy);
+                        remainingCount--;
+                    }
                 }
                 
                 return enemies;
             }
             
             getAdditionalEnemyCount(node) {
-                if (node < 50) return 0;
-                if (node < 100) return 1;
-                if (node < 200) return 2;
-                return 3;
+                // 每50个数字增加1个援军，2-49无援军
+                return Math.floor(node / 50);
             }
             
             async showBattleModal(playerUnits, enemyUnits) {
@@ -2641,11 +3315,14 @@
                 playerDiv.innerHTML = '';
                 enemyDiv.innerHTML = '';
                 
+                // 战斗显示：主角在最左边，魂按顺序从左到右排列
                 playerUnits.forEach((unit, index) => {
                     const div = document.createElement('div');
                     div.className = 'battle-unit player';
                     div.textContent = unit;
                     div.id = `battle-player-${unit}-${index}`;
+                    
+                    // 按照playerUnits的顺序显示：主角在左，魂从左到右
                     playerDiv.appendChild(div);
                 });
                 
@@ -2673,14 +3350,14 @@
                 while (aliveX.length > 0 && aliveY.length > 0) {
                     document.getElementById('turnDisplay').textContent = `回合 ${turn}`;
                     
-                    let maxX = Math.max(...aliveX.map(x => x % turn));
-                    let maxXUnit = aliveX.find(x => x % turn === maxX);
+                    let maxX = Math.max(...aliveX.map(x => MathUtils.modularValue(x, turn)));
+                    let maxXUnit = aliveX.find(x => MathUtils.modularValue(x, turn) === maxX);
                     
                     let soulBonus = 0;
                     let bonusSoul = null;
                     this.souls.forEach((soul, index) => {
                         if (this.soulModes[index] === 'buff' && this.soulBuffTurns[index] === turn) {
-                            const soulValue = soul % turn;
+                            const soulValue = MathUtils.modularValue(soul, turn);
                             if (soulValue > maxX) {
                                 maxX = soulValue;
                                 maxXUnit = this.heroUnit;
@@ -2690,8 +3367,8 @@
                         }
                     });
                     
-                    const maxY = Math.max(...aliveY.map(y => y % turn));
-                    const maxYUnit = aliveY.find(y => y % turn === maxY);
+                    const maxY = Math.max(...aliveY.map(y => MathUtils.modularValue(y, turn)));
+                    const maxYUnit = aliveY.find(y => MathUtils.modularValue(y, turn) === maxY);
                     
                     await this.showTurnEffects(maxXUnit, maxYUnit, maxX, maxY, bonusSoul, turn);
                     
@@ -2713,12 +3390,12 @@
                         await this.eliminateUnit('enemy', eliminated, randomIndex);
                         consecutiveWinsX = 0;
                     } else if (consecutiveWinsY === 3) {
-                        // 玩家阵亡顺序：魂释放顺序，主角最后
+                        // 玩家阵亡顺序：从右到左（前线优先），主角最后
                         let eliminatedIndex = -1;
                         let eliminated = null;
                         
-                        // 优先消灭释放的魂（按释放顺序）
-                        for (let i = 0; i < aliveX.length; i++) {
+                        // 优先消灭最右边的魂（最前线）
+                        for (let i = aliveX.length - 1; i >= 0; i--) {
                             if (aliveX[i] !== this.heroUnit) {
                                 eliminatedIndex = i;
                                 eliminated = aliveX[i];
@@ -2792,24 +3469,23 @@
                     `;
                     
                     // 显示魂数字标识 - 浮在数字上方
-                    const soulIndicator = document.createElement('div');
-                    soulIndicator.style.cssText = `
-                        position: absolute;
-                        left: ${unitRect.left - fieldRect.left + unitRect.width/2 - 40}px;
-                        top: ${unitRect.top - fieldRect.top - 50}px;
-                        width: 80px;
-                        background: linear-gradient(135deg, #55e285 0%, #45c275 100%);
-                        color: white;
-                        padding: 8px 12px;
-                        border-radius: 20px;
-                        font-size: 14px;
-                        font-weight: bold;
-                        z-index: 200;
-                        box-shadow: 0 4px 15px rgba(85, 226, 133, 0.6);
-                        animation: soulBonus 1.5s ease;
-                        pointer-events: none;
-                        text-align: center;
-                    `;
+                    const soulIndicator = DOMUtils.createElement('div', '', {}, {
+                        position: 'absolute',
+                        left: `${unitRect.left - fieldRect.left + unitRect.width/2 - 40}px`,
+                        top: `${unitRect.top - fieldRect.top - 50}px`,
+                        width: '80px',
+                        background: 'linear-gradient(135deg, #55e285 0%, #45c275 100%)',
+                        color: 'white',
+                        padding: '8px 12px',
+                        borderRadius: '20px',
+                        fontSize: '14px',
+                        fontWeight: 'bold',
+                        zIndex: '200',
+                        boxShadow: '0 4px 15px rgba(85, 226, 133, 0.6)',
+                        animation: 'soulBonus 1.5s ease',
+                        pointerEvents: 'none',
+                        textAlign: 'center'
+                    });
                     soulIndicator.textContent = `魂 ${bonusSoul}`;
                     
                     // 添加动画样式（如果还没有）
@@ -2942,16 +3618,13 @@
             onBattleWin(targetNode, enemies, releasedSoulIndices) {
                 this.battleCount++;
                 
-                if (this.battleCount % 10 === 0 && this.stealthCount < 3) {
-                    this.stealthCount++;
-                }
                 
-                releasedSoulIndices.sort((a, b) => b - a).forEach(index => {
-                    const soul = this.souls[index];
-                    this.souls.splice(index, 1);
-                    this.soulModes.splice(index, 1);
-                    this.soulBuffTurns.splice(index, 1);
-                });
+                // Store released souls before removal
+                const releasedSouls = releasedSoulIndices.map(index => this.souls[index]);
+                ArrayUtils.removeElementsByIndices(
+                    [this.souls, this.soulModes, this.soulBuffTurns],
+                    releasedSoulIndices
+                );
                 
                 this.conqueredNodes.add(targetNode);
                 this.currentPos = targetNode;
@@ -2999,6 +3672,12 @@
                         
                         item.classList.add(mode);
                         item.textContent = soul;
+                        
+                        // 添加点击事件
+                        item.style.cursor = 'pointer';
+                        item.addEventListener('click', () => {
+                            this.handleSoulClick(soul);
+                        });
                     } else {
                         item.classList.add('empty');
                         item.textContent = '-';
@@ -3012,6 +3691,76 @@
                 document.getElementById('soulCount').textContent = `${this.souls.length}/${this.maxSouls}`;
             }
             
+            // 处理魂点击事件
+            handleSoulClick(soulNode) {
+                // 检查是否可以通过友方节点到达
+                if (this.canReachThroughFriendlyNodes(soulNode)) {
+                    this.showSoulTeleportModal(soulNode);
+                }
+            }
+            
+            // 检查是否可以通过友方节点到达目标
+            canReachThroughFriendlyNodes(targetNode) {
+                if (this.currentPos === targetNode) return false;
+                
+                // BFS搜索，只通过友方节点
+                const visited = new Set();
+                const queue = [this.currentPos];
+                visited.add(this.currentPos);
+                
+                while (queue.length > 0) {
+                    const node = queue.shift();
+                    
+                    // 检查邻居节点
+                    for (const neighbor of this.adjacencyList[node]) {
+                        if (neighbor === targetNode) {
+                            return true;
+                        }
+                        
+                        if (!visited.has(neighbor) && this.friendlyNodes.has(neighbor)) {
+                            visited.add(neighbor);
+                            queue.push(neighbor);
+                        }
+                    }
+                }
+                
+                return false;
+            }
+            
+            // 显示魂传送确认弹窗
+            showSoulTeleportModal(targetNode) {
+                const content = `
+                    <div style="text-align: center;">
+                        <p style="font-size: 16px; margin: 20px 0;">
+                            是否传送到魂节点 <span style="color: #e2a855; font-weight: bold;">${sanitizeHTML(targetNode)}</span>？
+                        </p>
+                        <p style="color: #aaa; font-size: 14px;">
+                            通过友方节点网络可以快速传送
+                        </p>
+                        <div style="display: flex; gap: 10px; justify-content: center; margin-top: 20px;">
+                            <button class="game-button" onclick="gameInstance.teleportToSoul(${parseInt(targetNode) || 0}); this.closest('.modal-overlay').remove()">
+                                ✨ 传送
+                            </button>
+                            <button class="game-button settings-button" onclick="this.closest('.modal-overlay').remove()">
+                                取消
+                            </button>
+                        </div>
+                    </div>
+                `;
+                
+                const modal = ModalManager.createModal('🌟 魂传送', content, {
+                    width: '400px'
+                });
+                document.body.appendChild(modal);
+            }
+            
+            // 传送到魂节点
+            teleportToSoul(targetNode) {
+                this.currentPos = targetNode;
+                this.updateUI();
+                this.renderMap();
+            }
+            
 showSoulConfig() {
     document.getElementById('heroTimeline').textContent = this.heroUnit;
     this.renderSoulCards();
@@ -3023,7 +3772,15 @@ showSoulConfig() {
         this.zoneListenersAdded = true;
     }
     
-    document.getElementById('soulConfigModal').style.display = 'flex';
+    const modal = document.getElementById('soulConfigModal');
+    modal.style.display = 'flex';
+    
+    // 点击背景关闭
+    modal.onclick = (e) => {
+        if (e.target === modal) {
+            this.closeSoulConfig();
+        }
+    };
 }
             
             renderSoulCards() {
@@ -3033,13 +3790,31 @@ showSoulConfig() {
                 waitingZone.innerHTML = '';
                 releaseZone.innerHTML = '';
                 
+                // 先收集等待模式和出战模式的魂
+                const waitingSouls = [];
+                const releaseSouls = [];
+                
                 this.souls.forEach((soul, index) => {
-                    const card = this.createSoulCard(soul, index);
-                    
                     if (this.soulModes[index] === 'release') {
-                        releaseZone.appendChild(card);
+                        releaseSouls.push({soul, index});
                     } else if (this.soulModes[index] === 'none') {
-                        waitingZone.appendChild(card);
+                        waitingSouls.push({soul, index});
+                    }
+                });
+                
+                // 按数值排序等待区的魂
+                waitingSouls.sort((a, b) => a.soul - b.soul);
+                waitingSouls.forEach(({soul, index}) => {
+                    const card = this.createSoulCard(soul, index);
+                    waitingZone.appendChild(card);
+                });
+                
+                // 出战区按玩家拖拽的顺序显示
+                this.releaseOrder.forEach(index => {
+                    if (this.soulModes[index] === 'release') {
+                        const soul = this.souls[index];
+                        const card = this.createSoulCard(soul, index);
+                        releaseZone.appendChild(card);
                     }
                 });
             }
@@ -3079,7 +3854,7 @@ showSoulConfig() {
                 const turnsContainer = document.getElementById('timelineTurns');
                 turnsContainer.innerHTML = '';
                 
-                for (let turn = 2; turn <= 100; turn++) {
+                for (let turn = 2; turn <= 200; turn++) {
                     const turnDiv = document.createElement('div');
                     turnDiv.className = 'timeline-turn';
                     turnDiv.dataset.turn = turn;
@@ -3151,9 +3926,16 @@ showSoulConfig() {
                         
                         if (!isNaN(soulIndex)) {
                             if (isReleaseZone) {
+                                // 添加到出战区并记录顺序
                                 this.setSoulMode(soulIndex, 'release');
+                                // 如果不在释放顺序中，添加到末尾
+                                if (!this.releaseOrder.includes(soulIndex)) {
+                                    this.releaseOrder.push(soulIndex);
+                                }
                             } else {
+                                // 从出战区移除并从顺序记录中删除
                                 this.setSoulMode(soulIndex, 'none');
+                                this.releaseOrder = this.releaseOrder.filter(idx => idx !== soulIndex);
                             }
                             this.refreshSoulConfig();
                         }
@@ -3182,12 +3964,44 @@ showSoulConfig() {
             
             addDragListeners(card) {
                 card.addEventListener('dragstart', (e) => {
+                    const soulIndex = card.dataset.soulIndex;
+                    
+                    // Mark the dragging card
                     card.classList.add('dragging');
-                    e.dataTransfer.setData('text/plain', card.dataset.soulIndex);
+                    
+                    // Hide the original card immediately (the one being dragged)
+                    card.style.opacity = '0';
+                    card.style.visibility = 'hidden';
+                    
+                    // Create a visual clone for dragging
+                    const dragImage = card.cloneNode(true);
+                    dragImage.style.opacity = '0.8';
+                    dragImage.style.transform = 'rotate(5deg) scale(1.1)';
+                    dragImage.style.position = 'absolute';
+                    dragImage.style.top = '-1000px';
+                    document.body.appendChild(dragImage);
+                    e.dataTransfer.setDragImage(dragImage, 25, 32);
+                    
+                    // Clean up the clone after drag operation completes
+                    const cleanup = () => {
+                        if (dragImage && dragImage.parentNode) {
+                            dragImage.parentNode.removeChild(dragImage);
+                        }
+                    };
+                    
+                    // Multiple cleanup strategies for reliability
+                    setTimeout(cleanup, 100);
+                    card.addEventListener('dragend', cleanup, { once: true });
+                    document.addEventListener('drop', cleanup, { once: true });
+                    
+                    e.dataTransfer.setData('text/plain', soulIndex);
                     e.dataTransfer.effectAllowed = 'move';
                 });
                 
                 card.addEventListener('dragend', () => {
+                    // Show the card again
+                    card.style.opacity = '';
+                    card.style.visibility = '';
                     card.classList.remove('dragging');
                 });
             }
@@ -3232,7 +4046,15 @@ showSoulConfig() {
             }
             
             showSettings() {
-                document.getElementById('settingsModal').style.display = 'flex';
+                const modal = document.getElementById('settingsModal');
+                modal.style.display = 'flex';
+                
+                // 点击背景关闭
+                modal.onclick = (e) => {
+                    if (e.target === modal) {
+                        this.closeSettings();
+                    }
+                };
             }
             
             closeSettings() {
@@ -3240,41 +4062,201 @@ showSoulConfig() {
             }
             
             showHelp() {
-                document.getElementById('helpModal').style.display = 'flex';
+                const modal = document.getElementById('helpModal');
+                modal.style.display = 'flex';
+                
+                // 点击背景关闭
+                modal.onclick = (e) => {
+                    if (e.target === modal) {
+                        this.closeHelp();
+                    }
+                };
             }
             
             closeHelp() {
                 document.getElementById('helpModal').style.display = 'none';
             }
             
+            saveGame() {
+                const saveData = {
+                    version: '1.0',
+                    timestamp: new Date().toISOString(),
+                    gameState: {
+                        currentPos: this.currentPos,
+                        heroUnit: this.heroUnit,
+                        bossNode: this.bossNode,
+                        battleCount: this.battleCount,
+                        souls: this.souls,
+                        soulModes: this.soulModes,
+                        soulBuffTurns: this.soulBuffTurns,
+                        releaseOrder: this.releaseOrder,
+                        conqueredNodes: Array.from(this.conqueredNodes),
+                        missionCompleted: this.missionCompleted,
+                        maxSouls: this.maxSouls,
+                        viewRange: this.viewRange,
+                        battleSpeed: this.battleSpeed,
+                        soundEnabled: this.soundEnabled
+                    }
+                };
+                
+                const dataStr = JSON.stringify(saveData, null, 2);
+                const dataUri = 'data:application/json;charset=utf-8,'+ encodeURIComponent(dataStr);
+                
+                const exportFileDefaultName = `soulmauge_save_${new Date().getTime()}.json`;
+                
+                const linkElement = document.createElement('a');
+                linkElement.setAttribute('href', dataUri);
+                linkElement.setAttribute('download', exportFileDefaultName);
+                linkElement.click();
+                
+                this.showMessage('游戏进度已保存！');
+            }
+            
+            loadGame(file) {
+                const reader = new FileReader();
+                reader.onload = (e) => {
+                    try {
+                        const saveData = JSON.parse(e.target.result);
+                        
+                        // Validate save data
+                        if (!saveData.version || !saveData.gameState) {
+                            throw new Error('无效的存档文件');
+                        }
+                        
+                        // Load game state
+                        const state = saveData.gameState;
+                        this.currentPos = state.currentPos;
+                        this.heroUnit = state.heroUnit;
+                        this.bossNode = state.bossNode;
+                        this.battleCount = state.battleCount;
+                        this.souls = state.souls || [];
+                        this.soulModes = state.soulModes || [];
+                        this.soulBuffTurns = state.soulBuffTurns || [];
+                        this.releaseOrder = state.releaseOrder || [];
+                        this.conqueredNodes = new Set(state.conqueredNodes || []);
+                        this.missionCompleted = state.missionCompleted || false;
+                        this.maxSouls = state.maxSouls || 9;
+                        this.viewRange = state.viewRange || 2;
+                        this.battleSpeed = state.battleSpeed || 1.5;
+                        this.soundEnabled = state.soundEnabled !== undefined ? state.soundEnabled : true;
+                        
+                        // Hide game overlay if it's showing
+                        document.getElementById('gameOverlay').style.display = 'none';
+                        
+                        // Update UI
+                        this.updateFriendlyNodes();
+                        this.updateSoulDisplay();
+                        this.updateSoulCount();
+                        this.updateUI();
+                        this.renderMap();
+                        
+                        // Update settings UI if elements exist
+                        if (document.getElementById('viewRange')) {
+                            document.getElementById('viewRange').textContent = this.viewRange;
+                        }
+                        if (document.getElementById('viewRangeSlider')) {
+                            document.getElementById('viewRangeSlider').value = this.viewRange;
+                        }
+                        if (document.getElementById('battleSpeedSlider')) {
+                            document.getElementById('battleSpeedSlider').value = this.battleSpeed;
+                        }
+                        if (document.getElementById('soundToggle')) {
+                            document.getElementById('soundToggle').checked = this.soundEnabled;
+                        }
+                        
+                        this.showMessage('游戏进度已读取！');
+                    } catch (error) {
+                        console.error('Failed to load save:', error);
+                        this.showMessage('读取存档失败：' + error.message);
+                    }
+                };
+                reader.readAsText(file);
+            }
+            
             updateUI() {
-                document.getElementById('currentPos').textContent = this.currentPos;
+                document.getElementById('currentPos').textContent = this.currentPos || '-';
                 document.getElementById('battleCount').textContent = this.battleCount;
-                document.getElementById('stealthCount').textContent = this.stealthCount;
+                document.getElementById('heroUnit').textContent = this.heroUnit || '-';
+                document.getElementById('bossTarget').textContent = this.bossNode || '-';
+                
+                if (this.missionCompleted) {
+                    document.getElementById('missionStatus').style.display = 'flex';
+                }
             }
             
             onGameWin() {
+                // 标记任务完成
+                this.missionCompleted = true;
+                document.getElementById('missionStatus').style.display = 'flex';
+                
                 setTimeout(() => {
-                    alert('🎉 恭喜！你击败了BOSS，成为了真正的Soul Mage！\n\n传奇将永远流传！');
-                    location.reload();
+                    const victoryMessage = this.getVictoryMessage();
+                    alert(`🎉 恭喜！${victoryMessage}\n\n✅ 使命完成！你可以继续探索数字魂域的奥秘。`);
                 }, 2000);
             }
             
+            getVictoryMessage() {
+                if (this.heroUnit === 23 && this.bossNode === 419) {
+                    return '质数之王的挑战已经完成！你掌握了数字域的核心奥秘！';
+                } else if (this.heroUnit === 13 && this.bossNode === 203) {
+                    return '兵临城下的传说落下帷幕！古老力量-1的威能震撼了整个战场！';
+                } else if (this.heroUnit === 3 && this.bossNode === 300) {
+                    return '拿破仑的征服之路达到了巅峰！从科西嘉岛到欧洲大陆，传奇永存！';
+                } else {
+                    return '你的自创传奇已经完成！数字魂域因你的传说而更加辉煌！';
+                }
+            }
+            
             setupEventListeners() {
-                document.querySelectorAll('.scenario-option:not(.custom-scenario)').forEach(option => {
-                    option.addEventListener('click', (e) => {
-                        const hero = parseInt(e.currentTarget.dataset.hero);
-                        const boss = parseInt(e.currentTarget.dataset.boss);
-                        this.startGame(hero, boss);
+                // 剧本选择
+                document.querySelectorAll('.scenario-item').forEach(item => {
+                    item.addEventListener('click', (e) => {
+                        // 移除所有active类
+                        document.querySelectorAll('.scenario-item').forEach(i => i.classList.remove('active'));
+                        document.querySelectorAll('.scenario-panel').forEach(p => p.classList.remove('active'));
+                        
+                        // 添加active类
+                        item.classList.add('active');
+                        const scenario = item.dataset.scenario;
+                        document.getElementById(`${scenario}-panel`).classList.add('active');
                     });
                 });
                 
-                document.getElementById('startCustomBtn').addEventListener('click', () => {
-                    const hero = parseInt(document.getElementById('customHero').value);
-                    const boss = parseInt(document.getElementById('customBoss').value);
-                    if (hero && boss && hero !== boss) {
-                        this.startGame(hero, boss);
+                // 开始游戏按钮
+                document.getElementById('startGameBtn').addEventListener('click', () => {
+                    const activeScenario = document.querySelector('.scenario-item.active').dataset.scenario;
+                    const soulCapacity = parseInt(document.querySelector('input[name="soulCapacity"]:checked').value);
+                    
+                    let hero, boss;
+                    
+                    switch(activeScenario) {
+                        case 'classic':
+                            hero = 23;
+                            boss = 419;
+                            break;
+                        case 'siege':
+                            hero = 13;
+                            boss = 203;
+                            // 兵临城下剧本：给玩家一个-1的魂
+                            this.souls.push(-1);
+                            this.soulModes.push('none');
+                            this.soulBuffTurns.push(3);
+                            break;
+                        case 'napoleon':
+                            hero = 3;
+                            boss = 300;
+                            break;
+                        case 'custom':
+                            hero = parseInt(document.getElementById('customHero').value);
+                            boss = parseInt(document.getElementById('customBoss').value);
+                            if (!hero || !boss || hero === boss) {
+                                alert('请输入有效的英雄和魔王数字！');
+                                return;
+                            }
+                            break;
                     }
+                    
+                    this.startGame(hero, boss, soulCapacity);
                 });
                 
                 document.getElementById('configureSoulsBtn').addEventListener('click', () => {
@@ -3285,16 +4267,8 @@ showSoulConfig() {
                     this.showSettings();
                 });
                 
-                document.getElementById('campaignModeBtn').addEventListener('click', () => {
-                    this.startCampaignMode();
-                });
-                
                 document.getElementById('closeSoulConfigBtn').addEventListener('click', () => {
                     this.closeSoulConfig();
-                });
-                
-                document.getElementById('closeActionModalBtn').addEventListener('click', () => {
-                    this.closeActionModal();
                 });
                 
                 document.getElementById('closeSettingsBtn').addEventListener('click', () => {
@@ -3305,35 +4279,35 @@ showSoulConfig() {
                     this.closeHelp();
                 });
                 
-                document.getElementById('battleActionBtn').addEventListener('click', () => {
+                // Context menu event listeners
+                document.getElementById('contextBattle').addEventListener('click', (e) => {
+                    e.stopPropagation();
                     const target = this.selectedTarget;
-                    this.closeActionModal();
+                    this.closeContextMenu();
                     if (target) {
                         this.selectedTarget = target;
                         this.startBattle();
                     }
                 });
                 
-                document.getElementById('moveActionBtn').addEventListener('click', () => {
+                document.getElementById('contextCampaign').addEventListener('click', (e) => {
+                    e.stopPropagation();
                     const target = this.selectedTarget;
-                    this.closeActionModal();
+                    this.closeContextMenu();
                     if (target) {
+                        // 设置选中的敌人为第一个战役目标
+                        this.campaignTargets = [target];
+                        this.startCampaignMode();
+                    }
+                });
+                
+                document.getElementById('contextMove').addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    const target = this.selectedTarget;
+                    this.closeContextMenu();
+                    if (target && this.canReach(target)) {
                         this.moveToNode(target);
                     }
-                });
-                
-                document.getElementById('stealthActionBtn').addEventListener('click', () => {
-                    const target = this.selectedTarget;
-                    this.closeActionModal();
-                    if (target && this.stealthCount > 0) {
-                        this.stealthMove(target);
-                    }
-                });
-                
-                document.getElementById('campaignActionBtn').addEventListener('click', () => {
-                    this.closeActionModal();
-                    this.campaignTargets = [this.selectedTarget];
-                    this.startCampaignMode();
                 });
                 
                 document.getElementById('battleSpeedSelect').addEventListener('change', (e) => {
@@ -3375,12 +4349,29 @@ showSoulConfig() {
                 document.getElementById('helpBtn').addEventListener('click', () => {
                     this.showHelp();
                 });
+                
+                document.getElementById('saveGameBtn').addEventListener('click', () => {
+                    this.saveGame();
+                });
+                
+                document.getElementById('loadGameBtn').addEventListener('click', () => {
+                    document.getElementById('loadGameInput').click();
+                });
+                
+                document.getElementById('loadGameInput').addEventListener('change', (e) => {
+                    const file = e.target.files[0];
+                    if (file) {
+                        this.loadGame(file);
+                        e.target.value = ''; // Reset input
+                    }
+                });
             }
             
-            startGame(hero, boss) {
+            startGame(hero, boss, soulCapacity = 9) {
                 this.heroUnit = hero;
                 this.bossNode = boss;
                 this.currentPos = hero;
+                this.maxSouls = soulCapacity;
                 this.conqueredNodes.add(hero);
                 this.updateFriendlyNodes();
                 
@@ -3389,7 +4380,31 @@ showSoulConfig() {
                 document.getElementById('bossTarget').textContent = boss;
                 document.getElementById('gameOverlay').style.display = 'none';
                 
-                setTimeout(() => this.renderMap(), 100);
+                // 更新魂显示
+                this.updateSoulDisplay();
+                this.updateSoulCount();
+                
+                requestAnimationFrame(() => this.renderMap());
+            }
+            
+            // Add method to safely add event listeners
+            safeAddEventListener(element, event, handler, options = {}) {
+                const listener = { element, event, handler, options };
+                this.eventListeners.add(listener);
+                element.addEventListener(event, handler, options);
+                return listener;
+            }
+            
+            // Clean up all event listeners
+            cleanup() {
+                this.eventListeners.forEach(({ element, event, handler, options }) => {
+                    try {
+                        element.removeEventListener(event, handler, options);
+                    } catch (e) {
+                        console.warn('Failed to remove event listener:', e);
+                    }
+                });
+                this.eventListeners.clear();
             }
         }
         
