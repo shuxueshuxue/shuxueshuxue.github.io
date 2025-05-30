@@ -2187,6 +2187,9 @@
                 this.eventListeners = new Set();
                 this.mapSize = SoulMageGame.CONSTANTS.MAP_SIZE;
                 this.bossNode = SoulMageGame.CONSTANTS.DEFAULT_BOSS;
+                
+                // Bind closeContextMenu to ensure consistent reference for removeEventListener
+                this.closeContextMenu = this.closeContextMenu.bind(this);
                 this.nodes = [];
                 this.edges = [];
                 this.adjacencyList = {};
@@ -2231,13 +2234,52 @@
                 this.updateFriendlyNodes();
             }
 
+            // Event handler management
+            setContextMenuHandler(handler) {
+                this.clearContextMenuHandler();
+                if (handler) {
+                    this.contextMenuClickHandler = handler;
+                    setTimeout(() => {
+                        document.addEventListener('click', this.contextMenuClickHandler);
+                    }, 10);
+                }
+            }
+
+            clearContextMenuHandler() {
+                if (this.contextMenuClickHandler) {
+                    document.removeEventListener('click', this.contextMenuClickHandler);
+                    this.contextMenuClickHandler = null;
+                }
+            }
+
+            // Battle state management
+            clearBattleState() {
+                this.battleInProgress = false;
+                this.selectedTarget = null;
+                this.clearContextMenuHandler();
+            }
+
             // Centralized UI update method to replace repeated calls
-            updateGameUI() {
-                this.updateSoulDisplay();
-                this.updateSoulCount();
-                this.updateFriendlyNodes();
-                this.updateUI();
-                this.renderMap();
+            updateGameUI(options = {}) {
+                // Default to update everything if no options specified
+                const updateAll = Object.keys(options).length === 0;
+                
+                if (updateAll || options.souls) {
+                    this.updateSoulDisplay();
+                    this.updateSoulCount();
+                }
+                
+                if (updateAll || options.friendly) {
+                    this.updateFriendlyNodes();
+                }
+                
+                if (updateAll || options.ui) {
+                    this.updateUI();
+                }
+                
+                if (updateAll || options.map) {
+                    this.renderMap();
+                }
             }
             
             showOpeningAnimation() {
@@ -2288,7 +2330,6 @@
             }
             
             generateMap() {
-                console.log('生成地图中...');
                 const startTime = performance.now();
                 
                 for (let i = 2; i <= this.mapSize; i++) {
@@ -2315,7 +2356,6 @@
                 }
                 
                 const endTime = performance.now();
-                console.log(`地图生成完成，用时 ${(endTime - startTime).toFixed(2)}ms，共${edgeCount}条边`);
             }
             
             primeCache = new Map();
@@ -2360,7 +2400,6 @@
             getVisibleNodes() {
                 // During initialization, return empty array to prevent errors
                 if (!this.currentPos && !this.heroUnit) {
-                    console.log('No currentPos or heroUnit set yet');
                     return [];
                 }
                 
@@ -2403,7 +2442,6 @@
                 try {
                     // Don't render map if game hasn't started yet
                     if (!this.currentPos && !this.heroUnit) {
-                        console.log('Game not started yet, skipping map render');
                         return;
                     }
                     
@@ -2535,11 +2573,9 @@
             
             launchCampaign() {
                 if (this.campaignTargets.length === 0) {
-                    console.log('没有选择战役目标');
                     return;
                 }
                 
-                console.log('发起战役，目标:', this.campaignTargets);
                 // Save targets before exiting campaign mode
                 const targets = [...this.campaignTargets];
                 this.exitCampaignMode();
@@ -2550,7 +2586,6 @@
             
             highlightCampaignSelectableNodes() {
                 const selectableNodes = this.getCampaignSelectableNodes();
-                console.log('战役可选择节点:', selectableNodes);
                 
                 selectableNodes.forEach(node => {
                     const nodes = document.querySelectorAll('.node');
@@ -2572,7 +2607,6 @@
                     const selectable = (this.adjacencyList[this.currentPos] || []).filter(node => 
                         !this.friendlyNodes.has(node)
                     );
-                    console.log('第一个目标可选择 (从当前位置', this.currentPos, '):', selectable);
                     return selectable;
                 } else {
                     // 后续目标：必须与最后一个目标相连
@@ -2582,7 +2616,6 @@
                         !this.friendlyNodes.has(node) &&
                         node !== this.currentPos
                     );
-                    console.log('后续目标可选择 (从', lastTarget, '):', selectable);
                     return selectable;
                 }
             }
@@ -2699,42 +2732,31 @@
             }
             
             onNodeClick(node, event) {
-                console.log('节点点击:', node, '战役模式:', this.campaignMode, '战斗中:', this.battleInProgress);
                 
                 if (this.battleInProgress) {
-                    console.log('战斗进行中，忽略节点点击');
                     return;
                 }
                 
                 if (this.campaignMode) {
-                    console.log('处理战役模式节点点击');
                     this.handleCampaignNodeClick(node);
                 } else if (this.canReach(node)) {
-                    console.log('显示节点上下文菜单');
                     event.stopPropagation();
                     this.showNodeContextMenu(node, event);
                 } else {
-                    console.log('节点不可达:', node);
                 }
             }
             
             handleCampaignNodeClick(node) {
-                console.log('战役模式: 点击节点', node);
-                console.log('当前战役目标:', this.campaignTargets);
-                console.log('当前位置:', this.currentPos);
                 
                 const selectableNodes = this.getCampaignSelectableNodes();
                 if (!selectableNodes.includes(node)) {
-                    console.log('节点', node, '在战役模式下不可选择');
                     this.showMessage('该节点不能作为战役目标！');
                     return;
                 }
                 
                 this.campaignTargets.push(node);
-                console.log('添加战役目标:', node, '总目标数:', this.campaignTargets.length);
                 
                 if (this.campaignTargets.length >= this.maxCampaignLength) {
-                    console.log('战役达到最大长度');
                 }
                 
                 this.renderMap();
@@ -2778,7 +2800,6 @@
             }
             
             startCampaignMode() {
-                console.log('开始战役模式');
                 this.campaignMode = true;
                 // 不清空campaignTargets，保留已选择的目标
                 this.renderMap();
@@ -2786,7 +2807,6 @@
             }
             
             exitCampaignMode() {
-                console.log('退出战役模式');
                 this.campaignMode = false;
                 this.campaignTargets = [];
                 
@@ -2929,12 +2949,10 @@
             
             async confirmCampaign() {
                 if (this.campaignTargets.length === 0) {
-                    console.log('没有选择战役目标');
                     this.showMessage('请先选择战役目标！');
                     return;
                 }
                 
-                console.log('确认战役，目标:', this.campaignTargets);
                 
                 // 保存战役目标，因为exitCampaignMode()会清空它们
                 const campaignTargetsCopy = [...this.campaignTargets];
@@ -2948,7 +2966,6 @@
             }
             
             async startCampaignBattle() {
-                console.log('开始战役战斗...');
                 this.saveBeforeBattleState();
                 this.battleInProgress = true;
                 
@@ -2964,8 +2981,6 @@
                 });
                 
                 const enemyNodes = this.getCampaignEnemies();
-                console.log('战役战斗 - 我方单位:', playerUnits);
-                console.log('战役战斗 - 敌方单位:', enemyNodes);
                 
                 if (enemyNodes.length === 0) {
                     console.error('战役战斗中没有找到敌方单位！');
@@ -2988,21 +3003,17 @@
             }
             
             getCampaignEnemies() {
-                console.log('获取战役敌人，目标:', this.campaignTargets);
                 const enemies = [];
                 const usedEnemies = new Set();
                 
                 this.campaignTargets.forEach(target => {
-                    console.log('处理目标:', target);
                     
                     if (!usedEnemies.has(target) && !this.friendlyNodes.has(target)) {
                         enemies.push(target);
                         usedEnemies.add(target);
-                        console.log('添加目标作为敌人:', target);
                     }
                     
                     const additionalCount = this.getAdditionalEnemyCount(target);
-                    console.log('目标', target, '需要额外敌人:', additionalCount);
                     
                     // 使用BFS按距离逐层搜索援军
                     const visited = new Set([target, this.currentPos, ...usedEnemies, ...this.campaignTargets]);
@@ -3043,19 +3054,16 @@
                             if (!usedEnemies.has(enemy)) {
                                 enemies.push(enemy);
                                 usedEnemies.add(enemy);
-                                console.log('添加额外敌人:', enemy);
                                 remainingCount--;
                             }
                         }
                     }
                 });
                 
-                console.log('最终战役敌人:', enemies);
                 return enemies;
             }
             
             onCampaignWin(releasedSoulIndices) {
-                console.log('战役胜利！目标:', this.campaignTargets);
                 this.battleCount++;
                 
                 
@@ -3068,11 +3076,9 @@
                 campaignTargetsCopy.forEach(target => {
                     this.conqueredNodes.add(target);
                     this.collectSoul(target);
-                    console.log('征服并收集了魂:', target);
                 });
                 
                 this.currentPos = campaignTargetsCopy[campaignTargetsCopy.length - 1];
-                console.log('移动到战役终点位置:', this.currentPos);
                 
                 this.campaignTargets = [];
                 
@@ -3156,26 +3162,34 @@
                 
                 menu.style.display = 'block';
                 
-                // Close menu when clicking elsewhere - remove setTimeout to prevent interference
-                document.addEventListener('click', this.closeContextMenu, { once: true });
+                // Set up click handler for closing menu
+                this.setContextMenuHandler((e) => {
+                    // Don't close if clicking inside the menu itself
+                    if (!menu.contains(e.target)) {
+                        this.closeContextMenu();
+                    }
+                });
             }
             
-            closeContextMenu = () => {
+            closeContextMenu() {
                 document.getElementById('nodeContextMenu').style.display = 'none';
-                this.selectedTarget = null;
+                this.clearContextMenuHandler();
+                
+                // Don't clear selectedTarget during battle
+                if (!this.battleInProgress) {
+                    this.selectedTarget = null;
+                }
             }
             
             
             moveToNode(targetNode) {
-                if (this.friendlyNodes.has(targetNode)) {
-                    this.currentPos = targetNode;
-                } else {
-                    this.currentPos = targetNode;
+                this.currentPos = targetNode;
+                
+                if (!this.friendlyNodes.has(targetNode)) {
                     this.conqueredNodes.add(targetNode);
                 }
                 
-                this.updateUI();
-                this.renderMap();
+                this.updateGameUI({ ui: true, map: true });
                 return true;
             }
             
@@ -3201,10 +3215,7 @@
                     this.soulBuffTurns = [...this.beforeBattleState.soulBuffTurns];
                     this.releaseOrder = [...this.beforeBattleState.releaseOrder];
                     
-                    this.updateSoulDisplay();
-                    this.updateSoulCount();
-                    this.updateUI();
-                    this.renderMap();
+                    this.updateGameUI(); // Update everything after restoring state
                 }
             }
             
@@ -3214,7 +3225,12 @@
                     return;
                 }
                 
-                console.log('开始与目标的战斗:', this.selectedTarget);
+                // Save the target before any async operations
+                const battleTarget = this.selectedTarget;
+                
+                // Hide context menu and remove handlers without clearing selectedTarget
+                document.getElementById('nodeContextMenu').style.display = 'none';
+                this.clearContextMenuHandler();
                 
                 this.saveBeforeBattleState();
                 this.battleInProgress = true;
@@ -3230,23 +3246,21 @@
                     }
                 });
                 
-                const enemyNodes = this.getBattleEnemies(this.selectedTarget);
+                const enemyNodes = this.getBattleEnemies(battleTarget);
                 
-                console.log('我方单位:', playerUnits);
-                console.log('敌方单位:', enemyNodes);
                 
                 await this.showBattleModal(playerUnits, enemyNodes);
                 
                 const result = await this.numbercraftBattle(playerUnits, enemyNodes);
                 
                 if (result.winner === 'X') {
-                    this.onBattleWin(this.selectedTarget, enemyNodes, releasedSoulIndices);
+                    this.onBattleWin(battleTarget, enemyNodes, releasedSoulIndices);
                 } else {
                     this.onBattleLose();
                 }
                 
-                this.selectedTarget = null;
-                this.battleInProgress = false;
+                // Clear state after battle is completely done
+                this.clearBattleState();
             }
             
             getBattleEnemies(targetNode) {
@@ -3303,7 +3317,6 @@
             }
             
             async showBattleModal(playerUnits, enemyUnits) {
-                console.log('显示战斗模态框');
                 const modal = document.getElementById('battleModal');
                 
                 const speedTexts = {0.5: '慢速', 1: '正常', 1.5: '快速', 2: '极快'};
@@ -3335,7 +3348,6 @@
                 });
                 
                 modal.style.display = 'flex';
-                console.log('战斗模态框现在应该可见');
                 
                 await this.delay(300 / this.battleSpeed);
             }
@@ -3626,9 +3638,15 @@
                     releasedSoulIndices
                 );
                 
-                this.conqueredNodes.add(targetNode);
-                this.currentPos = targetNode;
-                this.collectSoul(targetNode);
+                // Validate targetNode before processing
+                if (targetNode != null && typeof targetNode === 'number') {
+                    this.conqueredNodes.add(targetNode);
+                    this.currentPos = targetNode;
+                    this.collectSoul(targetNode);
+                } else {
+                    console.error('Invalid target node in battle win:', targetNode);
+                    // Keep current position if targetNode is invalid
+                }
                 
                 this.updateSoulDisplay();
                 this.updateSoulCount();
@@ -4123,17 +4141,40 @@ showSoulConfig() {
                             throw new Error('无效的存档文件');
                         }
                         
-                        // Load game state
+                        // Load game state with validation
                         const state = saveData.gameState;
+                        
+                        // Validate and clean souls array - remove null values
+                        this.souls = (state.souls || []).filter(soul => soul != null && typeof soul === 'number');
+                        this.soulModes = (state.soulModes || []).slice(0, this.souls.length);
+                        this.soulBuffTurns = (state.soulBuffTurns || []).slice(0, this.souls.length);
+                        
+                        // Ensure arrays have same length
+                        while (this.soulModes.length < this.souls.length) {
+                            this.soulModes.push('none');
+                        }
+                        while (this.soulBuffTurns.length < this.souls.length) {
+                            this.soulBuffTurns.push(3);
+                        }
+                        
+                        // Validate currentPos - if null and has souls, use first soul as position
                         this.currentPos = state.currentPos;
-                        this.heroUnit = state.heroUnit;
-                        this.bossNode = state.bossNode;
-                        this.battleCount = state.battleCount;
-                        this.souls = state.souls || [];
-                        this.soulModes = state.soulModes || [];
-                        this.soulBuffTurns = state.soulBuffTurns || [];
-                        this.releaseOrder = state.releaseOrder || [];
-                        this.conqueredNodes = new Set(state.conqueredNodes || []);
+                        if (this.currentPos == null && this.souls.length > 0) {
+                            this.currentPos = this.souls[0];
+                            console.warn('Restored currentPos from first soul:', this.currentPos);
+                        } else if (this.currentPos == null) {
+                            this.currentPos = state.heroUnit || SoulMageGame.CONSTANTS.DEFAULT_HERO;
+                            console.warn('Restored currentPos to hero unit:', this.currentPos);
+                        }
+                        
+                        this.heroUnit = state.heroUnit || SoulMageGame.CONSTANTS.DEFAULT_HERO;
+                        this.bossNode = state.bossNode || SoulMageGame.CONSTANTS.DEFAULT_BOSS;
+                        this.battleCount = state.battleCount || 0;
+                        this.releaseOrder = (state.releaseOrder || []).filter(index => typeof index === 'number');
+                        
+                        // Clean conquered nodes - remove null values
+                        const cleanConqueredNodes = (state.conqueredNodes || []).filter(node => node != null && typeof node === 'number');
+                        this.conqueredNodes = new Set(cleanConqueredNodes);
                         this.missionCompleted = state.missionCompleted || false;
                         this.maxSouls = state.maxSouls || 9;
                         this.viewRange = state.viewRange || 2;
@@ -4283,9 +4324,10 @@ showSoulConfig() {
                 document.getElementById('contextBattle').addEventListener('click', (e) => {
                     e.stopPropagation();
                     const target = this.selectedTarget;
-                    this.closeContextMenu();
                     if (target) {
-                        this.selectedTarget = target;
+                        // Close the menu visually but don't clear selectedTarget yet
+                        document.getElementById('nodeContextMenu').style.display = 'none';
+                        // Start battle will clear selectedTarget after it's done using it
                         this.startBattle();
                     }
                 });
@@ -4293,19 +4335,23 @@ showSoulConfig() {
                 document.getElementById('contextCampaign').addEventListener('click', (e) => {
                     e.stopPropagation();
                     const target = this.selectedTarget;
-                    this.closeContextMenu();
                     if (target) {
+                        // Close the menu visually
+                        document.getElementById('nodeContextMenu').style.display = 'none';
                         // 设置选中的敌人为第一个战役目标
                         this.campaignTargets = [target];
                         this.startCampaignMode();
+                        // Clear selectedTarget after use
+                        this.selectedTarget = null;
                     }
                 });
                 
                 document.getElementById('contextMove').addEventListener('click', (e) => {
                     e.stopPropagation();
                     const target = this.selectedTarget;
-                    this.closeContextMenu();
                     if (target && this.canReach(target)) {
+                        // Close the menu and clear selectedTarget
+                        this.closeContextMenu();
                         this.moveToNode(target);
                     }
                 });
@@ -4385,6 +4431,57 @@ showSoulConfig() {
                 this.updateSoulCount();
                 
                 requestAnimationFrame(() => this.renderMap());
+            }
+            
+            // Emergency fix for corrupted save files
+            fixCorruptedState() {
+                
+                // Fix null currentPos
+                if (this.currentPos == null) {
+                    if (this.souls && this.souls.length > 0) {
+                        // Find first valid soul
+                        const validSoul = this.souls.find(soul => soul != null && typeof soul === 'number');
+                        if (validSoul) {
+                            this.currentPos = validSoul;
+                        }
+                    }
+                    
+                    if (this.currentPos == null) {
+                        this.currentPos = this.heroUnit || SoulMageGame.CONSTANTS.DEFAULT_HERO;
+                    }
+                }
+                
+                // Clean null values from arrays
+                if (this.souls) {
+                    const originalLength = this.souls.length;
+                    this.souls = this.souls.filter(soul => soul != null && typeof soul === 'number');
+                    if (this.souls.length !== originalLength) {
+                    }
+                    
+                    // Sync related arrays
+                    this.soulModes = this.soulModes.slice(0, this.souls.length);
+                    this.soulBuffTurns = this.soulBuffTurns.slice(0, this.souls.length);
+                    
+                    // Fill missing entries
+                    while (this.soulModes.length < this.souls.length) {
+                        this.soulModes.push('none');
+                    }
+                    while (this.soulBuffTurns.length < this.souls.length) {
+                        this.soulBuffTurns.push(3);
+                    }
+                }
+                
+                // Clean conqueredNodes
+                if (this.conqueredNodes) {
+                    const originalSize = this.conqueredNodes.size;
+                    const cleanNodes = Array.from(this.conqueredNodes).filter(node => node != null && typeof node === 'number');
+                    this.conqueredNodes = new Set(cleanNodes);
+                    if (this.conqueredNodes.size !== originalSize) {
+                    }
+                }
+                
+                // Update UI
+                this.updateGameUI();
             }
             
             // Add method to safely add event listeners
